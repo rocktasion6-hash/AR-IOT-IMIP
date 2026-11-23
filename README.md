@@ -1,83 +1,61 @@
-# SOP-AR | Web AR + Wokwi MQTT
+# SOP-AR Interaktif — V2: belajar dan ujian di dalam kamera AR
 
-Prototipe pembelajaran dan praktik SOP K3 menggunakan kamera HP, marker Hiro, dan ESP32 virtual Wokwi. **Tidak menggunakan Unity**. Ini bukan materi atau SOP resmi PT IRNC; validasi semua prosedur oleh petugas K3 sebelum dipakai sebagai pelatihan nyata.
+Versi ini menggantikan panel besar aplikasi sebelumnya. **Semua materi dan pertanyaan muncul pada papan 3D yang menempel di marker Hiro**, dan jawaban dapat diklik pada papan tersebut. Di bagian bawah kamera tersedia kartu sentuh alternatif, tetap dalam layar kamera AR yang sama. Karena sentuhan pada objek AR.js kadang berbeda perilakunya antarperangkat, kartu sentuh ini memastikan kuis tetap bisa dikerjakan di HP.
 
-## File
+## Yang sudah dapat dilakukan
 
-- `index.html`: halaman utama, kamera dan objek AR miniatur, materi dan praktik.
-- `style.css`: desain responsif, warna hijau-gading-emas.
-- `app.js`: koneksi MQTT, tampilan data dan aturan penilaian latihan.
-- `marker.html`: halaman pembantu menampilkan marker Hiro dari sumber AR.js (memerlukan internet).
+1. Buka kamera dan arahkan ke marker Hiro; papan 3D muncul di atas marker.
+2. Belajar **APD, rambu keselamatan, respons alarm** langsung dalam AR. Tekan "LANJUT MATERI" di papan AR atau tombol pada kartu layar kamera.
+3. Masuk **Praktik di AR** dan jawab **soal APD** dan **soal rambu** pada papan AR atau tombol kamera.
+4. Tahap IoT meminta pesan **NORMAL baru**, lalu **ALARM baru** dari Wokwi via MQTT. Jangan klik opsi palsu: Wokwi-lah yang memicu kelanjutan.
+5. Jawab **soal respons alarm** di papan AR dan lihat hasil nilai di AR.
+6. Unduh nilai simulasi sebagai JSON (penilaian lokal, belum disimpan di Laravel).
 
-## Cara cepat membuka di HP (direkomendasikan: GitHub Pages)
+Materi adalah **contoh akademik** bukan SOP resmi atau prosedur darurat PT IRNC. Validasi oleh personel K3 wajib sebelum penggunaan untuk pelatihan sebenarnya.
 
-1. Buka https://github.com/new dan buat repository **publik** bernama `sop-ar-k3` (atau nama lain). Jangan unggah berkas internal perusahaan.
-2. Unggah **isi** folder SOP-AR-WebAR ke root repository: `index.html`, `style.css`, `app.js`, `marker.html`, `.nojekyll`.
-3. Pada repository buka **Settings → Pages → Build and deployment → Source: Deploy from a branch**. Pilih branch `main` dan folder `/(root)` lalu **Save**.
-4. Setelah GitHub Pages memublikasikan situsnya, buka URL yang muncul di Settings → Pages, misalnya `https://namapengguna.github.io/sop-ar-k3/`, lewat Chrome di HP.
-5. Izinkan akses kamera. Karena halaman GitHub Pages memakai HTTPS, izin kamera bisa diminta.
-6. Tampilkan **marker Hiro pada layar laptop lain** atau cetak marker: https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/hiro.png (atau `marker.html`). Arahkan kamera HP ke marker.
-7. Jalankan Wokwi, pastikan MQTTX masih menerima data pada topic `sopar/demo/k3-58321/telemetry`.
-8. Tunggu status situs `Broker terhubung` dan `Sensor real-time`.
-9. Masuk **Mode Belajar**, baca materi lalu pilih **Mulai Praktik**. Pilih empat APD, lalu ikuti instruksi di Tahap 2.
-10. Saat Tahap 2, pastikan status `alarm_manual` = false pada Wokwi. Klik tombol merah **ALARM** Wokwi. Jika sudah aktif sejak awal, tekan **RESET**, tunggu telemetri masuk ke situs, baru tekan ALARM lagi.
-11. Pada Tahap 3 pilih respons yang sesuai. Setelah selesai, skor simulasi dapat diunduh sebagai JSON.
+## Cara membuka di HP
 
-## Tes awal di laptop (tanpa hosting)
+1. Buka [Wokwi](https://wokwi.com), jalankan simulasi IoT yang sudah berhasil. Pastikan data masuk ke MQTTX.
+2. Ekstrak ZIP ini, unggah file hasil ekstrak ke root repository GitHub (`index.html`, `style.css`, `app.js`, `marker.html`, `.nojekyll`).
+3. Pada **Settings → Pages**, pilih **Deploy from a branch**, branch `main`, folder `/(root)`, lalu simpan.
+4. Buka URL HTTPS GitHub Pages yang ditampilkan, gunakan browser HP, dan izinkan kamera.
+5. Tampilkan marker Hiro pada layar laptop atau cetak marker. Boleh membuka `marker.html` dari perangkat lain.
+6. Arahkan kamera HP ke marker; cek tulisan **Marker Hiro terdeteksi**. Papan 3D berisi materi dan soal akan muncul.
+7. Jalankan **Belajar di AR → Praktik di AR**. Pilih jawaban dari papan 3D, atau dari kontrol sentuh di bagian bawah kamera.
+8. Saat tahap IoT, tekan RESET Wokwi jika alarm sudah aktif. Tunggu data `alarm:false` / `alarm_manual:false` baru diterima, lalu tekan tombol ALARM di Wokwi.
+9. Setelah soal respons alarm selesai, nilai tampil di AR. Gunakan tombol unduh hasil untuk menyimpan JSON.
 
-Buka folder ini dalam terminal, lalu jalankan:
+## Jalankan pada laptop untuk uji lokal
+
+Dari folder ini jalankan:
 
 ```bash
 python -m http.server 8000
 ```
 
-Buka `http://localhost:8000` pada laptop yang sama, izinkan kamera laptop, kemudian pindai marker Hiro dari layar HP/kertas. **Jangan** mengandalkan `file://` dari double-click index.html untuk kamera. Untuk akses dari HP, gunakan situs **HTTPS** seperti GitHub Pages; `http://IP-laptop:8000` biasanya tidak diperbolehkan untuk kamera di HP.
+Buka `http://localhost:8000`. Kamera laptop dapat digunakan pada localhost. Kamera HP membutuhkan HTTPS; `http://IP-laptop:8000` umumnya tidak mendapat izin kamera di browser HP.
 
-## Konfigurasi MQTT
+## Koneksi MQTT
 
-| Parameter | Isi |
-|---|---|
-| URL WSS (browser) | `wss://broker.emqx.io:8084/mqtt` |
-| Topic di situs | `sopar/demo/k3-58321/telemetry` |
-| Topic di Wokwi | `sopar/demo/k3-58321/telemetry` |
+- Broker: `wss://broker.emqx.io:8084/mqtt`
+- Topic bawaan: `sopar/demo/k3-58321/telemetry`
+- Payload dipakai: `temperature`, `sensor_ok`, `alarm`, `alarm_manual` dan `event`.
+- Untuk ganti topic, klik ikon roda gigi di pojok kanan atas, isi topic yang identik dengan `MQTT_TOPIC` pada sketch Wokwi, kemudian simpan.
+- Data lebih tua dari 8,5 detik ditandai tidak real-time. Tahap alarm **tidak dapat lulus** dari data lama.
 
-Jika topic Wokwi diubah, buka **Pengaturan koneksi MQTT** di situs (desktop), masukkan topic yang sama lalu pilih **Terapkan topic**. Untuk penggunaan HP, lebih mudah samakan default di `app.js` sebelum diunggah.
+## Catatan teknis
 
-Pesan minimal yang diharapkan dari proyek Wokwi:
+- Papan AR bisa ditekan dengan A-Frame raycaster mouse/touch. Jika tap 3D tidak respons pada perangkat tertentu, gunakan pilihan identik di kartu layar kamera. Semua tahap tetap memakai scene AR, tidak dialihkan ke halaman kuis terpisah.
+- Jawaban kuis hanya diterima saat marker terdeteksi. Pastikan papan Hiro tetap terlihat kamera sewaktu memilih jawaban.
+- Tombol alarm baru dari Wokwi (perubahan `alarm_manual:false → true`) diterima hanya setelah aplikasi melihat pesan NORMAL baru ketika tahap IoT dimulai.
+- Aplikasi hanya subscribe MQTT; tidak mengirim perintah kontrol ke perangkat. Broker publik tidak aman untuk informasi rahasia dan bukan untuk pelatihan bersertifikat.
+- Perangkat perlu internet untuk library AR.js, A-Frame, dan MQTT.js dari CDN.
+- Objek APD dan lingkungan belum model 3D realistis; ini prototipe fungsional untuk alur belajar–kuis–IoT–hasil langsung pada AR.
 
-```json
-{
-  "device": "SOP-AR-K3",
-  "temperature": 30.0,
-  "humidity": 65.0,
-  "sensor_ok": true,
-  "alarm": false,
-  "alarm_manual": false,
-  "event": "boot"
-}
-```
+## Berkas
 
-## Pengujian
-
-1. **Marker**: kamera mengenali Hiro, model 3D muncul.
-2. **Sensor**: data suhu/kelembapan terbarui kira-kira setiap 2 detik (sesuai Wokwi).
-3. **Alarm**: tekan ALARM, lampu model 3D menjadi merah dan status AR `ALARM AKTIF`.
-4. **Reset**: tekan RESET pada Wokwi dengan suhu di bawah ambang 38°C, lampu kembali hijau.
-5. **Praktik**: lakukan langkah APD → tekan ALARM baru setelah diminta → pilih respons yang tepat → tampil hasil.
-6. **Koneksi terputus**: jika data tidak masuk >8,5 detik, sensor menjadi `Menunggu sensor`, sehingga tidak mengklaim status normal dari data usang.
-
-## Catatan keamanan dan batasan
-
-- Broker EMQX publik. **Jangan** unggah data pribadi, SOP internal, atau data rahasia perusahaan. Gunakan topik acak berbeda jika ada banyak peserta.
-- Alarm, APD dan respons adalah **simulasi pelatihan**, bukan instruksi darurat yang menggantikan SOP lokasi.
-- Skor dihitung lokal di browser (`100 - 20 per kesalahan`, minimum 0); **belum** disimpan ke Laravel atau server.
-- Yang disimulasikan adalah *alarm manual* dari tombol Wokwi dan data sensor. Alarm dari suhu tinggi mengubah warna model AR, tetapi *Tahap 2 praktik* secara sengaja memerlukan alarm manual baru.
-- Library 3D, AR dan MQTT dimuat dari CDN; internet diperlukan. Kamera membutuhkan HTTPS/localhost dan browser yang mendukung WebRTC.
-
-## Referensi teknis
-
-- AR.js marker: https://ar-js-org.github.io/AR.js-Docs/marker-based/
-- Marker Hiro: https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/hiro.png
-- MQTT.js: https://github.com/mqttjs/MQTT.js
-- EMQX WebSocket: https://www.emqx.com/en/blog/connect-to-mqtt-broker-with-websocket
-- GitHub Pages: https://docs.github.com/en/pages/quickstart
+- `index.html`: scene AR dan UI dalam kamera
+- `style.css`: tampilan layar kamera untuk desktop/HP
+- `app.js`: materi, soal, skor dan integrasi MQTT
+- `marker.html`: membuka marker Hiro resmi
+- `.nojekyll`: GitHub Pages

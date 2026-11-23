@@ -1,316 +1,390 @@
 'use strict';
 
-/* SOP-AR: latihan K3 berbasis data ESP32 virtual. BUKAN SOP resmi perusahaan. */
+/* SOP-AR Interaktif: studi kasus akademik; bukan SOP resmi atau sertifikasi K3. */
 const MQTT_URL = 'wss://broker.emqx.io:8084/mqtt';
 const DEFAULT_TOPIC = 'sopar/demo/k3-58321/telemetry';
 const DATA_TIMEOUT_MS = 8500;
-const REQUIRED_APD = ['helm', 'sepatu', 'rompi', 'kacamata'];
 
 const lessons = [
   {
-    title: 'Kenali alat pelindung diri',
-    body: 'APD ditentukan melalui penilaian bahaya dan persyaratan area kerja. Contoh latihan ini memakai empat jenis APD.',
-    points: ['Helm melindungi kepala dari bahaya tertentu.', 'Sepatu keselamatan melindungi kaki sesuai tingkat risikonya.', 'Rompi reflektif meningkatkan visibilitas pada situasi yang sesuai.', 'Kacamata pelindung dipilih berdasarkan potensi bahaya pada mata.']
+    title: 'Kenali APD sebelum bekerja',
+    tag: 'MATERI 01 / APD',
+    message: 'APD harus dipilih berdasarkan bahaya pekerjaan dan ketentuan area kerja. Pelajari fungsi perlindungannya terlebih dahulu.',
+    points: [
+      'Helm keselamatan membantu melindungi kepala dari bahaya tertentu.',
+      'Sepatu keselamatan dan pelindung mata harus sesuai dengan risikonya.',
+      'APD tidak menggantikan pengendalian bahaya atau instruksi petugas K3.'
+    ],
+    worldBody: 'Kenali APD yang diwajibkan di area kerja. Pilih sesuai risiko dan instruksi K3.'
   },
   {
-    title: 'Pahami tanda dan simbol bahaya',
-    body: 'Rambu keselamatan membantu pekerja mengenali peringatan, larangan, kewajiban, dan titik informasi keselamatan.',
-    points: ['Perhatikan rambu dan instruksi sebelum masuk area kerja.', 'Tentukan bahaya berdasarkan konteks dan instruksi setempat.', 'Jangan menganggap rambu digital sebagai pengganti pemeriksaan langsung.']
+    title: 'Pahami rambu keselamatan',
+    tag: 'MATERI 02 / RAMBU',
+    message: 'Rambu membantu mengenali peringatan, larangan, kewajiban, dan petunjuk keselamatan. Selalu pahami maknanya sebelum bertindak.',
+    points: [
+      'Rambu wajib dipatuhi sesuai konteks lokasi.',
+      'Tanda peringatan berarti ada potensi bahaya yang harus dikenali.',
+      'Jika rambu tidak dipahami, minta penjelasan petugas berwenang.'
+    ],
+    worldBody: 'Pelajari arti rambu peringatan dan ikuti instruksi keselamatan setempat.'
   },
   {
-    title: 'Respons terhadap alarm keselamatan',
-    body: 'Alarm virtual akan diaktifkan oleh tombol ALARM di Wokwi. Peserta diminta mengenali peringatan dan memilih respons yang tepat.',
-    points: ['Jangan abaikan alarm yang aktif.', 'Hentikan aktivitas sesuai instruksi setempat dan perhatikan arahan petugas.', 'Ikuti prosedur tanggap darurat/evakuasi yang berlaku di lokasi.', 'Jangan mereset alarm nyata tanpa kewenangan atau verifikasi penyebab.']
+    title: 'Kenali alarm dan respons awal',
+    tag: 'MATERI 03 / ALARM',
+    message: 'Alarm memberi sinyal bahwa situasi perlu diperiksa dan respons harus mengikuti prosedur lokasi. Latihan ini memicu alarm dari Wokwi.',
+    points: [
+      'Jangan mengabaikan alarm.',
+      'Ikuti arahan petugas dan prosedur darurat yang ditetapkan.',
+      'Jangan mematikan atau mereset alarm nyata tanpa kewenangan.'
+    ],
+    worldBody: 'Saat alarm berbunyi: pahami peringatan, ikuti prosedur dan arahan petugas.'
   }
 ];
 
-const el = (id) => document.getElementById(id);
+const stages = [
+  {
+    type: 'quiz', tag: 'SOAL 01 / APD', title: 'Soal APD',
+    question: 'Saat akan memasuki area yang mewajibkan helm keselamatan, apa yang seharusnya dilakukan?',
+    worldBody: 'Sebelum masuk area WAJIB HELM, tindakan yang benar?',
+    options: [
+      'Masuk tanpa helm karena hanya sebentar.',
+      'Pakai helm yang sesuai dan pastikan kondisinya layak.',
+      'Meminjam helm apa saja tanpa pemeriksaan.'
+    ],
+    worldOptions: ['Masuk tanpa helm', 'Pakai & periksa helm', 'Helm apa saja'],
+    correct: 1,
+    explain: 'Benar. Persyaratan APD harus dipenuhi sebelum memasuki area sesuai SOP yang berlaku.'
+  },
+  {
+    type: 'quiz', tag: 'SOAL 02 / RAMBU', title: 'Soal Rambu',
+    question: 'Jika kamu melihat rambu peringatan bahaya yang belum dipahami, apa tindakan paling tepat?',
+    worldBody: 'Ada rambu bahaya yang belum dipahami. Apa tindakanmu?',
+    options: [
+      'Abaikan selama tidak ada orang yang menegur.',
+      'Langsung masuk karena lingkungan terlihat aman.',
+      'Cari tahu artinya dan ikuti instruksi petugas berwenang.'
+    ],
+    worldOptions: ['Abaikan rambu', 'Langsung masuk', 'Pahami & ikuti arahan'],
+    correct: 2,
+    explain: 'Benar. Rambu merupakan informasi keselamatan yang perlu dipahami sebelum bertindak.'
+  },
+  {
+    type: 'alarm', tag: 'PRAKTIK 03 / IOT', title: 'Praktik alarm IoT',
+    question: 'Sekarang uji respons AR terhadap tombol ALARM pada Wokwi. Pastikan data MQTT aktif. Bila alarm sudah aktif, tekan RESET lebih dahulu.',
+    worldBody: 'Tunggu status NORMAL baru. Lalu tekan tombol ALARM di Wokwi.',
+    options: []
+  },
+  {
+    type: 'quiz', tag: 'SOAL 04 / RESPONS', title: 'Soal respons alarm',
+    question: 'Alarm latihan sudah aktif dari Wokwi. Apa respons awal paling tepat menurut prinsip umum keselamatan?',
+    worldBody: 'Alarm K3 telah aktif. Respons awal yang tepat?',
+    options: [
+      'Abaikan alarm dan lanjut bekerja.',
+      'Hentikan kegiatan sesuai instruksi dan ikuti arahan keselamatan setempat.',
+      'Reset alarm nyata tanpa memeriksa penyebabnya.'
+    ],
+    worldOptions: ['Abaikan dan lanjut', 'Ikuti prosedur & petugas', 'Reset tanpa periksa'],
+    correct: 1,
+    explain: 'Benar. Dalam kondisi nyata, ikuti prosedur perusahaan dan arahan personel K3 yang berwenang.'
+  }
+];
+
+const $ = (id) => document.getElementById(id);
 const state = {
-  mode: 'learn', lesson: 0, practiceStage: 'intro', wrongAttempts: 0,
-  mqttClient: null, subscribedTopic: DEFAULT_TOPIC, brokerConnected: false,
-  latest: null, lastSeenMs: 0, markerVisible: false, practiceFinishedAt: null
+  mode: 'learn', lessonIndex: 0, stageIndex: 0, wrong: 0,
+  markerVisible: false, brokerConnected: false, mqttClient: null,
+  topic: DEFAULT_TOPIC, latest: null, lastSeenMs: 0,
+  alarmArmed: false, finishedAt: null, feedback: null, feedbackKind: 'ok'
 };
 
-function setStatus(id, textId, mode, msg) {
-  const pill = el(id); pill.classList.remove('good', 'bad');
-  if (mode) pill.classList.add(mode);
-  el(textId).textContent = msg;
+function text(id, value) { const node = $(id); if (node) node.textContent = value; }
+function attr(id, field, value) { const node = $(id); if (node) node.setAttribute(field, value); }
+function fresh() { return state.brokerConnected && state.lastSeenMs > 0 && Date.now() - state.lastSeenMs < DATA_TIMEOUT_MS; }
+function currentStage() { return stages[state.stageIndex]; }
+function score() { return Math.max(0, 100 - state.wrong * 20); }
+function feedback(message, kind = 'ok') { state.feedback = message; state.feedbackKind = kind; renderFeedback(); }
+function clearFeedback() { state.feedback = null; renderFeedback(); }
+function renderFeedback() {
+  const node = $('dockFeedback');
+  node.className = state.feedback ? `feedback show ${state.feedbackKind}` : 'feedback';
+  node.textContent = state.feedback || '';
 }
-function freshTelemetry() {
-  return state.brokerConnected && state.lastSeenMs > 0 && Date.now() - state.lastSeenMs <= DATA_TIMEOUT_MS;
+function toast(message) {
+  const el = $('toast'); el.textContent = message; el.hidden = false;
+  clearTimeout(toast.handle); toast.handle = setTimeout(() => { el.hidden = true; }, 2800);
 }
-function logFeedback(message, ok) {
-  const target = el('feedback');
-  target.textContent = message;
-  target.className = `feedback visible ${ok ? 'ok' : 'error'}`;
+function ensureMarker() {
+  if (state.markerVisible) return true;
+  toast('Arahkan kamera ke marker Hiro agar praktik berlangsung di AR.');
+  return false;
 }
-function clearFeedback() {
-  el('feedback').textContent = '';
-  el('feedback').className = 'feedback';
+function setAlarmGraphic() {
+  const alarm = fresh() && state.latest && state.latest.alarm;
+  const color = alarm ? '#ed514c' : '#6db67d';
+  attr('alarmBeacon', 'color', color);
+  attr('alarmBeacon', 'material', `emissive: ${alarm ? '#ec3831' : '#1e7443'}; emissiveIntensity: ${alarm ? 0.85 : 0.35}`);
+  attr('panelIndicator', 'color', alarm ? '#ec5147' : '#60b779');
+  const b = $('alarmBeacon');
+  if (alarm) b.setAttribute('animation__pulse', 'property: scale; from: 1 0.72 1; to: 1.2 0.85 1.2; loop: true; dir: alternate; dur: 500');
+  else { b.removeAttribute('animation__pulse'); b.setAttribute('scale', '1 0.72 1'); }
 }
-function setARAttribute(id, name, value) {
-  const node = el(id);
-  if (node) node.setAttribute(name, value);
-}
-function updateAR() {
-  const hasData = freshTelemetry();
-  const reading = state.latest;
-  const alarming = hasData && reading && reading.alarm === true;
-  const status = !hasData ? 'MENUNGGU DATA' : alarming ? 'ALARM AKTIF' : 'KONDISI NORMAL';
-  setARAttribute('arStatus', 'value', status);
-  setARAttribute('arStatus', 'color', alarming ? '#ad3d32' : '#153e30');
-  setARAttribute('arTemperature', 'value', hasData && reading.sensor_ok && Number.isFinite(reading.temperature)
-    ? `Suhu: ${reading.temperature.toFixed(1)} C` : 'Suhu: --');
-  setARAttribute('alarmBeacon', 'color', alarming ? '#e23e39' : '#65b47a');
-  setARAttribute('alarmBeacon', 'material', `emissive: ${alarming ? '#e23e39' : '#237745'}; emissiveIntensity: ${alarming ? 0.85 : 0.3}`);
-  setARAttribute('monitorIndicator', 'color', alarming ? '#e23e39' : '#59a46a');
-  const beacon = el('alarmBeacon');
-  if (!beacon) return;
-  if (alarming) {
-    beacon.setAttribute('animation__pulse', 'property: scale; from: 1 0.68 1; to: 1.25 0.85 1.25; dur: 500; dir: alternate; loop: true; easing: easeInOutSine');
+function renderConnection() {
+  $('mqttPill').classList.toggle('good', state.brokerConnected);
+  $('mqttPill').classList.toggle('bad', !state.brokerConnected);
+  text('mqttText', state.brokerConnected ? 'MQTT terhubung' : 'MQTT terputus');
+  if (fresh()) {
+    const d = state.latest;
+    text('sensorConnection', 'IoT: data real-time');
+    text('temp', d.sensor_ok && Number.isFinite(d.temperature) ? `${d.temperature.toFixed(1)}°C` : '--°C');
+    text('alarm', d.alarm ? 'AKTIF' : 'Normal');
   } else {
-    beacon.removeAttribute('animation__pulse');
-    beacon.setAttribute('scale', '1 0.68 1');
+    text('sensorConnection', 'IoT: menunggu data');
+    text('temp', '--°C');
+    text('alarm', '--');
+  }
+  setAlarmGraphic();
+  if (state.mode === 'practice' && currentStage()?.type === 'alarm') renderAlarmCallout();
+}
+function renderAlarmCallout() {
+  const node = $('dockCallout');
+  if (state.mode !== 'practice' || currentStage().type !== 'alarm') { node.hidden = true; return; }
+  node.hidden = false;
+  let body;
+  if (!fresh()) body = 'Belum ada data Wokwi terbaru. Jalankan Wokwi dan tunggu MQTT terhubung.';
+  else if (state.latest.alarm_manual || state.latest.alarm) body = 'Alarm sudah aktif. Tekan RESET di Wokwi dan pastikan sensor kembali NORMAL, lalu tekan ALARM lagi.';
+  else if (!state.alarmArmed) body = 'Menunggu satu pesan kondisi NORMAL baru dari Wokwi untuk memulai pengujian.';
+  else body = 'Siap! Sekarang tekan tombol merah ALARM di Wokwi. AR menunggu perubahan nyata dari MQTT.';
+  node.textContent = body;
+}
+function renderWorld(options, header, title, body, hint, actionText) {
+  attr('arMode', 'value', header);
+  attr('arBoardTitle', 'value', title);
+  attr('arBoardBody', 'value', body);
+  attr('arBoardHint', 'value', hint);
+  const active = Boolean(options && options.length);
+  $('arOptions').setAttribute('visible', active);
+  for (let i = 0; i < 3; i++) {
+    attr(`arOptionText${i}`, 'value', active && options[i] ? `${String.fromCharCode(65 + i)}. ${options[i]}` : '');
+  }
+  $('arContinueGroup').setAttribute('visible', Boolean(actionText));
+  attr('arContinueText', 'value', actionText || '');
+}
+function render() {
+  const isLearn = state.mode === 'learn';
+  $('tabLearn').classList.toggle('selected', isLearn);
+  $('tabQuiz').classList.toggle('selected', !isLearn);
+  $('tabLearn').setAttribute('aria-selected', String(isLearn));
+  $('tabQuiz').setAttribute('aria-selected', String(!isLearn));
+  const choiceBox = $('dockAnswers'); choiceBox.replaceChildren();
+  const bullets = $('dockBullets'); bullets.replaceChildren();
+  $('resultActions').hidden = true;
+  $('dockCallout').hidden = true;
+  $('mainButton').hidden = false;
+  $('backButton').hidden = false;
+
+  if (isLearn) {
+    const item = lessons[state.lessonIndex];
+    text('dockStep', item.tag);
+    text('dockTitle', item.title);
+    text('dockQuestion', item.message);
+    item.points.forEach(p => { const box = document.createElement('div'); box.textContent = p; bullets.append(box); });
+    const pc = Math.round((state.lessonIndex + 1) / lessons.length * 100);
+    text('progressCaption', `Materi ${state.lessonIndex + 1} dari ${lessons.length}`);
+    text('progressPct', `${pc}%`); $('progressFill').style.width = `${pc}%`;
+    $('mainButton').textContent = state.lessonIndex === lessons.length - 1 ? 'Mulai praktik di AR →' : 'Materi berikutnya →';
+    $('backButton').hidden = state.lessonIndex === 0;
+    choiceBox.hidden = true;
+    renderWorld(null, `BELAJAR • 0${state.lessonIndex + 1}`, item.title, item.worldBody, 'Pahami materi di papan AR', state.lessonIndex === lessons.length - 1 ? 'MULAI SOAL' : 'LANJUT MATERI');
+  } else if (state.stageIndex === stages.length) {
+    const result = score();
+    text('dockStep', 'HASIL EVALUASI');
+    text('dockTitle', `Nilai latihan ${result}/100`);
+    text('dockQuestion', `Empat tahapan telah diselesaikan. Jumlah percobaan salah: ${state.wrong}. Penilaian simulasi: 100 - (20 × kesalahan), minimum 0.`);
+    text('progressCaption', 'Praktik selesai'); text('progressPct', '100%'); $('progressFill').style.width = '100%';
+    $('mainButton').textContent = 'Ulangi praktik'; $('backButton').textContent = 'Kembali belajar';
+    $('resultActions').hidden = false;
+    choiceBox.hidden = true;
+    renderWorld(null, 'EVALUASI SELESAI', `SKOR ${result}/100`, `Kesalahan: ${state.wrong}. Terus pelajari dan latih ulang prosedur.`, 'Bukan sertifikasi resmi', 'ULANGI PRAKTIK');
+  } else {
+    const stage = currentStage();
+    const pc = Math.round((state.stageIndex + 1) / stages.length * 100);
+    text('dockStep', stage.tag); text('dockTitle', stage.title); text('dockQuestion', stage.question);
+    text('progressCaption', `Tahap ${state.stageIndex + 1} dari ${stages.length}`);
+    text('progressPct', `${pc}%`); $('progressFill').style.width = `${pc}%`;
+    $('backButton').textContent = 'Kembali belajar';
+    $('mainButton').hidden = true;
+    if (stage.type === 'quiz') {
+      choiceBox.hidden = false;
+      stage.options.forEach((label, index) => {
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'answer';
+        const letter = document.createElement('strong'); letter.textContent = String.fromCharCode(65 + index);
+        b.append(letter, document.createTextNode(' ' + label));
+        b.addEventListener('click', () => answer(index)); choiceBox.append(b);
+      });
+      renderWorld(stage.worldOptions, stage.tag, stage.title, stage.worldBody, 'Ketuk opsi A / B / C pada AR atau panel kamera', '');
+    } else {
+      choiceBox.hidden = true;
+      renderWorld(null, 'PRAKTIK IOT', 'Tombol ALARM Wokwi', stage.worldBody, 'Data sensor harus real-time', '');
+      renderAlarmCallout();
+    }
+  }
+  renderFeedback();
+}
+function switchMode(mode) {
+  if (mode === 'practice' && state.mode !== 'practice') {
+    state.stageIndex = 0; state.wrong = 0; state.finishedAt = null; state.alarmArmed = false;
+  }
+  state.mode = mode; clearFeedback(); render();
+}
+function goNext() {
+  if (!ensureMarker()) return;
+  if (state.mode === 'learn') {
+    if (state.lessonIndex < lessons.length - 1) state.lessonIndex += 1;
+    else { switchMode('practice'); return; }
+    clearFeedback(); render();
+  } else if (state.stageIndex === stages.length) {
+    restartPractice();
   }
 }
-function updateSensorUI() {
-  const valid = freshTelemetry();
-  setStatus('dataPill', 'dataText', valid ? 'good' : 'bad', valid ? 'Sensor real-time' : 'Menunggu sensor');
-  if (!valid) {
-    el('lastSeen').textContent = state.lastSeenMs ? 'Data terlambat' : 'Belum ada data';
-    el('temperatureValue').textContent = '-- °C';
-    el('humidityValue').textContent = '-- %';
-    el('alarmValue').textContent = 'Tidak diketahui';
-    el('eventValue').textContent = 'Event: --';
-  } else {
-    const data = state.latest;
-    el('lastSeen').textContent = 'Baru diterima';
-    el('temperatureValue').textContent = data.sensor_ok && Number.isFinite(data.temperature) ? `${data.temperature.toFixed(1)} °C` : '-- °C';
-    el('humidityValue').textContent = data.sensor_ok && Number.isFinite(data.humidity) ? `${data.humidity.toFixed(1)} %` : '-- %';
-    el('alarmValue').textContent = data.alarm ? 'Aktif' : 'Normal';
-    el('eventValue').textContent = `Event: ${data.event || 'telemetri'}`;
-  }
-  updateAR();
-  if (state.practiceStage === 'alarm') updateAlarmInstructions();
+function restartPractice() {
+  state.mode = 'practice'; state.stageIndex = 0; state.wrong = 0; state.finishedAt = null;
+  state.alarmArmed = false; clearFeedback(); render();
 }
-function parseTelemetry(text) {
+function answer(index) {
+  if (!ensureMarker()) return;
+  if (state.mode !== 'practice' || state.stageIndex >= stages.length) return;
+  const s = currentStage();
+  if (s.type !== 'quiz') return;
+  if (index !== s.correct) {
+    state.wrong += 1;
+    feedback('Jawaban belum tepat. Pelajari petunjuk keselamatan dan coba kembali.', 'error');
+    return;
+  }
+  state.stageIndex += 1;
+  if (state.stageIndex === 2) state.alarmArmed = false;
+  if (state.stageIndex === stages.length) {
+    state.finishedAt = new Date();
+    feedback(`Latihan selesai. ${s.explain}`, 'ok');
+  } else feedback(s.explain, 'ok');
+  render();
+}
+function handleAlarmFromMQTT(oldData, oldFresh, next) {
+  if (state.mode !== 'practice' || currentStage()?.type !== 'alarm') return;
+  // Arming hanya sesudah menerima status NORMAL BARU pada tahap ini.
+  if (next.alarm_manual === false && next.alarm === false) {
+    state.alarmArmed = true;
+    renderAlarmCallout();
+    return;
+  }
+  if (state.alarmArmed && oldFresh && oldData && oldData.alarm_manual === false && next.alarm_manual === true) {
+    state.alarmArmed = false;
+    state.stageIndex = 3;
+    feedback('Alarm baru dari Wokwi berhasil terdeteksi. Sekarang jawab soal respons alarm.', 'ok');
+    render();
+  }
+}
+function parseTelemetry(payload) {
   try {
-    const obj = JSON.parse(text);
+    const obj = JSON.parse(payload);
     if (!obj || typeof obj !== 'object' || typeof obj.alarm !== 'boolean' || typeof obj.alarm_manual !== 'boolean') return null;
     return {
-      device: String(obj.device || ''),
-      temperature: Number(obj.temperature), humidity: Number(obj.humidity),
-      sensor_ok: obj.sensor_ok === true,
+      temperature: Number(obj.temperature), humidity: Number(obj.humidity), sensor_ok: obj.sensor_ok === true,
       alarm: obj.alarm, alarm_manual: obj.alarm_manual,
-      event: String(obj.event || '').slice(0, 64)
+      event: typeof obj.event === 'string' ? obj.event.slice(0, 70) : ''
     };
-  } catch (_err) { return null; }
+  } catch (_) { return null; }
 }
-function receiveTelemetry(topic, buffer) {
-  if (topic !== state.subscribedTopic) return;
-  const next = parseTelemetry(buffer.toString());
-  if (!next) return;
-  const prev = state.latest;
-  const prevFresh = freshTelemetry();
-  state.latest = next;
-  state.lastSeenMs = Date.now();
-  updateSensorUI();
-
-  // Tahap alarm hanya diluluskan oleh EDGE BARU tombol ALARM Wokwi.
-  // Data yang sudah dalam keadaan alarm sebelum latihan tidak lolos.
-  if (state.mode === 'practice' && state.practiceStage === 'alarm' && prevFresh && prev &&
-      prev.alarm_manual === false && next.alarm_manual === true) {
-    state.practiceStage = 'response';
-    renderPractice();
-    logFeedback('Alarm manual baru berhasil terdeteksi dari ESP32 virtual melalui MQTT. Pilih respons yang tepat.', true);
-  }
-}
-function subscribeTopic(topic) {
-  if (!state.mqttClient || !state.brokerConnected) return;
-  state.mqttClient.subscribe(topic, { qos: 0 }, (err) => {
-    if (err) setStatus('dataPill', 'dataText', 'bad', 'Subscribe gagal');
+function subscribe(topic) {
+  if (!state.brokerConnected || !state.mqttClient) return;
+  state.mqttClient.subscribe(topic, { qos: 0 }, (error) => {
+    if (error) { feedback('Subscribe topic gagal. Periksa topic dan koneksi.', 'error'); }
   });
 }
 function connectMQTT() {
-  if (!window.mqtt) {
-    setStatus('brokerPill', 'brokerText', 'bad', 'Library MQTT gagal dimuat');
-    return;
+  if (!window.mqtt) { text('mqttText', 'Library MQTT gagal'); return; }
+  const clientId = 'sop-ar-arquiz-' + Math.random().toString(16).slice(2, 10);
+  state.mqttClient = window.mqtt.connect(MQTT_URL, {
+    clientId, clean: true, keepalive: 30, connectTimeout: 10000, reconnectPeriod: 3000
+  });
+  state.mqttClient.on('connect', () => { state.brokerConnected = true; subscribe(state.topic); renderConnection(); });
+  state.mqttClient.on('message', (topic, message) => {
+    if (topic !== state.topic) return;
+    const parsed = parseTelemetry(message.toString()); if (!parsed) return;
+    const old = state.latest;
+    const oldFresh = fresh();
+    state.latest = parsed; state.lastSeenMs = Date.now();
+    handleAlarmFromMQTT(old, oldFresh, parsed);
+    renderConnection();
+  });
+  for (const event of ['offline','close','reconnect']) {
+    state.mqttClient.on(event, () => { state.brokerConnected = false; renderConnection(); });
   }
-  const randomID = Math.random().toString(16).slice(2, 9);
-  const client = window.mqtt.connect(MQTT_URL, {
-    clientId: `sopar-ar-web-${randomID}`,
-    clean: true, keepalive: 30, connectTimeout: 10000, reconnectPeriod: 3000
-  });
-  state.mqttClient = client;
-  client.on('connect', () => {
-    state.brokerConnected = true;
-    setStatus('brokerPill', 'brokerText', 'good', 'Broker terhubung');
-    subscribeTopic(state.subscribedTopic);
-    updateSensorUI();
-  });
-  client.on('reconnect', () => {
-    state.brokerConnected = false;
-    setStatus('brokerPill', 'brokerText', '', 'Menghubungkan ulang');
-    updateSensorUI();
-  });
-  client.on('offline', () => {
-    state.brokerConnected = false;
-    setStatus('brokerPill', 'brokerText', 'bad', 'Broker offline');
-    updateSensorUI();
-  });
-  client.on('close', () => { state.brokerConnected = false; updateSensorUI(); });
-  client.on('error', () => { setStatus('brokerPill', 'brokerText', 'bad', 'Koneksi gagal'); });
-  client.on('message', receiveTelemetry);
-}
-function renderLesson() {
-  const lesson = lessons[state.lesson];
-  el('lessonIndex').textContent = `MATERI 0${state.lesson + 1}`;
-  el('lessonTitle').textContent = lesson.title;
-  el('lessonText').textContent = lesson.body;
-  const list = el('lessonPoints'); list.replaceChildren();
-  lesson.points.forEach((point) => {
-    const li = document.createElement('li'); li.textContent = point; list.appendChild(li);
-  });
-  document.querySelectorAll('.lesson-btn').forEach((btn, index) => {
-    btn.classList.toggle('selected', index === state.lesson);
-    btn.setAttribute('aria-pressed', String(index === state.lesson));
-  });
-}
-function changeMode(mode) {
-  state.mode = mode;
-  const learn = mode === 'learn';
-  el('learnPanel').hidden = !learn;
-  el('practicePanel').hidden = learn;
-  el('tabLearn').classList.toggle('active', learn);
-  el('tabPractice').classList.toggle('active', !learn);
-  el('tabLearn').setAttribute('aria-selected', String(learn));
-  el('tabPractice').setAttribute('aria-selected', String(!learn));
-}
-function updateAlarmInstructions() {
-  if (state.practiceStage !== 'alarm') return;
-  let message = '';
-  let detail = '';
-  if (!freshTelemetry()) {
-    message = 'Menunggu data Wokwi melalui MQTT...';
-    detail = 'Periksa koneksi, topic MQTT, dan jalankan Wokwi hingga status sensor real-time.';
-  } else if (state.latest.alarm_manual) {
-    message = 'Alarm manual sudah aktif sebelum tahap ini.';
-    detail = 'Klik tombol RESET di Wokwi, tunggu status manual normal masuk di aplikasi, lalu klik ALARM lagi.';
-  } else {
-    message = 'Siap menerima alarm baru.';
-    detail = 'Sekarang klik tombol merah ALARM di rangkaian Wokwi. Jangan menekan tombol di MQTTX.';
-  }
-  el('waitingStatus').textContent = message;
-  el('alarmInstruction').textContent = detail;
-}
-function renderPractice() {
-  const stage = state.practiceStage;
-  el('practiceIntro').hidden = stage !== 'intro';
-  el('practiceFlow').hidden = stage === 'intro' || stage === 'done';
-  el('practiceResult').hidden = stage !== 'done';
-  const names = { apd: 'Tahap 1 dari 3', alarm: 'Tahap 2 dari 3', response: 'Tahap 3 dari 3' };
-  const pct = { apd: 33, alarm: 67, response: 100 };
-  if (names[stage]) {
-    el('stepName').textContent = names[stage];
-    el('stepPercent').textContent = `${pct[stage]}%`;
-    el('progressFill').style.width = `${pct[stage]}%`;
-  }
-  el('stageAPD').hidden = stage !== 'apd';
-  el('stageAlarm').hidden = stage !== 'alarm';
-  el('stageResponse').hidden = stage !== 'response';
-  updateAlarmInstructions();
-}
-function startPractice() {
-  state.wrongAttempts = 0;
-  state.practiceStage = 'apd';
-  state.practiceFinishedAt = null;
-  document.querySelectorAll('.apd-checkbox').forEach((ch) => { ch.checked = false; });
-  clearFeedback(); changeMode('practice'); renderPractice();
-}
-function validateAPD() {
-  const checked = [...document.querySelectorAll('.apd-checkbox:checked')].map((ch) => ch.value);
-  if (REQUIRED_APD.every((x) => checked.includes(x))) {
-    state.practiceStage = 'alarm'; renderPractice();
-    logFeedback('Benar. APD untuk skenario contoh ini sudah dipilih. Lanjutkan dengan alarm Wokwi.', true);
-  } else {
-    state.wrongAttempts += 1;
-    logFeedback('Belum tepat. Pelajari kembali empat APD pada materi, lalu pilih semuanya.', false);
-  }
-}
-function chooseResponse(answer) {
-  if (state.practiceStage !== 'response') return;
-  if (answer !== 'right') {
-    state.wrongAttempts += 1;
-    logFeedback('Belum tepat. Jangan abaikan atau mereset alarm nyata tanpa kewenangan. Pilih respons sesuai instruksi darurat.', false);
-    return;
-  }
-  state.practiceFinishedAt = new Date();
-  state.practiceStage = 'done';
-  const score = Math.max(0, 100 - state.wrongAttempts * 20);
-  el('resultScore').innerHTML = `${score}<span>/100</span>`;
-  el('resultSummary').textContent = `Tiga tahap latihan selesai. Percobaan yang keliru: ${state.wrongAttempts}. Skor contoh = 100 − (20 × jumlah kesalahan), minimal 0.`;
-  renderPractice();
-}
-function exportResult() {
-  if (state.practiceStage !== 'done') return;
-  const result = {
-    aplikasi: 'SOP-AR prototipe pelatihan K3',
-    kategori: 'Simulasi akademik, bukan sertifikasi',
-    selesai_pada: state.practiceFinishedAt?.toISOString() || new Date().toISOString(),
-    tahap_dilalui: ['Pilihan APD contoh', 'Alarm manual dari IoT Wokwi', 'Respons alarm'],
-    kesalahan: state.wrongAttempts,
-    skor_simulasi: Math.max(0, 100 - state.wrongAttempts * 20),
-    mqtt_topic: state.subscribedTopic
-  };
-  const url = URL.createObjectURL(new Blob([JSON.stringify(result, null, 2)], { type: 'application/json' }));
-  const a = document.createElement('a'); a.href = url; a.download = 'hasil-latihan-sop-ar.json';
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  state.mqttClient.on('error', () => { state.brokerConnected = false; renderConnection(); });
 }
 function applyTopic() {
-  const next = el('mqttTopic').value.trim();
-  if (!next || next.includes('#') || next.includes('+') || next.includes(' ')) {
-    alert('Masukkan satu topic MQTT tanpa wildcard atau spasi, sesuai dengan sketch.ino Wokwi.');
-    return;
+  const next = $('topicInput').value.trim();
+  const message = $('settingsError');
+  if (!next || /[+#\s]/.test(next) || next.length > 170) {
+    message.textContent = 'Topic wajib diisi, tanpa wildcard (+/#) atau spasi.'; return;
   }
-  const old = state.subscribedTopic;
-  if (next === old) return;
-  state.subscribedTopic = next;
-  state.latest = null; state.lastSeenMs = 0;
-  if (state.brokerConnected && state.mqttClient) {
-    state.mqttClient.unsubscribe(old, () => subscribeTopic(next));
-  }
-  updateSensorUI();
+  if (next === state.topic) { $('settingsDialog').close(); return; }
+  const old = state.topic;
+  state.topic = next; state.latest = null; state.lastSeenMs = 0; state.alarmArmed = false;
+  if (state.brokerConnected) state.mqttClient.unsubscribe(old, () => subscribe(next));
+  renderConnection(); message.textContent = '';
+  $('settingsDialog').close(); toast('Topic MQTT sudah diperbarui. Menunggu data dari Wokwi.');
 }
-function installUI() {
-  if (!window.isSecureContext) el('httpsHint').hidden = false;
-  renderLesson(); renderPractice(); updateSensorUI();
-  el('tabLearn').addEventListener('click', () => changeMode('learn'));
-  el('tabPractice').addEventListener('click', () => changeMode('practice'));
-  document.querySelectorAll('.lesson-btn').forEach((button) => {
-    button.addEventListener('click', () => { state.lesson = Number(button.dataset.lesson); renderLesson(); });
+function downloadResult() {
+  if (state.mode !== 'practice' || state.stageIndex !== stages.length) return;
+  const data = {
+    aplikasi: 'SOP-AR Interactive',
+    keterangan: 'Simulasi akademik, bukan sertifikasi atau SOP resmi PT IRNC',
+    waktu: (state.finishedAt || new Date()).toISOString(),
+    tahapan: stages.map(s => s.tag),
+    kesalahan: state.wrong, nilai: score(), topic_mqtt: state.topic
+  };
+  const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'}));
+  const anchor = document.createElement('a');
+  anchor.href = url; anchor.download = 'sop-ar-hasil-latihan.json'; document.body.append(anchor); anchor.click(); anchor.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+function initialize() {
+  if (!window.isSecureContext) $('httpsHint').hidden = false;
+  $('topicInput').value = state.topic;
+  $('tabLearn').addEventListener('click', () => switchMode('learn'));
+  $('tabQuiz').addEventListener('click', () => switchMode('practice'));
+  $('mainButton').addEventListener('click', () => { if (state.mode === 'practice' && state.stageIndex === stages.length) restartPractice(); else goNext(); });
+  $('backButton').addEventListener('click', () => {
+    if (state.mode === 'learn' && state.lessonIndex > 0) { state.lessonIndex--; clearFeedback(); render(); }
+    else { state.mode = 'learn'; clearFeedback(); render(); }
   });
-  el('btnStartPractice').addEventListener('click', startPractice);
-  el('btnBeginPractice').addEventListener('click', startPractice);
-  el('btnCheckAPD').addEventListener('click', validateAPD);
-  document.querySelectorAll('.answer-button').forEach((button) => {
-    button.addEventListener('click', () => chooseResponse(button.dataset.answer));
+  $('minimizeDock').addEventListener('click', () => {
+    const compact = document.querySelector('.ar-dock');
+    compact.classList.toggle('compact');
+    $('minimizeDock').textContent = compact.classList.contains('compact') ? '+' : '−';
   });
-  el('btnRetry').addEventListener('click', startPractice);
-  el('btnExport').addEventListener('click', exportResult);
-  el('btnApplyTopic').addEventListener('click', applyTopic);
-  el('hiroMarker').addEventListener('markerFound', () => {
+  $('openSettings').addEventListener('click', () => $('settingsDialog').showModal());
+  $('applyTopic').addEventListener('click', applyTopic);
+  $('downloadButton').addEventListener('click', downloadResult);
+  $('hiroMarker').addEventListener('markerFound', () => {
     state.markerVisible = true;
-    el('markerText').textContent = 'Marker terdeteksi';
-    el('cameraHelp').textContent = 'Objek 3D latihan tampil pada marker.';
+    $('markerNotice').classList.add('found');
+    text('markerLabel', 'Marker Hiro terdeteksi');
+    text('markerHelp', 'Materi dan soal 3D aktif. Ketuk pilihan untuk menjawab.');
   });
-  el('hiroMarker').addEventListener('markerLost', () => {
+  $('hiroMarker').addEventListener('markerLost', () => {
     state.markerVisible = false;
-    el('markerText').textContent = 'Cari marker Hiro';
-    el('cameraHelp').textContent = 'Arahkan kamera ke marker di layar lain atau kertas.';
+    $('markerNotice').classList.remove('found');
+    text('markerLabel', 'Arahkan kamera ke marker Hiro');
+    text('markerHelp', 'Papan belajar dan soal kembali saat marker terdeteksi.');
   });
-  setInterval(updateSensorUI, 1500);
-  connectMQTT();
+  for (let i = 0; i < 3; i++) $('arOption' + i).addEventListener('click', () => answer(i));
+  $('arContinueHit').addEventListener('click', () => {
+    if (state.mode === 'learn') goNext();
+    else if (state.stageIndex === stages.length) restartPractice();
+  });
+  setInterval(renderConnection, 1500);
+  renderConnection(); render(); connectMQTT();
 }
-if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', installUI);
-else installUI();
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initialize);
+else initialize();
