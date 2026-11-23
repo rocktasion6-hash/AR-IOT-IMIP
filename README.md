@@ -1,3 +1,15 @@
+# SOP-AR Interactive V2 — Camera Fix
+
+Perbaikan penting: camera texture diaktifkan pada AR.js, background halaman menjadi transparan, video DOM ditempatkan di belakang scene AR, dan ditambahkan indikator diagnostik izin/akses kamera dengan tombol muat ulang. Semua fitur belajar, kuis, alarm Wokwi dan MQTT dipertahankan.
+
+**Cara memakai:** Salin seluruh isi ZIP ke root repo GitHub Pages, menimpa berkas lama (index.html, style.css, app.js, marker.html, .nojekyll). Setelah Pages selesai publish, di HP buka URL https://.../index.html?v=3 atau refresh tanpa cache. Izinkan kamera. Gunakan browser Chrome langsung, bukan browser dalam aplikasi pesan.
+
+**Uji laptop:** dari folder: `python -m http.server 8000` lalu buka `http://localhost:8000`. Tidak cukup double-click HTML sebagai file biasa.
+
+**Jika tetap gagal:** catat pesan pada layar "Kamera AR ..."; status `camera-init` menunjukkan izin kamera berhasil, sedangkan pesan izin ditolak menandakan perlu mengubah izin browser. Pastikan `app.js` dan `style.css` baru ikut di-upload.
+
+---
+
 # SOP-AR Interaktif — V2: belajar dan ujian di dalam kamera AR
 
 Versi ini menggantikan panel besar aplikasi sebelumnya. **Semua materi dan pertanyaan muncul pada papan 3D yang menempel di marker Hiro**, dan jawaban dapat diklik pada papan tersebut. Di bagian bawah kamera tersedia kartu sentuh alternatif, tetap dalam layar kamera AR yang sama. Karena sentuhan pada objek AR.js kadang berbeda perilakunya antarperangkat, kartu sentuh ini memastikan kuis tetap bisa dikerjakan di HP.

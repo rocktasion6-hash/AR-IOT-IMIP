@@ -348,7 +348,68 @@ function downloadResult() {
   anchor.href = url; anchor.download = 'sop-ar-hasil-latihan.json'; document.body.append(anchor); anchor.click(); anchor.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
+// Diagnostik kamera pada perangkat asli tanpa mengubah jalur MQTT / kuis.
+function startCameraDiagnostics() {
+  const panel = $('cameraStatus');
+  const heading = $('cameraStatusTitle');
+  const message = $('cameraStatusMessage');
+  let cameraReady = false;
+
+  function setProblem(title, detail) {
+    if (cameraReady) return;
+    heading.textContent = title;
+    message.textContent = detail;
+    panel.hidden = false;
+  }
+  function onCameraReady() {
+    cameraReady = true;
+    panel.hidden = true;
+  }
+  function onCameraError(event) {
+    const raw = event?.detail?.error || event?.detail || event?.error || {};
+    const code = String(raw.name || raw.message || '');
+    const denied = /NotAllowed|PermissionDenied|denied|permission/i.test(code);
+    const missing = /NotFound|DevicesNotFound|Overconstrained/i.test(code);
+    setProblem(denied ? 'Izin kamera ditolak' : missing ? 'Kamera tidak ditemukan' : 'Kamera gagal dibuka',
+      denied ? 'Izinkan kamera di pengaturan situs browser, lalu tekan Muat ulang kamera.' :
+      missing ? 'Pastikan perangkat memiliki kamera dan tidak sedang digunakan aplikasi lain.' :
+      `Periksa izin kamera, HTTPS/localhost, dan koneksi internet untuk library AR.js.${code ? ' Detail: ' + code.slice(0, 140) : ''}`);
+  }
+  // Event AR.js dapat dipancarkan di window atau document, tergantung versinya.
+  window.addEventListener('camera-init', onCameraReady);
+  document.addEventListener('camera-init', onCameraReady);
+  window.addEventListener('arjs-video-loaded', onCameraReady);
+  document.addEventListener('arjs-video-loaded', onCameraReady);
+  window.addEventListener('camera-error', onCameraError);
+  document.addEventListener('camera-error', onCameraError);
+  $('retryCamera').addEventListener('click', () => location.reload());
+
+  if (!window.isSecureContext || !navigator.mediaDevices?.getUserMedia) {
+    setProblem('Kamera diblokir oleh alamat website',
+      'Buka melalui HTTPS (misalnya GitHub Pages) atau http://localhost di laptop. Jangan gunakan alamat HTTP IP lokal HP.');
+    return;
+  }
+  // Menangani versi AR.js yang tidak memancarkan event camera-init.
+  const poll = setInterval(() => {
+    if (cameraReady) { clearInterval(poll); return; }
+    const video = document.getElementById('arjs-video');
+    if (video && video.readyState >= 2 && video.videoWidth > 0) {
+      onCameraReady(); clearInterval(poll);
+    }
+  }, 600);
+  setTimeout(() => {
+    clearInterval(poll);
+    if (!cameraReady) {
+      const librariesReady = Boolean(window.AFRAME && (window.AFRAME.components?.arjs || window.AFRAME.systems?.arjs));
+      setProblem('Kamera AR belum aktif',
+        librariesReady ? 'Periksa izin kamera Chrome dan coba muat ulang. Tutup aplikasi lain yang memakai kamera.' :
+        'Library AR.js belum siap atau gagal dimuat. Pastikan internet aktif, lalu muat ulang website.');
+    }
+  }, 12000);
+}
+
 function initialize() {
+  startCameraDiagnostics();
   if (!window.isSecureContext) $('httpsHint').hidden = false;
   $('topicInput').value = state.topic;
   $('tabLearn').addEventListener('click', () => switchMode('learn'));

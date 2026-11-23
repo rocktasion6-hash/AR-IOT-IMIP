@@ -17,7 +17,7 @@
   <a-scene id="arScene"
     embedded vr-mode-ui="enabled: false"
     renderer="antialias: true; alpha: true; precision: medium"
-    arjs="sourceType: webcam; trackingMethod: best; debugUIEnabled: false;"
+    arjs="sourceType: webcam; trackingMethod: best; videoTexture: true; debugUIEnabled: false;"
     cursor="rayOrigin: mouse; fuse: false"
     raycaster="objects: .ar-hit; far: 50">
     <a-marker id="hiroMarker" preset="hiro" emitevents="true" smooth="true" smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
@@ -65,6 +65,16 @@
     <a-entity camera></a-entity>
   </a-scene>
 
+  <!-- Diagnostik kamera: muncul jika izin ditolak, URL bukan HTTPS/localhost,
+       atau AR.js belum berhasil menyalakan webcam. -->
+  <div class="camera-status" id="cameraStatus" role="status" aria-live="polite">
+    <div class="camera-status-card">
+      <span class="camera-status-symbol" aria-hidden="true">◎</span>
+      <strong id="cameraStatusTitle">Menyiapkan kamera AR...</strong>
+      <p id="cameraStatusMessage">Izinkan akses kamera saat browser memintanya. Pastikan situs dibuka melalui HTTPS atau localhost.</p>
+      <button id="retryCamera" class="camera-retry" type="button">Muat ulang kamera</button>
+    </div>
+  </div>
   <div class="screen-shade" aria-hidden="true"></div>
   <header class="app-header">
     <div class="logo"><div class="logo-icon">S<span>+</span></div><div><strong>SOP-AR</strong><small>INTERACTIVE K3 TRAINING</small></div></div>
