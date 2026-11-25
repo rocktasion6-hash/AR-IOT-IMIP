@@ -1,669 +1,638 @@
-
 <!doctype html>
 <html lang="id">
-<head>
-  <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-  >
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
 
-  <meta name="theme-color" content="#143e2f">
+    <meta name="theme-color" content="#143e2f" />
 
-  <title>SOP-AR | Pembelajaran dan Latihan HRD</title>
+    <title>SOP-AR | Pembelajaran dan Latihan HRD</title>
 
-  <!-- CSS TETAP TERPISAH -->
-  <link rel="stylesheet" href="style.css?v=11">
+    <link rel="stylesheet" href="style.css?v=12" />
 
-  <!-- LIBRARY A-FRAME -->
-  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
 
-  <!-- LIBRARY AR.JS -->
-  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 
-  <!-- LIBRARY MQTT -->
-  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  </head>
 
-</head>
+  <body>
+    <!-- ====================================
+       KAMERA AUGMENTED REALITY
+  ===================================== -->
 
-<body>
-
-  <!-- =====================================
-       SCENE AUGMENTED REALITY
-  ====================================== -->
-
-  <a-scene
-    id="arScene"
-    embedded
-    vr-mode-ui="enabled: false"
-    device-orientation-permission-ui="enabled: false"
-    renderer="antialias: true; alpha: true"
-    arjs="sourceType: webcam; debugUIEnabled: false;">
-
-    <!-- =====================================
-         MARKER HIRO
-         TAG PEMBUKA SUDAH DIPERBAIKI
-    ====================================== -->
-
-    <a-marker
-      id="hiroMarker"
-      preset="hiro"
-      emitevents="true">
-
-      <!-- =====================================
-           MENU UTAMA BERBENTUK 3D
-      ====================================== -->
-
-      <a-entity
-        id="menuWorld"
-        position="0 0.15 0"
-        rotation="-90 0 0"
-        scale="0.40 0.40 0.40"
-        visible="true">
-
-        <!-- PAPAN LATAR MENU -->
-        <a-box
-          position="0 0 -0.08"
-          width="2.50"
-          height="2.16"
-          depth="0.07"
-          color="#143e2f">
-        </a-box>
-
-        <!-- JUDUL MENU -->
-        <a-text
-          value="MENU UTAMA SOP-AR"
-          position="0 0.88 0.01"
-          align="center"
-          width="2.20"
-          color="#f6e7b5">
-        </a-text>
-
-        <a-text
-          value="PILIH MODUL PEMBELAJARAN / LATIHAN"
-          position="0 0.66 0.01"
-          align="center"
-          width="2.0"
-          color="#e7eee3">
-        </a-text>
-
-        <!-- =====================================
-             MENU 1
-             BELAJAR PERATURAN PERUSAHAAN
-        ====================================== -->
-
-        <a-box
-          id="menuLearnPP"
-          class="ar-hit"
-          position="-0.59 0.20 0.02"
-          width="1.10"
-          height="0.69"
-          depth="0.08"
-          color="#f8f7ee">
-        </a-box>
-
-        <a-text
-          value="BELAJAR&#10;PERATURAN&#10;PERUSAHAAN"
-          position="-0.59 0.20 0.075"
-          align="center"
-          anchor="center"
-          baseline="center"
-          width="1.01"
-          color="#1b5038">
-        </a-text>
-
-        <!-- =====================================
-             MENU 2
-             BELAJAR KESELAMATAN KERJA
-        ====================================== -->
-
-        <a-box
-          id="menuLearnK3"
-          class="ar-hit"
-          position="0.59 0.20 0.02"
-          width="1.10"
-          height="0.69"
-          depth="0.08"
-          color="#e3b757">
-        </a-box>
-
-        <a-text
-          value="BELAJAR&#10;KESELAMATAN&#10;KERJA (K3)"
-          position="0.59 0.20 0.075"
-          align="center"
-          anchor="center"
-          baseline="center"
-          width="1.01"
-          color="#173e2d">
-        </a-text>
-
-        <!-- =====================================
-             MENU 3
-             LATIHAN PERATURAN PERUSAHAAN
-        ====================================== -->
-
-        <a-box
-          id="menuQuizPP"
-          class="ar-hit"
-          position="-0.59 -0.57 0.02"
-          width="1.10"
-          height="0.69"
-          depth="0.08"
-          color="#f8f7ee">
-        </a-box>
-
-        <a-text
-          value="LATIHAN SOAL&#10;PERATURAN&#10;PERUSAHAAN"
-          position="-0.59 -0.57 0.075"
-          align="center"
-          anchor="center"
-          baseline="center"
-          width="1.01"
-          color="#1b5038">
-        </a-text>
-
-        <!-- =====================================
-             MENU 4
-             LATIHAN KESELAMATAN KERJA
-        ====================================== -->
-
-        <a-box
-          id="menuQuizK3"
-          class="ar-hit"
-          position="0.59 -0.57 0.02"
-          width="1.10"
-          height="0.69"
-          depth="0.08"
-          color="#e3b757">
-        </a-box>
-
-        <a-text
-          value="LATIHAN SOAL&#10;KESELAMATAN&#10;KERJA (K3)"
-          position="0.59 -0.57 0.075"
-          align="center"
-          anchor="center"
-          baseline="center"
-          width="1.01"
-          color="#173e2d">
-        </a-text>
-
-      </a-entity>
-
-      <!-- =====================================
-           PAPAN MATERI DAN SOAL 3D
-      ====================================== -->
-
-      <a-entity
-        id="contentWorld"
-        position="0 0.15 0"
-        rotation="-90 0 0"
-        scale="0.32 0.32 0.32"
-        visible="false">
-
-        <!-- BACKGROUND PAPAN -->
-        <a-box
-          width="2.45"
-          height="2.80"
-          depth="0.07"
-          color="#f8f7ee">
-        </a-box>
-
-        <!-- HEADER PAPAN -->
-        <a-plane
-          position="0 1.09 0.045"
-          width="2.45"
-          height="0.59"
-          color="#1e553d">
-        </a-plane>
-
-        <!-- NAMA MODUL -->
-        <a-text
-          id="worldMode"
-          value="MODUL"
-          position="-1.10 1.27 0.065"
-          width="2.13"
-          color="#ecd394">
-        </a-text>
-
-        <!-- JUDUL MATERI / SOAL -->
-        <a-text
-          id="worldTitle"
-          value="Judul"
-          position="-1.10 1.05 0.065"
-          width="2.13"
-          wrap-count="35"
-          color="#ffffff">
-        </a-text>
-
-        <!-- ISI MATERI / PERTANYAAN -->
-        <a-text
-          id="worldBody"
-          value="Materi dan pertanyaan akan muncul di sini."
-          position="-1.10 0.75 0.065"
-          baseline="top"
-          width="2.14"
-          wrap-count="39"
-          color="#224c36">
-        </a-text>
-
-        <!-- PETUNJUK -->
-        <a-text
-          id="worldHint"
-          value=""
-          position="-1.10 -0.01 0.065"
-          width="2.14"
-          wrap-count="39"
-          color="#66806d">
-        </a-text>
-
-        <!-- =====================================
-             PILIHAN JAWABAN DI AR
-        ====================================== -->
+    <a-scene
+      id="arScene"
+      embedded
+      vr-mode-ui="enabled: false"
+      device-orientation-permission-ui="enabled: false"
+      renderer="antialias: true; alpha: true"
+      arjs="sourceType: webcam; debugUIEnabled: false;"
+    >
+      <a-marker id="hiroMarker" preset="hiro" emitevents="true">
+        <!-- ====================================
+           MENU UTAMA 3D
+           SUSUNAN 2 KOLOM × 2 BARIS
+      ===================================== -->
 
         <a-entity
-          id="worldOptions"
-          visible="false">
-
-          <!-- JAWABAN A -->
+          id="menuWorld"
+          position="0 0.18 0"
+          rotation="-90 0 0"
+          scale="0.38 0.38 0.38"
+          visible="true"
+        >
+          <!-- Latar belakang 3D -->
           <a-box
-            id="option0"
+            position="0 0 -0.075"
+            width="2.72"
+            height="2.82"
+            depth="0.10"
+            color="#143e2f"
+          >
+          </a-box>
+
+          <!-- Garis aksen emas -->
+          <a-box
+            position="0 1.36 0.005"
+            width="2.72"
+            height="0.055"
+            depth="0.01"
+            color="#e3b535"
+          >
+          </a-box>
+
+          <!-- Header -->
+          <a-text
+            value="SOP-AR"
+            position="0 1.10 0.025"
+            align="center"
+            width="2.10"
+            color="#f8f7ee"
+          >
+          </a-text>
+
+          <a-text
+            value="PEMBELAJARAN DAN LATIHAN HRD"
+            position="0 0.88 0.025"
+            align="center"
+            width="2.32"
+            color="#e3b535"
+          >
+          </a-text>
+
+          <!-- =================================
+             MENU 1 - BELAJAR PP
+        ================================== -->
+
+          <a-box
+            id="menuLearnPP"
             class="ar-hit"
-            position="0 -0.19 0.075"
-            width="2.21"
-            height="0.31"
-            depth="0.045"
-            color="#dfeee0">
+            position="-0.67 0.35 0.10"
+            width="1.24"
+            height="0.72"
+            depth="0.12"
+            color="#f8f7ee"
+          >
           </a-box>
 
           <a-text
-            id="optionText0"
-            value="A"
-            position="-1.04 -0.22 0.108"
-            width="2.05"
-            wrap-count="43"
-            color="#1d4d34">
+            value="01"
+            position="-1.16 0.59 0.18"
+            align="left"
+            width="0.28"
+            color="#3b6649"
+          >
           </a-text>
 
-          <!-- JAWABAN B -->
+          <a-text
+            value="BELAJAR&#10;PERATURAN&#10;PERUSAHAAN"
+            position="-0.67 0.30 0.18"
+            align="center"
+            anchor="center"
+            baseline="center"
+            width="1.08"
+            wrap-count="20"
+            color="#143e2f"
+          >
+          </a-text>
+
+          <!-- =================================
+             MENU 2 - BELAJAR K3
+        ================================== -->
+
           <a-box
-            id="option1"
+            id="menuLearnK3"
             class="ar-hit"
-            position="0 -0.54 0.075"
-            width="2.21"
-            height="0.31"
-            depth="0.045"
-            color="#dfeee0">
+            position="0.67 0.35 0.10"
+            width="1.24"
+            height="0.72"
+            depth="0.12"
+            color="#e3b535"
+          >
           </a-box>
 
           <a-text
-            id="optionText1"
-            value="B"
-            position="-1.04 -0.57 0.108"
-            width="2.05"
-            wrap-count="43"
-            color="#1d4d34">
+            value="02"
+            position="0.18 0.59 0.18"
+            align="left"
+            width="0.28"
+            color="#143e2f"
+          >
           </a-text>
 
-          <!-- JAWABAN C -->
+          <a-text
+            value="BELAJAR&#10;KESELAMATAN&#10;KERJA (K3)"
+            position="0.67 0.30 0.18"
+            align="center"
+            anchor="center"
+            baseline="center"
+            width="1.08"
+            wrap-count="20"
+            color="#143e2f"
+          >
+          </a-text>
+
+          <!-- =================================
+             MENU 3 - LATIHAN PP
+        ================================== -->
+
           <a-box
-            id="option2"
+            id="menuQuizPP"
             class="ar-hit"
-            position="0 -0.89 0.075"
-            width="2.21"
-            height="0.31"
-            depth="0.045"
-            color="#dfeee0">
+            position="-0.67 -0.55 0.10"
+            width="1.24"
+            height="0.72"
+            depth="0.12"
+            color="#f8f7ee"
+          >
           </a-box>
 
           <a-text
-            id="optionText2"
-            value="C"
-            position="-1.04 -0.92 0.108"
-            width="2.05"
-            wrap-count="43"
-            color="#1d4d34">
+            value="03"
+            position="-1.16 -0.31 0.18"
+            align="left"
+            width="0.28"
+            color="#3b6649"
+          >
           </a-text>
 
+          <a-text
+            value="LATIHAN SOAL&#10;PERATURAN&#10;PERUSAHAAN"
+            position="-0.67 -0.60 0.18"
+            align="center"
+            anchor="center"
+            baseline="center"
+            width="1.08"
+            wrap-count="20"
+            color="#143e2f"
+          >
+          </a-text>
+
+          <!-- =================================
+             MENU 4 - LATIHAN K3
+        ================================== -->
+
+          <a-box
+            id="menuQuizK3"
+            class="ar-hit"
+            position="0.67 -0.55 0.10"
+            width="1.24"
+            height="0.72"
+            depth="0.12"
+            color="#e3b535"
+          >
+          </a-box>
+
+          <a-text
+            value="04"
+            position="0.18 -0.31 0.18"
+            align="left"
+            width="0.28"
+            color="#143e2f"
+          >
+          </a-text>
+
+          <a-text
+            value="LATIHAN SOAL&#10;KESELAMATAN&#10;KERJA (K3)"
+            position="0.67 -0.60 0.18"
+            align="center"
+            anchor="center"
+            baseline="center"
+            width="1.08"
+            wrap-count="20"
+            color="#143e2f"
+          >
+          </a-text>
+
+          <!-- Footer papan -->
+          <a-text
+            value="SENTUH MENU UNTUK MEMBUKA MODUL"
+            position="0 -1.18 0.03"
+            align="center"
+            width="2.20"
+            color="#d9e8dc"
+          >
+          </a-text>
         </a-entity>
 
-        <!-- =====================================
-             TOMBOL KEMBALI KE MENU
-        ====================================== -->
+        <!-- ====================================
+           PAPAN MATERI DAN SOAL 3D
+      ===================================== -->
+
+        <a-entity
+          id="contentWorld"
+          position="0 0.18 0"
+          rotation="-90 0 0"
+          scale="0.35 0.35 0.35"
+          visible="false"
+        >
+          <!-- Latar utama -->
+          <a-box
+            position="0 0 -0.04"
+            width="2.74"
+            height="3.48"
+            depth="0.08"
+            color="#f8f7ee"
+          >
+          </a-box>
+
+          <!-- Header hijau -->
+          <a-box
+            position="0 1.37 0.015"
+            width="2.74"
+            height="0.67"
+            depth="0.025"
+            color="#1e553d"
+          >
+          </a-box>
+
+          <!-- Aksen -->
+          <a-box
+            position="0 1.72 0.035"
+            width="2.74"
+            height="0.04"
+            depth="0.01"
+            color="#e3b535"
+          >
+          </a-box>
+
+          <!-- Jenis modul -->
+          <a-text
+            id="worldMode"
+            value="MODUL PEMBELAJARAN"
+            position="-1.20 1.52 0.055"
+            width="2.37"
+            wrap-count="42"
+            color="#e3b535"
+          >
+          </a-text>
+
+          <!-- Judul -->
+          <a-text
+            id="worldTitle"
+            value="Judul Materi"
+            position="-1.20 1.28 0.055"
+            width="2.38"
+            wrap-count="32"
+            color="#ffffff"
+          >
+          </a-text>
+
+          <!-- Isi materi atau soal -->
+          <a-text
+            id="worldBody"
+            value="Materi akan ditampilkan di sini."
+            position="-1.20 0.84 0.055"
+            baseline="top"
+            width="2.40"
+            wrap-count="39"
+            color="#224c36"
+          >
+          </a-text>
+
+          <!-- Petunjuk -->
+          <a-text
+            id="worldHint"
+            value=""
+            position="-1.20 0.08 0.055"
+            baseline="top"
+            width="2.40"
+            wrap-count="45"
+            color="#647a69"
+          >
+          </a-text>
+
+          <!-- =================================
+             PILIHAN JAWABAN A, B, C
+        ================================== -->
+
+          <a-entity id="worldOptions" visible="false">
+            <!-- Jawaban A -->
+            <a-box
+              id="option0"
+              class="ar-hit"
+              position="0 -0.35 0.075"
+              width="2.40"
+              height="0.29"
+              depth="0.055"
+              color="#dfeee0"
+            >
+            </a-box>
+
+            <a-text
+              id="optionText0"
+              value="A."
+              position="-1.10 -0.39 0.112"
+              width="2.18"
+              wrap-count="42"
+              color="#1d4d34"
+            >
+            </a-text>
+
+            <!-- Jawaban B -->
+            <a-box
+              id="option1"
+              class="ar-hit"
+              position="0 -0.73 0.075"
+              width="2.40"
+              height="0.29"
+              depth="0.055"
+              color="#dfeee0"
+            >
+            </a-box>
+
+            <a-text
+              id="optionText1"
+              value="B."
+              position="-1.10 -0.77 0.112"
+              width="2.18"
+              wrap-count="42"
+              color="#1d4d34"
+            >
+            </a-text>
+
+            <!-- Jawaban C -->
+            <a-box
+              id="option2"
+              class="ar-hit"
+              position="0 -1.11 0.075"
+              width="2.40"
+              height="0.29"
+              depth="0.055"
+              color="#dfeee0"
+            >
+            </a-box>
+
+            <a-text
+              id="optionText2"
+              value="C."
+              position="-1.10 -1.15 0.112"
+              width="2.18"
+              wrap-count="42"
+              color="#1d4d34"
+            >
+            </a-text>
+          </a-entity>
+
+          <!-- =================================
+             TOMBOL KEMBALI
+        ================================== -->
+
+          <a-box
+            id="worldHome"
+            class="ar-hit"
+            position="-0.65 -1.50 0.075"
+            width="1.13"
+            height="0.26"
+            depth="0.055"
+            color="#d9e5d8"
+          >
+          </a-box>
+
+          <a-text
+            value="MENU UTAMA"
+            position="-0.65 -1.54 0.112"
+            align="center"
+            width="1.02"
+            color="#173d2c"
+          >
+          </a-text>
+
+          <!-- =================================
+             TOMBOL SELANJUTNYA
+        ================================== -->
+
+          <a-entity id="worldNextGroup">
+            <a-box
+              id="worldNext"
+              class="ar-hit"
+              position="0.65 -1.50 0.075"
+              width="1.13"
+              height="0.26"
+              depth="0.055"
+              color="#286b4b"
+            >
+            </a-box>
+
+            <a-text
+              id="worldNextText"
+              value="LANJUT"
+              position="0.65 -1.54 0.112"
+              align="center"
+              width="1.02"
+              color="#ffffff"
+            >
+            </a-text>
+          </a-entity>
+        </a-entity>
+
+        <!-- ====================================
+           MINIATUR & STATUS IOT
+      ===================================== -->
 
         <a-box
-          id="worldHome"
-          class="ar-hit"
-          position="-0.59 -1.22 0.075"
-          width="1.05"
-          height="0.25"
-          depth="0.04"
-          color="#adbdae">
+          id="groundIndicator"
+          position="0 0.025 0.62"
+          width="1.65"
+          height="0.05"
+          depth="0.17"
+          color="#27563e"
+        >
         </a-box>
 
-        <a-text
-          value="MENU UTAMA"
-          position="-0.59 -1.255 0.108"
-          align="center"
-          width="0.98"
-          color="#173d2c">
-        </a-text>
+        <a-sphere
+          id="alarmBeacon"
+          position="0.70 0.16 0.62"
+          radius="0.10"
+          color="#69b77c"
+        >
+        </a-sphere>
+      </a-marker>
 
-        <!-- =====================================
-             TOMBOL LANJUT
-        ====================================== -->
-
-        <a-entity id="worldNextGroup">
-
-          <a-box
-            id="worldNext"
-            class="ar-hit"
-            position="0.59 -1.22 0.075"
-            width="1.05"
-            height="0.25"
-            depth="0.04"
-            color="#2d754e">
-          </a-box>
-
-          <a-text
-            id="worldNextText"
-            value="LANJUT"
-            position="0.59 -1.255 0.108"
-            align="center"
-            width="0.98"
-            color="#ffffff">
-          </a-text>
-
-        </a-entity>
-
+      <!-- KAMERA DAN INTERAKSI -->
+      <a-entity
+        camera
+        cursor="rayOrigin: mouse; fuse: false"
+        raycaster="objects: .ar-hit; far: 30"
+      >
       </a-entity>
+    </a-scene>
 
-      <!-- =====================================
-           MINIATUR AREA K3
-      ====================================== -->
+    <!-- ====================================
+       OVERLAY KAMERA
+  ===================================== -->
 
-      <a-box
-        id="groundIndicator"
-        position="0 0.025 0"
-        width="1.7"
-        depth="1.2"
-        height="0.05"
-        color="#27563e">
-      </a-box>
+    <div class="screen-shade" aria-hidden="true"></div>
 
-      <!-- LAMPU ALARM DARI MQTT -->
-      <a-sphere
-        id="alarmBeacon"
-        position="0.7 0.23 0.35"
-        radius="0.12"
-        color="#69b77c">
-      </a-sphere>
+    <!-- ====================================
+       HEADER
+  ===================================== -->
 
-    </a-marker>
+    <header class="app-header">
+      <div class="logo">
+        <div class="logo-icon">S<span>+</span></div>
 
-    <!-- =====================================
-         KAMERA DAN INTERAKSI SENTUH 3D
-    ====================================== -->
-
-    <a-entity
-      camera
-      cursor="rayOrigin: mouse; fuse: false"
-      raycaster="objects: .ar-hit; far: 30">
-    </a-entity>
-
-  </a-scene>
-
-  <!-- =====================================
-       EFEK LATAR KAMERA
-  ====================================== -->
-
-  <div
-    class="screen-shade"
-    aria-hidden="true">
-  </div>
-
-  <!-- =====================================
-       HEADER SOP-AR
-  ====================================== -->
-
-  <header class="app-header">
-
-    <div class="logo">
-
-      <div class="logo-icon">
-        S<span>+</span>
+        <div>
+          <strong>SOP-AR</strong>
+          <small>PEMBELAJARAN & LATIHAN HRD</small>
+        </div>
       </div>
 
-      <div>
-        <strong>SOP-AR</strong>
-        <small>PEMBELAJARAN & LATIHAN HRD</small>
-      </div>
-
-    </div>
-
-    <div class="header-right">
-
-      <!-- STATUS MQTT -->
-      <span
-        class="connection-pill"
-        id="mqttPill">
-
-        <span class="led"></span>
-
-        <span id="mqttText">
-          MQTT menghubungkan
+      <div class="header-right">
+        <span class="connection-pill" id="mqttPill">
+          <span class="led"></span>
+          <span id="mqttText">MQTT menghubungkan</span>
         </span>
-
-      </span>
-
-      <!-- TOMBOL PENGATURAN -->
-      <button
-        class="icon-button"
-        id="openSettings"
-        type="button"
-        aria-label="Pengaturan MQTT">
-        ⚙
-      </button>
-
-    </div>
-
-  </header>
-
-  <!-- =====================================
-       INFORMASI MARKER
-  ====================================== -->
-
-  <div
-    class="camera-guidance"
-    id="markerNotice">
-
-    <span class="scan-icon">⌗</span>
-
-    <div>
-
-      <strong id="markerLabel">
-        Arahkan kamera belakang ke marker Hiro
-      </strong>
-
-      <small id="markerHelp">
-        Empat pilihan 3D akan muncul di atas marker.
-      </small>
-
-    </div>
-
-    <a
-      href="marker.html"
-      target="_blank"
-      rel="noopener noreferrer">
-      Marker
-    </a>
-
-  </div>
-
-  <!-- =====================================
-       INFORMASI SENSOR IOT WOKWI
-  ====================================== -->
-
-  <div class="sensor-strip">
-
-    <span id="sensorConnection">
-      IoT: menunggu data
-    </span>
-
-    <span>
-      Suhu <b id="temp">--°C</b>
-    </span>
-
-    <span>
-      Alarm <b id="alarm">--</b>
-    </span>
-
-  </div>
-
-  <!-- =====================================
-       PANEL SENTUH ALTERNATIF HP
-  ====================================== -->
-
-  <section
-    class="ar-dock compact"
-    aria-label="Kontrol sentuh alternatif">
-
-    <div class="dock-head">
-
-      <div>
-
-        <span class="eyebrow">
-          KONTROL SENTUH
-        </span>
-
-        <h1 id="dockTitle">
-          Menu SOP-AR
-        </h1>
-
-      </div>
-
-      <button
-        class="minimize"
-        type="button"
-        id="minimizeDock"
-        aria-label="Buka atau tutup panel">
-        +
-      </button>
-
-    </div>
-
-    <div class="dock-body">
-
-      <p
-        class="question"
-        id="dockQuestion">
-        Ketuk salah satu menu pada papan 3D.
-      </p>
-
-      <div
-        class="answers"
-        id="touchActions">
-      </div>
-
-      <p class="disclaimer">
-        Materi contoh untuk proyek akademik.
-        Bukan SOP resmi PT IRNC.
-      </p>
-
-    </div>
-
-  </section>
-
-  <!-- =====================================
-       PENGATURAN MQTT
-  ====================================== -->
-
-  <dialog
-    class="settings-dialog"
-    id="settingsDialog">
-
-    <form
-      method="dialog"
-      class="settings-inner">
-
-      <div class="settings-top">
-
-        <h2>
-          Pengaturan MQTT
-        </h2>
 
         <button
           class="icon-button"
-          type="submit"
-          aria-label="Tutup">
-          ✕
+          id="openSettings"
+          type="button"
+          aria-label="Pengaturan MQTT"
+        >
+          ⚙
+        </button>
+      </div>
+    </header>
+
+    <!-- ====================================
+       PETUNJUK MARKER
+  ===================================== -->
+
+    <div class="camera-guidance" id="markerNotice">
+      <span class="scan-icon">⌗</span>
+
+      <div>
+        <strong id="markerLabel"> Arahkan kamera ke marker Hiro </strong>
+
+        <small id="markerHelp"> Empat pilihan menu 3D akan muncul. </small>
+      </div>
+
+      <a href="marker.html" target="_blank" rel="noopener noreferrer">
+        Marker
+      </a>
+    </div>
+
+    <!-- ====================================
+       INFORMASI SENSOR IOT
+  ===================================== -->
+
+    <div class="sensor-strip">
+      <span id="sensorConnection"> IoT: menunggu data </span>
+
+      <span>Suhu <b id="temp">--°C</b></span>
+
+      <span>Alarm <b id="alarm">--</b></span>
+    </div>
+
+    <!-- ====================================
+       PANEL KONTROL HP
+  ===================================== -->
+
+    <section class="ar-dock compact" aria-label="Kontrol sentuh alternatif">
+      <div class="dock-head">
+        <div>
+          <span class="eyebrow"> KONTROL SENTUH </span>
+
+          <h1 id="dockTitle">Menu SOP-AR</h1>
+        </div>
+
+        <button
+          class="minimize"
+          id="minimizeDock"
+          type="button"
+          aria-label="Buka atau tutup panel"
+        >
+          +
+        </button>
+      </div>
+
+      <div class="dock-body">
+        <p class="question" id="dockQuestion">
+          Pilih salah satu menu 3D pada marker.
+        </p>
+
+        <div class="answers" id="touchActions"></div>
+
+        <p class="disclaimer">
+          Materi demonstrasi akademik, bukan SOP resmi PT IRNC.
+        </p>
+      </div>
+    </section>
+
+    <!-- ====================================
+       PENGATURAN MQTT
+  ===================================== -->
+
+    <dialog class="settings-dialog" id="settingsDialog">
+      <form method="dialog" class="settings-inner">
+        <div class="settings-top">
+          <h2>Pengaturan MQTT</h2>
+
+          <button class="icon-button" type="submit" aria-label="Tutup">
+            ✕
+          </button>
+        </div>
+
+        <p>
+          Gunakan topic yang sama dengan Wokwi. Jangan mengirim data rahasia
+          perusahaan ke broker publik.
+        </p>
+
+        <label for="topicInput"> Topic telemetri Wokwi </label>
+
+        <input
+          id="topicInput"
+          value="sopar/demo/k3-58321/telemetry"
+          spellcheck="false"
+        />
+
+        <div class="broker-line">
+          Broker:
+          <code>wss://broker.emqx.io:8084/mqtt</code>
+        </div>
+
+        <button class="primary-button" id="applyTopic" type="button">
+          Simpan topic
         </button>
 
-      </div>
+        <div class="settings-error" id="settingsError"></div>
+      </form>
+    </dialog>
 
-      <p>
-        Gunakan topic yang sama dengan Wokwi.
-        Jangan kirim informasi rahasia
-        perusahaan ke broker publik.
-      </p>
+    <!-- NOTIFIKASI -->
+    <div id="toast" class="toast" hidden></div>
 
-      <label for="topicInput">
-        Topic telemetri Wokwi
-      </label>
+    <div id="httpsHint" class="https-hint" hidden>
+      Akses kamera HP membutuhkan HTTPS.
+    </div>
 
-      <input
-        id="topicInput"
-        value="sopar/demo/k3-58321/telemetry"
-        spellcheck="false">
-
-      <div class="broker-line">
-        Broker:
-        <code>wss://broker.emqx.io:8084/mqtt</code>
-      </div>
-
-      <button
-        class="primary-button"
-        type="button"
-        id="applyTopic">
-        Simpan topic
-      </button>
-
-      <div
-        class="settings-error"
-        id="settingsError">
-      </div>
-
-    </form>
-
-  </dialog>
-
-  <!-- =====================================
-       NOTIFIKASI
-  ====================================== -->
-
-  <div
-    id="toast"
-    class="toast"
-    hidden>
-  </div>
-
-  <!-- =====================================
-       INFORMASI HTTPS
-  ====================================== -->
-
-  <div
-    id="httpsHint"
-    class="https-hint"
-    hidden>
-    Kamera HP memerlukan HTTPS.
-    Gunakan GitHub Pages.
-  </div>
-
-  <!-- =====================================
-       JAVASCRIPT SOP-AR V5
-  ====================================== -->
-
-  <script src="app.js?v=10"></script>
-
-</body>
+    <script src="app.js?v=10"></script>
+  </body>
 </html>
