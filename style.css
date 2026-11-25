@@ -27,3 +27,216 @@
 /* Video DOM (0), scene 3D (1), efek warna (2), HUD (7+). */
 a-scene#arScene{z-index:1!important}
 .screen-shade{z-index:2}
+
+
+/* =========================================
+   SOP-AR FULLSCREEN CAMERA FIX
+   Laptop, tablet, dan HP
+========================================= */
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: transparent !important;
+  overscroll-behavior: none;
+}
+
+/* Scene AR memenuhi layar */
+#arScene,
+a-scene#arScene {
+  position: fixed !important;
+  inset: 0 !important;
+
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+
+  max-width: none !important;
+  max-height: none !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  display: block !important;
+  background: transparent !important;
+
+  z-index: 1 !important;
+}
+
+/* Canvas A-Frame */
+#arScene canvas,
+#arScene .a-canvas {
+  position: absolute !important;
+  inset: 0 !important;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  display: block !important;
+}
+
+/* Tampilan video kamera dari AR.js */
+#arjs-video,
+video.arjs-video {
+  position: fixed !important;
+
+  top: 0 !important;
+  left: 0 !important;
+
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+
+  max-width: none !important;
+  max-height: none !important;
+
+  object-fit: cover !important;
+  object-position: center center !important;
+
+  z-index: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Efek bayangan di atas kamera */
+.screen-shade {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2 !important;
+  pointer-events: none !important;
+}
+
+/* Header dan informasi sensor */
+.app-header {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20 !important;
+}
+
+.camera-guidance,
+.sensor-strip {
+  z-index: 15 !important;
+}
+
+/* Panel pembelajaran tetap di depan kamera */
+.ar-dock {
+  position: fixed !important;
+  z-index: 18 !important;
+}
+
+/* Tidak ada overlay loading yang menutupi kamera */
+.camera-status {
+  position: fixed !important;
+
+  inset: auto 12px
+    calc(12px + env(safe-area-inset-bottom))
+    auto !important;
+
+  width: min(360px, calc(100vw - 24px));
+  max-height: 40dvh;
+
+  z-index: 30 !important;
+  overflow-y: auto;
+  background: transparent !important;
+}
+
+.camera-status[hidden] {
+  display: none !important;
+}
+
+.camera-status-card {
+  border-radius: 14px;
+  padding: 15px;
+}
+
+/* =========================================
+   HP PORTRAIT
+========================================= */
+
+@media (max-width: 767px) {
+  .app-header {
+    padding:
+      max(8px, env(safe-area-inset-top))
+      12px 9px !important;
+  }
+
+  .camera-guidance {
+    top: calc(60px + env(safe-area-inset-top));
+  }
+
+  .sensor-strip {
+    top: calc(118px + env(safe-area-inset-top));
+  }
+
+  .ar-dock {
+    position: fixed !important;
+
+    left: 8px !important;
+    right: 8px !important;
+    bottom: max(
+      8px,
+      env(safe-area-inset-bottom)
+    ) !important;
+
+    top: auto !important;
+    width: auto !important;
+    max-height: 43dvh !important;
+
+    border-radius: 16px !important;
+  }
+
+  .dock-body {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .ar-dock.compact {
+    max-height: none !important;
+  }
+
+  .camera-status {
+    left: 10px !important;
+    right: 10px !important;
+    width: auto !important;
+  }
+}
+
+/* =========================================
+   HP LANDSCAPE
+========================================= */
+
+@media (max-width: 950px)
+  and (orientation: landscape) {
+
+  .app-header {
+    padding: 6px 12px !important;
+  }
+
+  .camera-guidance {
+    top: 54px !important;
+    left: 10px !important;
+    transform: none !important;
+    max-width: 280px;
+  }
+
+  .sensor-strip {
+    top: 110px !important;
+    left: 10px !important;
+    transform: none !important;
+  }
+
+  .ar-dock {
+    top: 54px !important;
+    right: 8px !important;
+    left: auto !important;
+    bottom: 8px !important;
+
+    width: min(340px, 45vw) !important;
+    max-height: none !important;
+  }
+}

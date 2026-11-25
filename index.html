@@ -1,143 +1,713 @@
+
 <!doctype html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#153f30">
-  <meta name="description" content="SOP-AR Interaktif: belajar, mengerjakan soal, dan praktik K3 langsung dalam tampilan kamera AR.">
-  <title>SOP-AR | Belajar & Praktik Langsung di AR</title>
-  <link rel="stylesheet" href="style.css">
+
+  <title>SOP-AR | Belajar & Praktik K3 di Kamera HP</title>
+
+  <!-- CSS tetap terpisah -->
+  <link rel="stylesheet" href="style.css?v=8">
+
+  <!-- Library AR dan MQTT -->
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
   <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.7/aframe/build/aframe-ar.js"></script>
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 </head>
+
 <body>
-  <!-- Seluruh materi, soal dan tombol ada di papan dunia AR di atas marker. -->
-  <!-- Panel layar hanya kontrol sentuh alternatif untuk HP (tetap di kamera, tanpa pindah halaman). -->
-  <a-scene id="arScene"
-    embedded vr-mode-ui="enabled: false"
+
+  <!-- ==================================
+       KAMERA AR FULLSCREEN
+       Tidak menggunakan atribut embedded
+  =================================== -->
+
+  <a-scene
+    id="arScene"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false"
     renderer="antialias: true; alpha: true; precision: medium"
-    arjs="sourceType: webcam; trackingMethod: best; videoTexture: true; debugUIEnabled: false;"
-    cursor="rayOrigin: mouse; fuse: false"
-    raycaster="objects: .ar-hit; far: 50">
-    <a-marker id="hiroMarker" preset="hiro" emitevents="true" smooth="true" smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
-      <a-entity id="trainingWorld" scale="0.83 0.83 0.83">
-        <!-- Lantai miniatur -->
-        <a-box position="0 0.035 0.10" height="0.07" width="2.23" depth="1.56" color="#163c2f"></a-box>
-        <a-box position="0 0.078 0.78" height="0.015" width="2.08" depth="0.08" color="#e3b757"></a-box>
-        <a-box position="0 0.078 -0.58" height="0.015" width="2.08" depth="0.08" color="#e3b757"></a-box>
-        <!-- Skenario area latihan K3 -->
-        <a-box position="-0.70 0.25 0.30" width="0.37" height="0.36" depth="0.34" color="#d6ddd2"></a-box>
-        <a-box position="-0.70 0.33 0.475" width="0.30" height="0.18" depth="0.012" color="#143f2f"></a-box>
-        <a-plane id="panelIndicator" position="-0.70 0.33 0.484" width="0.19" height="0.075" color="#60b779"></a-plane>
-        <a-cylinder position="0.71 0.24 0.30" radius="0.023" height="0.34" color="#b8c4bc"></a-cylinder>
-        <a-cylinder position="0.71 0.45 0.30" radius="0.11" height="0.035" color="#486456"></a-cylinder>
-        <a-sphere id="alarmBeacon" position="0.71 0.54 0.30" radius="0.12" scale="1 0.72 1" color="#66b57b" material="emissive: #1e7443; emissiveIntensity: 0.3"></a-sphere>
+    arjs="sourceType: webcam;
+          trackingMethod: best;
+          videoTexture: true;
+          debugUIEnabled: false;">
+
+    <a-marker
+      id="hiroMarker"
+      preset="hiro"
+      emitevents="true"
+      smooth="true"
+      smoothCount="5"
+      smoothTolerance="0.01"
+      smoothThreshold="2">
+
+      <a-entity
+        id="trainingWorld"
+        scale="0.83 0.83 0.83">
+
+        <!-- LANTAI AREA LATIHAN -->
+        <a-box
+          position="0 0.035 0.10"
+          height="0.07"
+          width="2.23"
+          depth="1.56"
+          color="#163c2f">
+        </a-box>
+
+        <a-box
+          position="0 0.078 0.78"
+          height="0.015"
+          width="2.08"
+          depth="0.08"
+          color="#e3b757">
+        </a-box>
+
+        <a-box
+          position="0 0.078 -0.58"
+          height="0.015"
+          width="2.08"
+          depth="0.08"
+          color="#e3b757">
+        </a-box>
+
+        <!-- INDIKATOR SENSOR -->
+        <a-box
+          position="-0.70 0.25 0.30"
+          width="0.37"
+          height="0.36"
+          depth="0.34"
+          color="#d6ddd2">
+        </a-box>
+
+        <a-box
+          position="-0.70 0.33 0.475"
+          width="0.30"
+          height="0.18"
+          depth="0.012"
+          color="#143f2f">
+        </a-box>
+
+        <a-plane
+          id="panelIndicator"
+          position="-0.70 0.33 0.484"
+          width="0.19"
+          height="0.075"
+          color="#60b779">
+        </a-plane>
+
+        <!-- LAMPU ALARM -->
+        <a-cylinder
+          position="0.71 0.24 0.30"
+          radius="0.023"
+          height="0.34"
+          color="#b8c4bc">
+        </a-cylinder>
+
+        <a-cylinder
+          position="0.71 0.45 0.30"
+          radius="0.11"
+          height="0.035"
+          color="#486456">
+        </a-cylinder>
+
+        <a-sphere
+          id="alarmBeacon"
+          position="0.71 0.54 0.30"
+          radius="0.12"
+          scale="1 0.72 1"
+          color="#66b57b"
+          material="emissive: #1e7443; emissiveIntensity: 0.3">
+        </a-sphere>
+
+        <!-- RAMBU PERINGATAN -->
         <a-entity position="0.23 0.24 0.42">
-          <a-cylinder radius="0.018" height="0.30" color="#d6dad0"></a-cylinder>
-          <a-triangle position="0 0.22 0" vertex-a="0 0.13 0" vertex-b="-0.15 -0.12 0" vertex-c="0.15 -0.12 0" color="#e2b657" material="side: double"></a-triangle>
-          <a-text value="!" position="0 0.17 0.01" align="center" width="0.35" color="#213d2b"></a-text>
+
+          <a-cylinder
+            radius="0.018"
+            height="0.30"
+            color="#d6dad0">
+          </a-cylinder>
+
+          <a-triangle
+            position="0 0.22 0"
+            vertex-a="0 0.13 0"
+            vertex-b="-0.15 -0.12 0"
+            vertex-c="0.15 -0.12 0"
+            color="#e2b657"
+            material="side: double">
+          </a-triangle>
+
+          <a-text
+            value="!"
+            position="0 0.17 0.01"
+            align="center"
+            width="0.35"
+            color="#213d2b">
+          </a-text>
+
         </a-entity>
 
-        <!-- Papan pelajaran & ujian benar-benar berada di koordinat marker AR -->
-        <a-entity id="arLearningBoard" position="0 1.28 -0.34">
-          <a-plane width="2.12" height="1.84" color="#f8f7ee" material="side: double; opacity: 0.98; transparent: true"></a-plane>
-          <a-plane position="0 0.72 0.006" width="2.12" height="0.41" color="#1d563d"></a-plane>
-          <a-text id="arMode" value="BELAJAR SOP K3" color="#f7e7ba" align="left" position="-0.93 0.81 0.017" width="1.9" wrap-count="40"></a-text>
-          <a-text id="arBoardTitle" value="Alat Pelindung Diri" color="#ffffff" position="-0.93 0.59 0.017" width="1.90" wrap-count="32"></a-text>
-          <a-text id="arBoardBody" value="Arahkan kamera ke marker dan ikuti materi." color="#264b37" position="-0.94 0.35 0.017" width="1.95" wrap-count="37" baseline="top"></a-text>
-          <a-text id="arBoardHint" value="SOP-AR • SIMULASI AKADEMIK" color="#6e806e" position="-0.93 -0.15 0.017" width="1.88" wrap-count="43"></a-text>
-          <a-entity id="arOptions" visible="false">
-            <a-plane id="arOption0" class="ar-hit" data-choice="0" position="0 -0.30 0.03" width="1.94" height="0.22" color="#e0ece0"></a-plane>
-            <a-text id="arOptionText0" value="Pilihan 1" position="-0.91 -0.32 0.041" width="1.77" color="#1e4834" wrap-count="52"></a-text>
-            <a-plane id="arOption1" class="ar-hit" data-choice="1" position="0 -0.55 0.03" width="1.94" height="0.22" color="#e0ece0"></a-plane>
-            <a-text id="arOptionText1" value="Pilihan 2" position="-0.91 -0.57 0.041" width="1.77" color="#1e4834" wrap-count="52"></a-text>
-            <a-plane id="arOption2" class="ar-hit" data-choice="2" position="0 -0.80 0.03" width="1.94" height="0.22" color="#e0ece0"></a-plane>
-            <a-text id="arOptionText2" value="Pilihan 3" position="-0.91 -0.82 0.041" width="1.77" color="#1e4834" wrap-count="52"></a-text>
+        <!-- ==================================
+             PAPAN PEMBELAJARAN DAN SOAL AR
+        =================================== -->
+
+        <a-entity
+          id="arLearningBoard"
+          position="0 1.28 -0.34">
+
+          <!-- Latar papan -->
+          <a-plane
+            width="2.12"
+            height="1.84"
+            color="#f8f7ee"
+            material="side: double;
+                      opacity: 0.98;
+                      transparent: true">
+          </a-plane>
+
+          <!-- Header -->
+          <a-plane
+            position="0 0.72 0.006"
+            width="2.12"
+            height="0.41"
+            color="#1d563d">
+          </a-plane>
+
+          <a-text
+            id="arMode"
+            value="BELAJAR SOP K3"
+            color="#f7e7ba"
+            position="-0.93 0.81 0.017"
+            width="1.9"
+            wrap-count="40">
+          </a-text>
+
+          <a-text
+            id="arBoardTitle"
+            value="Pengenalan APD"
+            color="#ffffff"
+            position="-0.93 0.59 0.017"
+            width="1.90"
+            wrap-count="32">
+          </a-text>
+
+          <!-- Materi atau pertanyaan -->
+          <a-text
+            id="arBoardBody"
+            value="Pelajari materi dan ikuti latihan."
+            color="#264b37"
+            position="-0.94 0.35 0.017"
+            width="1.95"
+            wrap-count="37"
+            baseline="top">
+          </a-text>
+
+          <a-text
+            id="arBoardHint"
+            value="SIMULASI AKADEMIK"
+            color="#6e806e"
+            position="-0.93 -0.15 0.017"
+            width="1.88"
+            wrap-count="43">
+          </a-text>
+
+          <!-- PILIHAN JAWABAN AR -->
+          <a-entity
+            id="arOptions"
+            visible="false">
+
+            <!-- JAWABAN A -->
+            <a-plane
+              id="arOption0"
+              class="ar-hit"
+              position="0 -0.30 0.03"
+              width="1.94"
+              height="0.22"
+              color="#e0ece0">
+            </a-plane>
+
+            <a-text
+              id="arOptionText0"
+              position="-0.91 -0.32 0.041"
+              width="1.77"
+              color="#1e4834"
+              wrap-count="52">
+            </a-text>
+
+            <!-- JAWABAN B -->
+            <a-plane
+              id="arOption1"
+              class="ar-hit"
+              position="0 -0.55 0.03"
+              width="1.94"
+              height="0.22"
+              color="#e0ece0">
+            </a-plane>
+
+            <a-text
+              id="arOptionText1"
+              position="-0.91 -0.57 0.041"
+              width="1.77"
+              color="#1e4834"
+              wrap-count="52">
+            </a-text>
+
+            <!-- JAWABAN C -->
+            <a-plane
+              id="arOption2"
+              class="ar-hit"
+              position="0 -0.80 0.03"
+              width="1.94"
+              height="0.22"
+              color="#e0ece0">
+            </a-plane>
+
+            <a-text
+              id="arOptionText2"
+              position="-0.91 -0.82 0.041"
+              width="1.77"
+              color="#1e4834"
+              wrap-count="52">
+            </a-text>
+
           </a-entity>
-          <a-entity id="arContinueGroup" position="0 -0.72 0.03">
-            <a-plane id="arContinueHit" class="ar-hit" width="1.78" height="0.25" color="#286c4c"></a-plane>
-            <a-text id="arContinueText" value="LANJUT MATERI" position="0 -0.035 0.011" width="1.55" align="center" color="#ffffff"></a-text>
+
+          <!-- TOMBOL LANJUT PADA PAPAN AR -->
+          <a-entity
+            id="arContinueGroup"
+            position="0 -0.72 0.03">
+
+            <a-plane
+              id="arContinueHit"
+              class="ar-hit"
+              width="1.78"
+              height="0.25"
+              color="#286c4c">
+            </a-plane>
+
+            <a-text
+              id="arContinueText"
+              value="LANJUT MATERI"
+              position="0 -0.035 0.011"
+              width="1.55"
+              align="center"
+              color="#ffffff">
+            </a-text>
+
           </a-entity>
+
         </a-entity>
+
       </a-entity>
+
     </a-marker>
-    <a-entity camera></a-entity>
+
+    <!-- KAMERA + INTERAKSI SENTUH 3D -->
+    <a-entity
+      camera
+      cursor="rayOrigin: mouse; fuse: false"
+      raycaster="objects: .ar-hit; far: 50">
+    </a-entity>
+
   </a-scene>
 
-  <!-- Diagnostik kamera: muncul jika izin ditolak, URL bukan HTTPS/localhost,
-       atau AR.js belum berhasil menyalakan webcam. -->
-  <div class="camera-status" id="cameraStatus" role="status" aria-live="polite">
+  <!-- ==================================
+       PESAN ERROR KAMERA
+       Tidak tampil saat kamera normal
+  =================================== -->
+
+  <div
+    class="camera-status"
+    id="cameraStatus"
+    role="status"
+    aria-live="polite"
+    hidden>
+
     <div class="camera-status-card">
-      <span class="camera-status-symbol" aria-hidden="true">◎</span>
-      <strong id="cameraStatusTitle">Menyiapkan kamera AR...</strong>
-      <p id="cameraStatusMessage">Izinkan akses kamera saat browser memintanya. Pastikan situs dibuka melalui HTTPS atau localhost.</p>
-      <button id="retryCamera" class="camera-retry" type="button">Muat ulang kamera</button>
+
+      <span
+        class="camera-status-symbol"
+        aria-hidden="true">◎</span>
+
+      <strong id="cameraStatusTitle">
+        Kamera gagal diakses
+      </strong>
+
+      <p id="cameraStatusMessage">
+        Periksa izin kamera.
+      </p>
+
+      <div class="camera-status-actions">
+
+        <button
+          id="dismissCamera"
+          class="camera-dismiss"
+          type="button">
+          Tutup
+        </button>
+
+        <button
+          id="retryCamera"
+          class="camera-retry"
+          type="button">
+          Muat ulang
+        </button>
+
+      </div>
     </div>
   </div>
-  <div class="screen-shade" aria-hidden="true"></div>
+
+  <div
+    class="screen-shade"
+    aria-hidden="true">
+  </div>
+
+  <!-- ==================================
+       HEADER WEBSITE
+  =================================== -->
+
   <header class="app-header">
-    <div class="logo"><div class="logo-icon">S<span>+</span></div><div><strong>SOP-AR</strong><small>INTERACTIVE K3 TRAINING</small></div></div>
-    <div class="header-right">
-      <span class="connection-pill" id="mqttPill"><span class="led"></span><span id="mqttText">MQTT menghubungkan</span></span>
-      <button class="icon-button" id="openSettings" type="button" aria-label="Pengaturan MQTT" title="Pengaturan MQTT">⚙</button>
+
+    <div class="logo">
+
+      <div class="logo-icon">
+        S<span>+</span>
+      </div>
+
+      <div>
+        <strong>SOP-AR</strong>
+        <small>INTERACTIVE K3 TRAINING</small>
+      </div>
+
     </div>
+
+    <div class="header-right">
+
+      <span
+        class="connection-pill"
+        id="mqttPill">
+
+        <span class="led"></span>
+        <span id="mqttText">
+          Menghubungkan MQTT
+        </span>
+
+      </span>
+
+      <button
+        class="icon-button"
+        id="openSettings"
+        type="button"
+        aria-label="Pengaturan MQTT">
+        ⚙
+      </button>
+
+    </div>
+
   </header>
 
-  <div class="camera-guidance" id="markerNotice" aria-live="polite">
+  <!-- ==================================
+       STATUS MARKER
+  =================================== -->
+
+  <div
+    class="camera-guidance"
+    id="markerNotice"
+    aria-live="polite">
+
     <span class="scan-icon">⌗</span>
-    <div><strong id="markerLabel">Arahkan kamera ke marker Hiro</strong><small id="markerHelp">Papan materi dan soal 3D muncul di atas marker.</small></div>
-    <a href="marker.html" target="_blank" rel="noopener noreferrer">Marker</a>
+
+    <div>
+
+      <strong id="markerLabel">
+        Arahkan kamera belakang ke marker Hiro
+      </strong>
+
+      <small id="markerHelp">
+        Soal tetap dapat dikerjakan pada panel
+        di atas kamera.
+      </small>
+
+    </div>
+
+    <a
+      href="marker.html"
+      target="_blank"
+      rel="noopener noreferrer">
+      Marker
+    </a>
+
   </div>
 
-  <div class="sensor-strip" aria-label="Sensor dari Wokwi">
-    <span class="sensor-live" id="sensorConnection">Data IoT: menunggu</span>
-    <span>Suhu <b id="temp">--°C</b></span>
-    <span>Alarm <b id="alarm">--</b></span>
+  <!-- ==================================
+       INFORMASI SENSOR WOKWI
+  =================================== -->
+
+  <div
+    class="sensor-strip"
+    aria-label="Sensor dari Wokwi">
+
+    <span
+      class="sensor-live"
+      id="sensorConnection">
+      IoT: menunggu
+    </span>
+
+    <span>
+      Suhu <b id="temp">--°C</b>
+    </span>
+
+    <span>
+      Alarm <b id="alarm">--</b>
+    </span>
+
   </div>
 
-  <!-- Semua tombol ini adalah HUD di dalam layar kamera, bukan halaman terpisah. -->
-  <section class="ar-dock" aria-label="Belajar dan mengerjakan soal di AR">
+  <!-- ==================================
+       PANEL INTERAKSI DI ATAS KAMERA HP
+       Tetap bisa disentuh tanpa marker
+  =================================== -->
+
+  <section
+    class="ar-dock"
+    aria-label="Belajar dan praktik SOP K3 di kamera AR">
+
     <div class="dock-head">
-      <div><span class="eyebrow" id="dockStep">MODUL 01 • BELAJAR AR</span><h1 id="dockTitle">Pengenalan APD</h1></div>
-      <button type="button" id="minimizeDock" class="minimize" aria-label="Perkecil kartu pembelajaran">−</button>
-    </div>
-    <div id="dockBody" class="dock-body">
-      <div class="tabs" role="tablist">
-        <button type="button" id="tabLearn" class="selected" role="tab" aria-selected="true">Belajar di AR</button>
-        <button type="button" id="tabQuiz" role="tab" aria-selected="false">Praktik di AR</button>
+
+      <div>
+
+        <span
+          class="eyebrow"
+          id="dockStep">
+          MATERI 01 • APD
+        </span>
+
+        <h1 id="dockTitle">
+          Pengenalan APD
+        </h1>
+
       </div>
-      <div class="meter"><span id="progressCaption">Materi 1 dari 3</span><strong id="progressPct">33%</strong></div>
-      <div class="progress"><div id="progressFill" style="width:33%"></div></div>
-      <p class="question" id="dockQuestion">Sebelum masuk area kerja, kenali APD yang diwajibkan berdasarkan risiko.</p>
-      <div id="dockBullets" class="bullets"></div>
-      <div id="dockAnswers" class="answers" hidden></div>
-      <div id="dockCallout" class="callout" hidden></div>
-      <div id="dockFeedback" class="feedback" role="status" aria-live="polite"></div>
+
+      <button
+        type="button"
+        id="minimizeDock"
+        class="minimize"
+        aria-label="Perkecil atau perbesar panel">
+        −
+      </button>
+
+    </div>
+
+    <div
+      id="dockBody"
+      class="dock-body">
+
+      <!-- MODE BELAJAR DAN PRAKTIK -->
+      <div
+        class="tabs"
+        role="tablist"
+        aria-label="Mode latihan">
+
+        <button
+          type="button"
+          id="tabLearn"
+          class="selected"
+          role="tab"
+          aria-selected="true">
+          Belajar di AR
+        </button>
+
+        <button
+          type="button"
+          id="tabQuiz"
+          role="tab"
+          aria-selected="false">
+          Praktik di AR
+        </button>
+
+      </div>
+
+      <!-- PROGRES -->
+      <div class="meter">
+
+        <span id="progressCaption">
+          Materi 1 dari 3
+        </span>
+
+        <strong id="progressPct">
+          33%
+        </strong>
+
+      </div>
+
+      <div class="progress">
+        <div id="progressFill"></div>
+      </div>
+
+      <!-- MATERI DAN PERTANYAAN -->
+      <p
+        class="question"
+        id="dockQuestion">
+        Materi ditampilkan di sini.
+      </p>
+
+      <div
+        id="dockBullets"
+        class="bullets">
+      </div>
+
+      <!-- JAWABAN YANG DAPAT DISENTUH DI HP -->
+      <div
+        id="dockAnswers"
+        class="answers"
+        hidden>
+      </div>
+
+      <!-- INFORMASI PRAKTIK IOT -->
+      <div
+        id="dockCallout"
+        class="callout"
+        hidden>
+      </div>
+
+      <!-- FEEDBACK JAWABAN -->
+      <div
+        id="dockFeedback"
+        class="feedback"
+        role="status"
+        aria-live="polite">
+      </div>
+
+      <!-- NAVIGASI -->
       <div class="actions">
-        <button id="backButton" type="button" class="secondary-button">Kembali</button>
-        <button id="mainButton" type="button" class="primary-button">Materi berikutnya →</button>
+
+        <button
+          id="backButton"
+          type="button"
+          class="secondary-button">
+          Kembali
+        </button>
+
+        <button
+          id="mainButton"
+          type="button"
+          class="primary-button">
+          Materi berikutnya →
+        </button>
+
       </div>
-      <div class="result-actions" id="resultActions" hidden>
-        <button id="downloadButton" type="button" class="secondary-button">Unduh hasil JSON</button>
+
+      <!-- UNDUH HASIL -->
+      <div
+        class="result-actions"
+        id="resultActions"
+        hidden>
+
+        <button
+          id="downloadButton"
+          type="button"
+          class="secondary-button">
+          Unduh hasil JSON
+        </button>
+
       </div>
-      <p class="disclaimer">Materi demonstrasi akademik, bukan SOP resmi PT IRNC atau sertifikasi K3.</p>
+
+      <p class="disclaimer">
+        Simulasi akademik. Bukan SOP resmi PT IRNC
+        atau sertifikasi K3.
+      </p>
+
     </div>
+
   </section>
 
-  <dialog id="settingsDialog" class="settings-dialog">
-    <form method="dialog" class="settings-inner">
-      <div class="settings-top"><h2>Pengaturan MQTT</h2><button id="closeSettings" type="submit" class="icon-button" aria-label="Tutup">✕</button></div>
-      <p>Data tetap diambil dari Wokwi. Jangan kirim data internal perusahaan ke broker publik.</p>
-      <label for="topicInput">Topic telemetri Wokwi</label>
-      <input id="topicInput" value="sopar/demo/k3-58321/telemetry" spellcheck="false" autocomplete="off">
-      <div class="broker-line">Broker: <code>wss://broker.emqx.io:8084/mqtt</code></div>
-      <button type="button" id="applyTopic" class="primary-button">Simpan topic</button>
-      <div id="settingsError" class="settings-error" role="status"></div>
+  <!-- ==================================
+       PENGATURAN MQTT
+  =================================== -->
+
+  <dialog
+    id="settingsDialog"
+    class="settings-dialog">
+
+    <form
+      method="dialog"
+      class="settings-inner">
+
+      <div class="settings-top">
+
+        <h2>
+          Pengaturan MQTT
+        </h2>
+
+        <button
+          id="closeSettings"
+          type="submit"
+          class="icon-button"
+          aria-label="Tutup">
+          ✕
+        </button>
+
+      </div>
+
+      <p>
+        Gunakan topic yang sama dengan Wokwi.
+        Jangan kirim informasi internal perusahaan
+        ke broker publik.
+      </p>
+
+      <label for="topicInput">
+        Topic telemetri Wokwi
+      </label>
+
+      <input
+        id="topicInput"
+        value="sopar/demo/k3-58321/telemetry"
+        spellcheck="false"
+        autocomplete="off">
+
+      <div class="broker-line">
+        Broker:
+        <code>wss://broker.emqx.io:8084/mqtt</code>
+      </div>
+
+      <button
+        id="applyTopic"
+        type="button"
+        class="primary-button">
+        Simpan topic
+      </button>
+
+      <div
+        id="settingsError"
+        class="settings-error"
+        role="status">
+      </div>
+
     </form>
+
   </dialog>
-  <div id="toast" class="toast" aria-live="polite" hidden></div>
-  <div id="httpsHint" class="https-hint" hidden>Untuk menggunakan kamera HP, buka situs lewat HTTPS seperti GitHub Pages.</div>
-  <script src="app.js"></script>
+
+  <!-- NOTIFIKASI -->
+  <div
+    id="toast"
+    class="toast"
+    role="status"
+    aria-live="polite"
+    hidden>
+  </div>
+
+  <div
+    id="httpsHint"
+    class="https-hint"
+    hidden>
+    Kamera HP perlu HTTPS. Gunakan GitHub Pages.
+  </div>
+
+  <!-- KODE LOGIKA APLIKASI -->
+  <script src="app.js?v=8"></script>
+
 </body>
 </html>
