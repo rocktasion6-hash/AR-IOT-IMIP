@@ -1,3 +1,14 @@
+
+/* =========================================
+   SOP-AR INTERACTIVE V7
+   FULLSCREEN CAMERA + RESPONSIVE UI
+   iPhone, Android, Laptop, Desktop
+========================================= */
+
+/* =========================================
+   1. WARNA DAN RESET
+========================================= */
+
 :root {
   --pine: #143e2f;
   --green: #286b4b;
@@ -8,14 +19,29 @@
   --muted: #637668;
   --line: #dae4d9;
 }
-* {
+
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
+
 html,
 body {
-  height: 100%;
-  margin: 0;
-  overflow: hidden;
+  position: fixed !important;
+  inset: 0 !important;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  overflow: hidden !important;
+  overscroll-behavior: none;
+
+  background: #10251b !important;
+
   font-family:
     Inter,
     system-ui,
@@ -23,764 +49,43 @@ body {
     "Segoe UI",
     Arial,
     sans-serif;
+
   color: var(--ink);
-  background: transparent;
 }
+
 button,
 input {
   font: inherit;
 }
+
 button {
   cursor: pointer;
+  touch-action: manipulation;
 }
+
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
-[hidden] {
-  display: none !important;
-}
+
 a {
   color: inherit;
 }
-a-scene {
-  position: fixed !important;
-  inset: 0 !important;
-  width: 100vw !important;
-  height: 100dvh !important;
-  z-index: 0 !important;
-}
-a-scene canvas {
-  width: 100% !important;
-  height: 100% !important;
-}
-.screen-shade {
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    rgba(8, 35, 24, 0.48),
-    transparent 22%,
-    transparent 63%,
-    rgba(7, 28, 22, 0.15)
-  );
-}
-.app-header {
-  position: fixed;
-  z-index: 12;
-  top: 0;
-  left: 0;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 13px clamp(14px, 2vw, 28px);
-  gap: 12px;
-  background: rgba(17, 63, 44, 0.93);
-  box-shadow: 0 3px 20px #031c154a;
-  color: white;
-}
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-}
-.logo-icon {
-  display: grid;
-  place-items: center;
-  width: 41px;
-  height: 41px;
-  background: #f6edcc;
-  color: var(--pine);
-  font-size: 22px;
-  font-weight: 850;
-  border-radius: 12px;
-  letter-spacing: -0.08em;
-  flex: none;
-}
-.logo-icon span {
-  color: #ad8430;
-}
-.logo strong {
-  font-size: 17px;
-  display: block;
-  line-height: 1.25;
-  letter-spacing: 0.015em;
-}
-.logo small {
-  font-size: 9px;
-  color: #b7d7c3;
-  letter-spacing: 0.115em;
-  display: block;
-  margin-top: 2px;
-}
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.connection-pill {
-  display: inline-flex;
-  gap: 7px;
-  align-items: center;
-  border: 1px solid #ffffff38;
-  border-radius: 99px;
-  font-size: 11px;
-  color: #e5f4e8;
-  padding: 8px 10px;
-  white-space: nowrap;
-}
-.connection-pill .led {
-  width: 8px;
-  height: 8px;
-  background: #e7b851;
-  border-radius: 50%;
-  flex: none;
-}
-.connection-pill.good .led {
-  background: #61e59b;
-}
-.connection-pill.bad .led {
-  background: #e88c7e;
-}
-.icon-button {
-  height: 38px;
-  width: 38px;
-  color: inherit;
-  border-radius: 10px;
-  border: 1px solid #ffffff48;
-  background: #ffffff18;
-  font-size: 19px;
-  display: grid;
-  place-items: center;
-}
-.camera-guidance {
-  position: fixed;
-  z-index: 7;
-  left: 50%;
-  top: 77px;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 240px;
-  max-width: min(680px, calc(100vw - 22px));
-  padding: 10px 13px;
-  background: rgba(248, 247, 238, 0.95);
-  border: 1px solid #ffffffc7;
-  border-radius: 14px;
-  box-shadow: 0 8px 35px #0b281b30;
-}
-.scan-icon {
-  display: grid;
-  place-items: center;
-  border-radius: 10px;
-  width: 32px;
-  height: 32px;
-  flex: none;
-  color: #265b41;
-  background: #e5f0e7;
-  font-weight: 800;
-  font-size: 21px;
-}
-.camera-guidance strong {
-  display: block;
-  font-size: 12px;
-}
-.camera-guidance small {
-  display: block;
-  color: #667e6c;
-  font-size: 10px;
-  line-height: 1.35;
-  margin-top: 3px;
-}
-.camera-guidance a {
-  margin-left: auto;
-  border-left: 1px solid #cfddcd;
-  padding-left: 9px;
-  color: #257b4b;
-  font-weight: 800;
-  font-size: 11px;
-  text-decoration: none;
-}
-.camera-guidance.found {
-  border-color: #afd9b6;
-}
-.sensor-strip {
-  position: fixed;
-  z-index: 7;
-  top: 145px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(20, 62, 47, 0.84);
-  color: #fff;
-  display: flex;
-  gap: 14px;
-  border-radius: 50px;
-  padding: 9px 14px;
-  font-size: 11px;
-  white-space: nowrap;
-  box-shadow: 0 4px 20px #07170f49;
-}
-.sensor-strip b {
-  font-weight: 800;
-  color: #f1d990;
-}
-.sensor-live {
-  color: #d1e4d6;
-}
-.ar-dock {
-  position: fixed;
-  z-index: 9;
-  right: 22px;
-  bottom: 20px;
-  width: min(414px, calc(100vw - 28px));
-  max-height: min(78vh, 720px);
-  display: flex;
-  flex-direction: column;
-  border-radius: 20px;
-  background: rgba(249, 249, 242, 0.97);
-  border: 1px solid #f6f5e9;
-  box-shadow: 0 16px 55px #051e1259;
-  overflow: hidden;
-  backdrop-filter: blur(12px);
-}
-.dock-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  background: var(--pine);
-  color: #fff;
-  padding: 17px 18px 15px;
-}
-.eyebrow {
-  font-size: 10px;
-  letter-spacing: 0.13em;
-  color: #d5bd7f;
-  font-weight: 800;
-}
-.dock-head h1 {
-  font-size: 19px;
-  line-height: 1.17;
-  letter-spacing: -0.025em;
-  margin: 7px 0 0;
-}
-.minimize {
-  background: #ffffff1d;
-  color: white;
-  border: 1px solid #ffffff46;
-  border-radius: 8px;
-  width: 30px;
-  height: 30px;
-  font-size: 23px;
-  line-height: 1;
-  flex: none;
-}
-.dock-body {
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  padding: 15px 18px 16px;
-}
-.ar-dock.compact {
-  max-height: none;
-}
-.ar-dock.compact .dock-body {
-  display: none;
-}
-.tabs {
-  display: flex;
-  gap: 5px;
-  padding: 4px;
-  background: #e9eee7;
-  border-radius: 12px;
-}
-.tabs button {
-  background: transparent;
-  color: #6d8575;
-  padding: 11px 8px;
-  border: 0;
-  border-radius: 9px;
-  flex: 1;
-  font-weight: 750;
-  font-size: 12px;
-}
-.tabs button.selected {
-  color: white;
-  background: #2f7451;
-  box-shadow: 0 2px 9px #1e50351f;
-}
-.meter {
-  display: flex;
-  justify-content: space-between;
-  margin: 15px 1px 7px;
-  color: #637669;
-  font-size: 11px;
-}
-.meter strong {
-  color: #2a6a46;
-}
-.progress {
-  height: 6px;
-  border-radius: 20px;
-  background: #e3eadf;
-  overflow: hidden;
-}
-.progress > div {
-  height: 100%;
-  background: #5b9a65;
-  transition: width 0.3s;
-}
-.question {
-  font-size: 14px;
-  font-weight: 650;
-  line-height: 1.55;
-  color: #264e37;
-  margin: 15px 0 10px;
-}
-.bullets {
-  font-size: 12px;
-  line-height: 1.5;
-  color: #48634e;
-}
-.bullets div {
-  padding: 8px 9px;
-  background: #ecf3e9;
-  border: 1px solid #e0eadc;
-  border-radius: 8px;
-  margin: 6px 0;
-}
-.answers {
-  display: grid;
-  gap: 8px;
-  margin-top: 13px;
-}
-.answer {
-  display: block;
-  width: 100%;
-  text-align: left;
-  background: #fff;
-  border: 1px solid #d0e0ce;
-  border-radius: 11px;
-  padding: 11px 12px;
-  font-size: 12px;
-  color: #275039;
-  font-weight: 630;
-  line-height: 1.4;
-  min-height: 44px;
-}
-.answer:hover {
-  border-color: #5da374;
-  background: #f0f7ed;
-}
-.answer strong {
-  display: inline-grid;
-  place-items: center;
-  width: 23px;
-  height: 23px;
-  margin-right: 6px;
-  background: #e4f0e4;
-  border-radius: 6px;
-  color: #376b4d;
-}
-.answer:focus-visible,
-.primary-button:focus-visible,
-.secondary-button:focus-visible {
-  outline: 3px solid #daa64b;
-  outline-offset: 2px;
-}
-.callout {
-  padding: 13px;
-  background: #ecf3ec;
-  border-radius: 11px;
-  color: #3e644d;
-  line-height: 1.5;
-  font-size: 12px;
-  margin-top: 11px;
-  border: 1px solid #d8e5da;
-}
-.feedback {
-  display: none;
-  font-size: 12px;
-  padding: 11px 12px;
-  border-radius: 9px;
-  line-height: 1.5;
-  margin-top: 12px;
-}
-.feedback.show {
-  display: block;
-}
-.feedback.ok {
-  background: #e6f4e7;
-  color: #275e39;
-}
-.feedback.error {
-  background: #f9e8e2;
-  color: #963f35;
-}
-.actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 15px;
-}
-.primary-button,
-.secondary-button {
-  border-radius: 10px;
-  padding: 12px;
-  font-size: 12px;
-  font-weight: 800;
-  min-height: 43px;
-}
-.primary-button {
-  background: #2b704e;
-  color: white;
-  border: 1px solid #286b4b;
-  flex: 1;
-}
-.primary-button:hover {
-  background: #1d5439;
-}
-.secondary-button {
-  background: #fff;
-  color: #386b4c;
-  border: 1px solid #b8d1be;
-  flex: 0 0 auto;
-}
-.secondary-button:hover {
-  background: #eff6ee;
-}
-.result-actions {
-  margin-top: 9px;
-}
-.result-actions .secondary-button {
-  width: 100%;
-}
-.disclaimer {
-  font-size: 10px;
-  line-height: 1.4;
-  color: #829084;
-  margin: 13px 0 0;
-}
-.settings-dialog {
-  color: #234a37;
-  background: var(--cream);
-  border: 1px solid #dfebdd;
-  border-radius: 18px;
-  padding: 0;
-  width: min(420px, calc(100vw - 22px));
-  box-shadow: 0 14px 50px #0006;
-}
-.settings-dialog::backdrop {
-  background: #051c12b8;
-}
-.settings-inner {
-  padding: 22px;
-}
-.settings-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.settings-top h2 {
-  font-size: 19px;
-  margin: 0;
-}
-.settings-top .icon-button {
-  color: #315d43;
-  border-color: #b9d5bf;
-  background: #e6f2e6;
-}
-.settings-inner p {
-  font-size: 12px;
-  line-height: 1.5;
-  color: #587260;
-}
-.settings-inner label {
-  display: block;
-  font-weight: 740;
-  font-size: 12px;
-  margin: 20px 0 7px;
-}
-.settings-inner input {
-  width: 100%;
-  border-radius: 9px;
-  padding: 12px;
-  border: 1px solid #bad2c0;
-  background: white;
-  color: #123d2a;
-}
-.settings-inner > .primary-button {
-  margin-top: 18px;
-  width: 100%;
-}
-.broker-line {
-  font-size: 10px;
-  overflow-wrap: anywhere;
-  margin-top: 11px;
-  color: #748776;
-}
-.settings-error {
-  color: #9a4538;
-  font-size: 12px;
-  margin-top: 10px;
-}
-.toast,
-.https-hint {
-  position: fixed;
-  z-index: 30;
-  bottom: 16px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 10px 14px;
-  background: #f6e7bd;
-  color: #624f2a;
-  border: 1px solid #d9bd73;
-  border-radius: 10px;
-  box-shadow: 0 5px 20px #0004;
-  font-size: 12px;
-  max-width: calc(100vw - 20px);
-  text-align: center;
-}
-.https-hint {
-  bottom: 66px;
-}
-@media (min-width: 800px) {
-  .camera-guidance {
-    left: 27px;
-    top: 86px;
-    transform: none;
-    max-width: 345px;
-  }
-  .sensor-strip {
-    left: 27px;
-    top: 160px;
-    transform: none;
-  }
-  .ar-dock {
-    top: 91px;
-    bottom: 20px;
-    max-height: none;
-  }
-}
-@media (max-width: 799px) {
-  .app-header {
-    padding: 9px 12px;
-  }
-  .logo-icon {
-    height: 35px;
-    width: 35px;
-    border-radius: 9px;
-    font-size: 20px;
-  }
-  .logo strong {
-    font-size: 15px;
-  }
-  .logo small {
-    font-size: 8px;
-  }
-  .connection-pill {
-    font-size: 10px;
-    padding: 7px 8px;
-  }
-  .camera-guidance {
-    top: 62px;
-    padding: 7px 10px;
-  }
-  .camera-guidance strong {
-    font-size: 11px;
-  }
-  .camera-guidance small {
-    font-size: 9px;
-  }
-  .sensor-strip {
-    top: 120px;
-    font-size: 10px;
-    gap: 8px;
-    padding: 7px 10px;
-  }
-  .ar-dock {
-    right: 10px;
-    left: 10px;
-    bottom: max(9px, env(safe-area-inset-bottom));
-    width: auto;
-    max-height: 46dvh;
-    border-radius: 17px;
-  }
-  .dock-head {
-    padding: 10px 13px;
-  }
-  .dock-head h1 {
-    font-size: 15px;
-    margin-top: 3px;
-  }
-  .dock-body {
-    padding: 10px 13px 12px;
-  }
-  .tabs button {
-    padding: 8px;
-  }
-  .meter {
-    margin-top: 8px;
-  }
-  .question {
-    font-size: 12px;
-    margin: 10px 0;
-  }
-  .bullets {
-    font-size: 11px;
-  }
-  .bullets div {
-    padding: 6px;
-  }
-  .answers {
-    gap: 6px;
-    margin-top: 8px;
-  }
-  .answer {
-    padding: 7px 10px;
-    font-size: 11px;
-    min-height: 37px;
-  }
-  .actions {
-    margin-top: 9px;
-  }
-  .primary-button,
-  .secondary-button {
-    min-height: 39px;
-    padding: 9px;
-    font-size: 11px;
-  }
-  .disclaimer {
-    font-size: 9px;
-    margin: 8px 0 0;
-  }
-}
-@media (max-height: 660px) and (max-width: 799px) {
-  .ar-dock {
-    max-height: 47dvh;
-  }
-  .sensor-strip {
-    top: 112px;
-  }
-  .camera-guidance {
-    top: 60px;
-  }
-}
-@media (max-width: 370px) {
-  .logo small {
-    display: none;
-  }
-  .connection-pill {
-    max-width: 142px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .camera-guidance small {
-    display: none;
-  }
-  .camera-guidance {
-    top: 58px;
-  }
-  .sensor-strip {
-    top: 107px;
-  }
-}
 
-/* Kamera AR.js: jika browser memakai elemen video DOM, tampilkan di belakang kanvas AR.
-    videoTexture:true pada <a-scene> merupakan jalur utama. */
-#arjs-video,
-video.arjs-video {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100vw !important;
-  height: 100dvh !important;
-  object-fit: cover !important;
-  z-index: 0 !important;
-  pointer-events: none !important;
-}
-/* Selama kamera sedang membuka, beri informasi yang jelas, bukan layar hitam. */
-.camera-status {
-  position: fixed;
-  inset: 0;
-  z-index: 25;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 18px;
-  background: rgba(8, 27, 19, 0.86);
-  color: #f8f7ee;
-}
-.camera-status[hidden] {
+[hidden] {
   display: none !important;
-}
-.camera-status-card {
-  width: min(390px, 100%);
-  border: 1px solid #ffffff33;
-  background: #153f30;
-  border-radius: 18px;
-  padding: 26px 20px;
-  text-align: center;
-  box-shadow: 0 14px 38px #0006;
-}
-.camera-status-symbol {
-  display: block;
-  font-size: 40px;
-  color: #e3b757;
-  margin-bottom: 9px;
-}
-.camera-status-card strong {
-  font-size: 17px;
-  line-height: 1.4;
-  display: block;
-}
-.camera-status-card p {
-  font-size: 13px;
-  line-height: 1.6;
-  color: #dce9dc;
-  margin: 10px 0 20px;
-}
-.camera-retry {
-  border: 1px solid #f0d99d;
-  background: #e3b757;
-  color: #153f30;
-  padding: 12px 20px;
-  border-radius: 10px;
-  font-weight: 750;
-  min-height: 44px;
-}
-
-/* Video DOM (0), scene 3D (1), efek warna (2), HUD (7+). */
-a-scene#arScene {
-  z-index: 1 !important;
-}
-.screen-shade {
-  z-index: 2;
 }
 
 /* =========================================
-    SOP-AR FULLSCREEN CAMERA FIX
-    Laptop, tablet, dan HP
-  ========================================= */
+   2. KAMERA AR FULLSCREEN
+========================================= */
 
-html,
-body {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  background: transparent !important;
-  overscroll-behavior: none;
-}
+/* Scene harus memenuhi seluruh viewport */
 
-/* Scene AR memenuhi layar */
 #arScene,
 a-scene#arScene {
   position: fixed !important;
+
   inset: 0 !important;
 
   width: 100vw !important;
@@ -794,446 +99,1350 @@ a-scene#arScene {
   padding: 0 !important;
 
   display: block !important;
+  overflow: hidden !important;
+
   background: transparent !important;
 
   z-index: 1 !important;
 }
 
-/* Canvas A-Frame */
+/* Canvas objek 3D A-Frame */
+
 #arScene canvas,
 #arScene .a-canvas {
   position: absolute !important;
-  inset: 0 !important;
+
+  top: 0 !important;
+  left: 0 !important;
 
   width: 100% !important;
   height: 100% !important;
 
+  max-width: none !important;
+  max-height: none !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
   display: block !important;
+
+  background: transparent !important;
+
+  touch-action: none !important;
+  pointer-events: auto !important;
 }
 
-/* Tampilan video kamera dari AR.js */
+/* =========================================
+   3. VIDEO KAMERA AR.JS
+========================================= */
+
+/*
+  AR.js biasanya membuat video #arjs-video.
+  object-fit: cover memenuhi viewport
+  tanpa mengubah proporsi gambar.
+*/
+
 #arjs-video,
-video.arjs-video {
+video.arjs-video,
+body > video {
   position: fixed !important;
 
   top: 0 !important;
   left: 0 !important;
 
+  right: auto !important;
+  bottom: auto !important;
+
   width: 100vw !important;
+
   height: 100vh !important;
   height: 100dvh !important;
+
+  min-width: 100vw !important;
+  min-height: 100dvh !important;
 
   max-width: none !important;
   max-height: none !important;
 
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+
+  transform: none !important;
+
   object-fit: cover !important;
   object-position: center center !important;
 
+  background: #10251b !important;
+
   z-index: 0 !important;
+
   pointer-events: none !important;
 }
 
-/* Efek bayangan di atas kamera */
+/* =========================================
+   4. EFEK WARNA DI ATAS KAMERA
+========================================= */
+
 .screen-shade {
   position: fixed !important;
+
   inset: 0 !important;
+
+  width: 100%;
+  height: 100%;
+
   z-index: 2 !important;
+
   pointer-events: none !important;
+
+  background: linear-gradient(
+    180deg,
+    rgba(8, 35, 24, 0.38) 0%,
+    transparent 22%,
+    transparent 72%,
+    rgba(7, 28, 22, 0.18) 100%
+  );
 }
 
-/* Header dan informasi sensor */
+/* =========================================
+   5. HEADER SOP-AR
+========================================= */
+
 .app-header {
   position: fixed !important;
+
   top: 0;
   left: 0;
   right: 0;
+
+  width: 100%;
+
   z-index: 20 !important;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 10px;
+
+  padding:
+    max(12px, env(safe-area-inset-top))
+    18px
+    12px;
+
+  background: rgba(17, 63, 44, 0.94);
+
+  color: white;
+
+  box-shadow:
+    0 3px 20px rgba(3, 28, 21, 0.25);
 }
 
-.camera-guidance,
-.sensor-strip {
+/* Logo */
+
+.logo {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+  min-width: 0;
+}
+
+.logo-icon {
+  display: grid;
+  place-items: center;
+
+  width: 41px;
+  height: 41px;
+
+  flex: none;
+
+  background: #f6edcc;
+  color: var(--pine);
+
+  border-radius: 11px;
+
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.logo-icon span {
+  color: #ad8430;
+}
+
+.logo strong {
+  display: block;
+
+  font-size: 17px;
+  line-height: 1.2;
+}
+
+.logo small {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #b7d7c3;
+
+  font-size: 9px;
+  letter-spacing: 0.08em;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+}
+
+/* =========================================
+   6. STATUS MQTT
+========================================= */
+
+.connection-pill {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 7px;
+
+  padding: 8px 11px;
+
+  border: 1px solid #ffffff38;
+  border-radius: 99px;
+
+  font-size: 11px;
+
+  color: #e5f4e8;
+
+  white-space: nowrap;
+}
+
+.connection-pill .led {
+  width: 8px;
+  height: 8px;
+
+  flex: none;
+
+  border-radius: 50%;
+
+  background: var(--gold);
+}
+
+.connection-pill.good .led {
+  background: #61e59b;
+}
+
+.connection-pill.bad .led {
+  background: #e88c7e;
+}
+
+/* =========================================
+   7. TOMBOL PENGATURAN
+========================================= */
+
+.icon-button {
+  display: grid;
+  place-items: center;
+
+  width: 38px;
+  height: 38px;
+
+  flex: none;
+
+  border-radius: 10px;
+
+  border: 1px solid #ffffff48;
+
+  background: #ffffff18;
+  color: inherit;
+
+  font-size: 19px;
+}
+
+/* =========================================
+   8. PETUNJUK MARKER HIRO
+========================================= */
+
+.camera-guidance {
+  position: fixed;
+
+  top: 82px;
+  left: 50%;
+
+  transform: translateX(-50%);
+
   z-index: 15 !important;
+
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  width: max-content;
+  max-width: calc(100vw - 24px);
+
+  padding: 9px 12px;
+
+  background: rgba(248, 247, 238, 0.96);
+
+  border: 1px solid #ffffffc7;
+  border-radius: 13px;
+
+  box-shadow:
+    0 8px 28px rgba(11, 40, 27, 0.20);
+
+  pointer-events: none;
 }
 
-/* Panel pembelajaran tetap di depan kamera */
+.scan-icon {
+  display: grid;
+  place-items: center;
+
+  width: 31px;
+  height: 31px;
+
+  flex: none;
+
+  border-radius: 9px;
+
+  background: #e5f0e7;
+  color: #265b41;
+
+  font-weight: 800;
+  font-size: 20px;
+}
+
+.camera-guidance strong {
+  display: block;
+
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.camera-guidance small {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #667e6c;
+
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.camera-guidance a {
+  margin-left: auto;
+
+  padding-left: 10px;
+
+  border-left: 1px solid #cfddcd;
+
+  color: #257b4b;
+
+  font-weight: 800;
+  font-size: 11px;
+
+  text-decoration: none;
+
+  pointer-events: auto;
+}
+
+.camera-guidance.found {
+  border-color: #8cca9c;
+}
+
+/* =========================================
+   9. INFORMASI SENSOR IOT
+========================================= */
+
+.sensor-strip {
+  position: fixed;
+
+  top: 148px;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  z-index: 15 !important;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  max-width: calc(100vw - 24px);
+
+  padding: 8px 13px;
+
+  background: rgba(20, 62, 47, 0.90);
+
+  color: white;
+
+  border-radius: 50px;
+
+  font-size: 11px;
+
+  white-space: nowrap;
+
+  box-shadow:
+    0 4px 17px rgba(7, 23, 15, 0.28);
+
+  pointer-events: none;
+}
+
+.sensor-strip b {
+  font-weight: 800;
+  color: #f1d990;
+}
+
+.sensor-live {
+  color: #d1e4d6;
+}
+
+/* =========================================
+   10. PANEL BELAJAR DAN SOAL
+========================================= */
+
 .ar-dock {
   position: fixed !important;
+
+  right: 20px;
+  bottom: 18px;
+
   z-index: 18 !important;
+
+  width: min(
+    414px,
+    calc(100vw - 24px)
+  );
+
+  max-height: 76dvh;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+
+  background: rgba(249, 249, 242, 0.97);
+
+  border: 1px solid #f6f5e9;
+  border-radius: 18px;
+
+  box-shadow:
+    0 16px 45px rgba(5, 30, 18, 0.34);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
-/* Tidak ada overlay loading yang menutupi kamera */
-.camera-status {
-  position: fixed !important;
+/* Header panel */
 
-  inset: auto 12px calc(12px + env(safe-area-inset-bottom)) auto !important;
+.dock-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
-  width: min(360px, calc(100vw - 24px));
-  max-height: 40dvh;
+  gap: 12px;
 
-  z-index: 30 !important;
+  padding: 14px 16px;
+
+  background: var(--pine);
+  color: white;
+}
+
+.eyebrow {
+  color: #d5bd7f;
+
+  font-size: 10px;
+  font-weight: 800;
+
+  letter-spacing: 0.10em;
+}
+
+.dock-head h1 {
+  margin: 5px 0 0;
+
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+/* Tombol + dan - */
+
+.minimize {
+  width: 34px;
+  height: 34px;
+
+  flex: none;
+
+  background: #ffffff1d;
+  color: white;
+
+  border: 1px solid #ffffff46;
+  border-radius: 9px;
+
+  font-size: 23px;
+  line-height: 1;
+}
+
+/* Isi panel */
+
+.dock-body {
+  min-height: 0;
+
   overflow-y: auto;
-  background: transparent !important;
+  overscroll-behavior: contain;
+
+  -webkit-overflow-scrolling: touch;
+
+  padding: 15px 16px 16px;
 }
 
-.camera-status[hidden] {
+/* =========================================
+   11. PANEL SAAT DIPERKECIL
+========================================= */
+
+.ar-dock.compact {
+  top: auto !important;
+
+  height: auto !important;
+  max-height: none !important;
+}
+
+.ar-dock.compact .dock-body {
   display: none !important;
 }
 
-.camera-status-card {
-  border-radius: 14px;
-  padding: 15px;
+/* =========================================
+   12. TAB BELAJAR / LATIHAN
+========================================= */
+
+.tabs {
+  display: flex;
+
+  gap: 5px;
+
+  padding: 4px;
+
+  background: #e9eee7;
+  border-radius: 11px;
+}
+
+.tabs button {
+  flex: 1;
+
+  padding: 10px 8px;
+
+  background: transparent;
+  color: #6d8575;
+
+  border: 0;
+  border-radius: 8px;
+
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.tabs button.selected {
+  background: #2f7451;
+  color: white;
 }
 
 /* =========================================
-    HP PORTRAIT
-  ========================================= */
+   13. PROGRES PEMBELAJARAN
+========================================= */
 
-@media (max-width: 767px) {
-  .app-header {
-    padding: max(8px, env(safe-area-inset-top)) 12px 9px !important;
-  }
+.meter {
+  display: flex;
+  justify-content: space-between;
+
+  margin: 14px 1px 7px;
+
+  color: #637669;
+
+  font-size: 11px;
+}
+
+.meter strong {
+  color: #2a6a46;
+}
+
+.progress {
+  height: 6px;
+
+  background: #e3eadf;
+
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.progress > div {
+  height: 100%;
+
+  background: #5b9a65;
+
+  transition: width 0.3s;
+}
+
+/* =========================================
+   14. TEKS MATERI DAN PERTANYAAN
+========================================= */
+
+.question {
+  margin: 12px 0 10px;
+
+  color: #264e37;
+
+  font-size: 14px;
+  font-weight: 650;
+
+  line-height: 1.55;
+}
+
+.bullets {
+  color: #48634e;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.bullets div {
+  margin: 6px 0;
+
+  padding: 9px;
+
+  background: #ecf3e9;
+
+  border: 1px solid #e0eadc;
+  border-radius: 8px;
+}
+
+/* =========================================
+   15. PILIHAN JAWABAN SENTUH
+========================================= */
+
+.answers {
+  display: grid;
+
+  gap: 9px;
+  margin-top: 12px;
+}
+
+.answer {
+  display: block;
+
+  width: 100%;
+  min-height: 48px;
+
+  padding: 11px 13px;
+
+  text-align: left;
+
+  background: white;
+
+  border: 1px solid #d0e0ce;
+  border-radius: 11px;
+
+  color: #275039;
+
+  font-size: 13px;
+  font-weight: 630;
+
+  line-height: 1.45;
+
+  touch-action: manipulation;
+}
+
+.answer:hover,
+.answer:active {
+  border-color: #5da374;
+  background: #f0f7ed;
+}
+
+.answer strong {
+  display: inline-grid;
+  place-items: center;
+
+  width: 23px;
+  height: 23px;
+
+  margin-right: 6px;
+
+  background: #e4f0e4;
+
+  border-radius: 6px;
+
+  color: #376b4d;
+}
+
+/* =========================================
+   16. INFORMASI PRAKTIK IOT
+========================================= */
+
+.callout {
+  margin-top: 11px;
+
+  padding: 12px;
+
+  background: #ecf3ec;
+
+  border: 1px solid #d8e5da;
+  border-radius: 10px;
+
+  color: #3e644d;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* =========================================
+   17. FEEDBACK
+========================================= */
+
+.feedback {
+  display: none;
+
+  margin-top: 11px;
+  padding: 11px 12px;
+
+  border-radius: 9px;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.feedback.show {
+  display: block;
+}
+
+.feedback.ok {
+  background: #e6f4e7;
+  color: #275e39;
+}
+
+.feedback.error {
+  background: #f9e8e2;
+  color: #963f35;
+}
+
+/* =========================================
+   18. TOMBOL NAVIGASI
+========================================= */
+
+.actions {
+  display: flex;
+  gap: 8px;
+
+  margin-top: 14px;
+}
+
+.primary-button,
+.secondary-button {
+  min-height: 44px;
+
+  padding: 11px 12px;
+
+  border-radius: 10px;
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.primary-button {
+  flex: 1;
+
+  background: #2b704e;
+  color: white;
+
+  border: 1px solid #286b4b;
+}
+
+.primary-button:hover {
+  background: #1d5439;
+}
+
+.secondary-button {
+  background: white;
+  color: #386b4c;
+
+  border: 1px solid #b8d1be;
+}
+
+.secondary-button:hover {
+  background: #eff6ee;
+}
+
+.result-actions {
+  margin-top: 10px;
+}
+
+.result-actions .secondary-button {
+  width: 100%;
+}
+
+/* Fokus tombol */
+
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid #daa64b;
+  outline-offset: 2px;
+}
+
+/* =========================================
+   19. KETERANGAN SIMULASI
+========================================= */
+
+.disclaimer {
+  margin: 13px 0 0;
+
+  color: #829084;
+
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+/* =========================================
+   20. DIALOG PENGATURAN MQTT
+========================================= */
+
+.settings-dialog {
+  width: min(
+    420px,
+    calc(100vw - 24px)
+  );
+
+  max-height: 85dvh;
+  overflow-y: auto;
+
+  padding: 0;
+
+  color: #234a37;
+  background: var(--cream);
+
+  border: 1px solid #dfebdd;
+  border-radius: 18px;
+
+  box-shadow:
+    0 14px 50px #0006;
+
+  z-index: 55 !important;
+}
+
+.settings-dialog::backdrop {
+  background: #051c12b8;
+}
+
+.settings-inner {
+  padding: 20px;
+}
+
+.settings-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.settings-top h2 {
+  margin: 0;
+  font-size: 19px;
+}
+
+.settings-top .icon-button {
+  color: #315d43;
+
+  border-color: #b9d5bf;
+  background: #e6f2e6;
+}
+
+.settings-inner p {
+  color: #587260;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.settings-inner label {
+  display: block;
+
+  margin: 18px 0 7px;
+
+  font-size: 12px;
+  font-weight: 740;
+}
+
+.settings-inner input {
+  width: 100%;
+
+  padding: 12px;
+
+  background: white;
+  color: #123d2a;
+
+  border: 1px solid #bad2c0;
+  border-radius: 9px;
+}
+
+.settings-inner > .primary-button {
+  width: 100%;
+  margin-top: 17px;
+}
+
+.broker-line {
+  margin-top: 11px;
+
+  color: #748776;
+  font-size: 10px;
+
+  overflow-wrap: anywhere;
+}
+
+.settings-error {
+  margin-top: 10px;
+
+  color: #9a4538;
+  font-size: 12px;
+}
+
+/* =========================================
+   21. NOTIFIKASI
+========================================= */
+
+.toast,
+.https-hint {
+  position: fixed;
+
+  bottom: 16px;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  z-index: 45 !important;
+
+  max-width: calc(100vw - 20px);
+
+  padding: 10px 14px;
+
+  background: #f6e7bd;
+  color: #624f2a;
+
+  border: 1px solid #d9bd73;
+  border-radius: 10px;
+
+  box-shadow: 0 5px 20px #0004;
+
+  font-size: 12px;
+  text-align: center;
+}
+
+.https-hint {
+  bottom: 66px;
+}
+
+/* =========================================
+   22. PESAN ERROR KAMERA
+========================================= */
+
+.camera-status {
+  position: fixed !important;
+
+  right: 12px;
+  bottom: calc(
+    12px + env(safe-area-inset-bottom)
+  );
+
+  width: min(
+    360px,
+    calc(100vw - 24px)
+  );
+
+  max-height: 40dvh;
+
+  z-index: 40 !important;
+
+  overflow-y: auto;
+
+  color: var(--cream);
+}
+
+.camera-status-card {
+  padding: 16px;
+
+  background: #153f30;
+
+  border: 1px solid #ffffff33;
+  border-radius: 14px;
+
+  box-shadow:
+    0 14px 38px #0006;
+
+  text-align: center;
+}
+
+.camera-status-symbol {
+  display: block;
+
+  margin-bottom: 9px;
+
+  color: var(--gold);
+  font-size: 32px;
+}
+
+.camera-status-card strong {
+  display: block;
+  font-size: 15px;
+}
+
+.camera-status-card p {
+  margin: 10px 0 15px;
+
+  color: #dce9dc;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.camera-status-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  gap: 8px;
+}
+
+.camera-dismiss,
+.camera-retry {
+  min-height: 42px;
+
+  padding: 10px 13px;
+
+  border-radius: 10px;
+
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.camera-dismiss {
+  background: transparent;
+  border: 1px solid #ffffff70;
+  color: white;
+}
+
+.camera-retry {
+  background: var(--gold);
+  border: 1px solid #f0d99d;
+  color: var(--pine);
+}
+
+/* =========================================
+   23. LAPTOP / DESKTOP
+========================================= */
+
+@media (min-width: 800px) {
 
   .camera-guidance {
-    top: calc(60px + env(safe-area-inset-top));
+    top: 90px;
+    left: 24px;
+
+    transform: none;
+
+    max-width: 350px;
   }
 
   .sensor-strip {
-    top: calc(118px + env(safe-area-inset-top));
+    top: 155px;
+    left: 24px;
+
+    transform: none;
   }
 
   .ar-dock {
-    position: fixed !important;
+    top: 94px;
+    right: 20px;
+    bottom: 18px;
 
-    left: 8px !important;
-    right: 8px !important;
-    bottom: max(8px, env(safe-area-inset-bottom)) !important;
-
-    top: auto !important;
-    width: auto !important;
-    max-height: 43dvh !important;
-
-    border-radius: 16px !important;
-  }
-
-  .dock-body {
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    max-height: none;
   }
 
   .ar-dock.compact {
-    max-height: none !important;
-  }
-
-  .camera-status {
-    left: 10px !important;
-    right: 10px !important;
-    width: auto !important;
+    top: auto !important;
+    bottom: 18px !important;
   }
 }
 
 /* =========================================
-    HP LANDSCAPE
-  ========================================= */
+   24. HP PORTRAIT
+========================================= */
 
-@media (max-width: 950px) and (orientation: landscape) {
+@media (max-width: 799px) {
+
   .app-header {
-    padding: 6px 12px !important;
+    padding:
+      max(9px, env(safe-area-inset-top))
+      11px
+      9px;
+
+    gap: 8px;
+  }
+
+  .logo {
+    gap: 8px;
+  }
+
+  .logo-icon {
+    width: 35px;
+    height: 35px;
+
+    border-radius: 9px;
+    font-size: 19px;
+  }
+
+  .logo strong {
+    font-size: 15px;
+  }
+
+  .logo small {
+    font-size: 8px;
+    letter-spacing: 0.05em;
+  }
+
+  .connection-pill {
+    padding: 7px 8px;
+    font-size: 10px;
   }
 
   .camera-guidance {
-    top: 54px !important;
-    left: 10px !important;
-    transform: none !important;
-    max-width: 280px;
+    top: calc(
+      62px + env(safe-area-inset-top)
+    );
+
+    width: calc(100vw - 24px);
+    max-width: 400px;
+    min-width: 0;
+
+    min-height: 46px;
+
+    padding: 7px 10px;
+
+    gap: 8px;
+  }
+
+  .camera-guidance strong {
+    font-size: 11px;
+    line-height: 1.25;
+  }
+
+  .camera-guidance small {
+    display: none;
+  }
+
+  .camera-guidance a {
+    font-size: 10px;
+  }
+
+  .scan-icon {
+    width: 28px;
+    height: 28px;
+
+    font-size: 18px;
   }
 
   .sensor-strip {
-    top: 110px !important;
-    left: 10px !important;
-    transform: none !important;
+    top: calc(
+      118px + env(safe-area-inset-top)
+    );
+
+    gap: 8px;
+    padding: 8px 11px;
+
+    max-width: calc(100vw - 24px);
+
+    border-radius: 12px;
+
+    font-size: 10px;
   }
 
-  .ar-dock {
-    top: 54px !important;
-    right: 8px !important;
-    left: auto !important;
-    bottom: 8px !important;
+  /* Panel soal berada di bawah kamera */
 
-    width: min(340px, 45vw) !important;
+  .ar-dock {
+    top: auto;
+
+    left: 9px;
+    right: 9px;
+
+    bottom: max(
+      9px,
+      env(safe-area-inset-bottom)
+    );
+
+    width: auto;
+    max-height: 45dvh;
+
+    border-radius: 16px;
+  }
+
+  .dock-head {
+    padding: 11px 13px;
+  }
+
+  .dock-head h1 {
+    font-size: 15px;
+  }
+
+  .dock-body {
+    padding: 11px 13px 13px;
+  }
+
+  .question {
+    margin: 10px 0;
+    font-size: 13px;
+  }
+
+  .answers {
+    gap: 8px;
+    margin-top: 9px;
+  }
+
+  .answer {
+    min-height: 48px;
+
+    padding: 11px;
+
+    font-size: 13px;
+  }
+
+  .ar-dock.compact {
+    top: auto !important;
+
+    height: auto !important;
     max-height: none !important;
   }
 
-  /* =========================================
-   SOP-AR V5
-   PERAPIAN TAMPILAN MOBILE
+  .ar-dock.compact .dock-body {
+    display: none !important;
+  }
+}
+
+/* =========================================
+   25. HP LAYAR KECIL
 ========================================= */
 
-  @media (max-width: 799px) {
-    /* Header lebih ringkas */
-    .app-header {
-      gap: 8px;
-      padding: 8px 10px;
-    }
+@media (max-width: 370px) {
 
-    .logo {
-      gap: 7px;
-    }
-
-    .logo-icon {
-      width: 34px;
-      height: 34px;
-      font-size: 19px;
-    }
-
-    .logo strong {
-      font-size: 15px;
-    }
-
-    .logo small {
-      font-size: 7px;
-      letter-spacing: 0.06em;
-    }
-
-    .connection-pill {
-      font-size: 10px;
-      padding: 7px 9px;
-    }
-
-    /* Petunjuk marker lebih kecil */
-    .camera-guidance {
-      top: calc(62px + env(safe-area-inset-top)) !important;
-
-      left: 50%;
-      transform: translateX(-50%);
-
-      min-width: 0;
-      width: max-content;
-
-      max-width: calc(100vw - 20px);
-
-      padding: 7px 10px;
-      gap: 8px;
-
-      border-radius: 12px;
-    }
-
-    .camera-guidance strong {
-      font-size: 11px;
-      line-height: 1.3;
-    }
-
-    .camera-guidance small {
-      display: none;
-    }
-
-    .camera-guidance a {
-      font-size: 10px;
-    }
-
-    .scan-icon {
-      width: 28px;
-      height: 28px;
-      font-size: 18px;
-    }
-
-    /* Sensor tidak menutupi petunjuk marker */
-    .sensor-strip {
-      top: calc(118px + env(safe-area-inset-top)) !important;
-
-      left: 50%;
-      transform: translateX(-50%);
-
-      max-width: calc(100vw - 20px);
-
-      gap: 9px;
-      padding: 8px 11px;
-
-      font-size: 10px;
-      border-radius: 12px;
-    }
-
-    /* Panel soal berada di bawah */
-    .ar-dock {
-      left: 10px;
-      right: 10px;
-      bottom: max(10px, env(safe-area-inset-bottom));
-
-      top: auto;
-      width: auto;
-
-      max-height: 44dvh;
-      border-radius: 16px;
-    }
-
-    .dock-head {
-      padding: 11px 13px;
-    }
-
-    .dock-head h1 {
-      font-size: 15px;
-    }
-
-    .dock-body {
-      overflow-y: auto;
-      padding: 12px;
-    }
-
-    .answer {
-      min-height: 44px;
-      padding: 10px 12px;
-      font-size: 12px;
-    }
-
-    /* Panel saat diperkecil */
-    .ar-dock.compact {
-      top: auto !important;
-      height: auto !important;
-      max-height: none !important;
-    }
-
-    .ar-dock.compact .dock-body {
-      display: none !important;
-    }
+  .logo small {
+    display: none;
   }
 
-  /* HP landscape */
+  .connection-pill {
+    max-width: 140px;
 
-  @media (max-width: 950px) and (orientation: landscape) {
-    .camera-guidance {
-      top: 54px !important;
-      left: 10px !important;
-      transform: none !important;
-    }
-
-    .sensor-strip {
-      top: 105px !important;
-      left: 10px !important;
-      transform: none !important;
-    }
-
-    .ar-dock {
-      top: 54px !important;
-      right: 8px !important;
-      left: auto !important;
-      bottom: 8px !important;
-
-      width: min(340px, 45vw) !important;
-      max-height: none !important;
-    }
-
-    .ar-dock.compact {
-      top: auto !important;
-    }
+    overflow: hidden;
   }
 
-  /* =========================================
-   SOP-AR V6
-   TOUCH DAN PERAPIAN MOBILE
+  .camera-guidance {
+    top: calc(
+      58px + env(safe-area-inset-top)
+    );
+  }
+
+  .sensor-strip {
+    top: calc(
+      112px + env(safe-area-inset-top)
+    );
+
+    font-size: 9px;
+  }
+}
+
+/* =========================================
+   26. HP LANDSCAPE
 ========================================= */
 
-  /* Canvas dapat menerima sentuhan langsung */
-  #arScene canvas,
-  #arScene .a-canvas {
-    touch-action: none !important;
-    pointer-events: auto !important;
+@media (max-width: 950px)
+  and (orientation: landscape) {
+
+  .app-header {
+    padding: 6px 12px;
   }
 
-  /* =========================================
-   HP PORTRAIT
+  .camera-guidance {
+    top: 54px;
+    left: 10px;
+
+    transform: none;
+
+    width: auto;
+    max-width: 275px;
+  }
+
+  .sensor-strip {
+    top: 110px;
+    left: 10px;
+
+    transform: none;
+  }
+
+  .ar-dock {
+    top: 54px;
+
+    right: 8px;
+    left: auto;
+
+    bottom: 8px;
+
+    width: min(
+      350px,
+      46vw
+    );
+
+    max-height: none;
+  }
+
+  .ar-dock.compact {
+    top: auto !important;
+
+    bottom: 8px !important;
+
+    height: auto !important;
+    max-height: none !important;
+  }
+}
+
+/* =========================================
+   27. OPTIMASI LAYAR SENTUH
 ========================================= */
 
-  @media (max-width: 799px) {
-    .app-header {
-      padding: 9px 11px !important;
-    }
+@media (hover: none) {
 
-    /* Status marker lebih ringkas */
-    .camera-guidance {
-      top: calc(60px + env(safe-area-inset-top)) !important;
-
-      width: calc(100vw - 24px) !important;
-      min-width: 0 !important;
-      max-width: 400px !important;
-
-      height: 48px !important;
-      padding: 6px 10px !important;
-
-      overflow: hidden;
-    }
-
-    .camera-guidance strong {
-      font-size: 11px;
-      line-height: 1.2;
-    }
-
-    .camera-guidance small {
-      display: none !important;
-    }
-
-    .camera-guidance .scan-icon {
-      height: 30px;
-      width: 30px;
-    }
-
-    /* Status sensor di bawah marker */
-    .sensor-strip {
-      top: calc(116px + env(safe-area-inset-top)) !important;
-
-      max-width: calc(100vw - 24px) !important;
-
-      font-size: 10px !important;
-      gap: 7px !important;
-      padding: 7px 10px !important;
-    }
-
-    /* Panel interaksi */
-    .ar-dock {
-      max-height: 45dvh !important;
-
-      bottom: max(8px, env(safe-area-inset-bottom)) !important;
-    }
-
-    /* Saat panel kecil */
-    .ar-dock.compact {
-      top: auto !important;
-      max-height: none !important;
-    }
-
-    .dock-body {
-      overscroll-behavior: contain;
-    }
-
-    /* Tombol jawaban lebih mudah ditekan */
-    .answer {
-      min-height: 48px !important;
-      font-size: 13px !important;
-      padding: 11px !important;
-    }
+  .answer,
+  .primary-button,
+  .secondary-button,
+  .minimize,
+  .tabs button {
+    -webkit-tap-highlight-color: transparent;
   }
+}
 
-  /* =========================================
-   HP LANDSCAPE
+/* =========================================
+   28. PENGAMAN TERAKHIR
 ========================================= */
 
-  @media (max-width: 950px) and (orientation: landscape) {
-    .camera-guidance {
-      top: 53px !important;
-      left: 10px !important;
+/* Efek kamera tidak boleh menahan sentuhan */
 
-      transform: none !important;
-      max-width: 275px !important;
-    }
+.screen-shade,
+.sensor-strip {
+  pointer-events: none !important;
+}
 
-    .sensor-strip {
-      top: 110px !important;
-      left: 10px !important;
+/* Tombol UI tetap dapat ditekan */
 
-      transform: none !important;
-    }
+.app-header,
+.ar-dock {
+  pointer-events: auto;
+}
 
-    .ar-dock {
-      max-height: none !important;
-      width: min(350px, 46vw) !important;
-    }
-  }
+/* Scene 3D tetap menerima sentuhan */
+
+#arScene canvas {
+  pointer-events: auto !important;
+  touch-action: none !important;
 }
