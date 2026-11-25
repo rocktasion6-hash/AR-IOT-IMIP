@@ -31,16 +31,30 @@
     raycaster="objects: .ar-hit; far: 30">
 
     <a-marker
+
       id="hiroMarker"
       preset="hiro"
       emitevents="true"
       smooth="true">
 
       <!-- MENU UTAMA 3D -->
-      <a-entity
-        id="menuWorld"
-        position="0 1.15 -0.15"
-        scale="0.87 0.87 0.87">
+
+    <a-entity
+      id="menuWorld"
+      position="0 0.25 0"
+      rotation="-90 0 0"
+      scale="0.42 0.42 0.42">
+
+
+    <!-- OBJEK TEST MARKER HIRO -->
+    <a-box
+      position="0 0.5 0"
+      width="0.3"
+      height="0.3"
+      depth="0.3"
+      color="#ff0000">
+    </a-box>
+
 
         <!-- Papan utama -->
         <a-box
@@ -156,8 +170,9 @@
       <!-- PAPAN MATERI DAN SOAL 3D -->
       <a-entity
         id="contentWorld"
-        position="0 1.30 -0.15"
-        scale="0.87 0.87 0.87"
+        position="0 0.25 0"
+        rotation="-90 0 0"
+        scale="0.34 0.34 0.34"
         visible="false">
 
         <a-box
