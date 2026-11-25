@@ -1125,4 +1125,115 @@ video.arjs-video {
       top: auto !important;
     }
   }
+
+  /* =========================================
+   SOP-AR V6
+   TOUCH DAN PERAPIAN MOBILE
+========================================= */
+
+  /* Canvas dapat menerima sentuhan langsung */
+  #arScene canvas,
+  #arScene .a-canvas {
+    touch-action: none !important;
+    pointer-events: auto !important;
+  }
+
+  /* =========================================
+   HP PORTRAIT
+========================================= */
+
+  @media (max-width: 799px) {
+    .app-header {
+      padding: 9px 11px !important;
+    }
+
+    /* Status marker lebih ringkas */
+    .camera-guidance {
+      top: calc(60px + env(safe-area-inset-top)) !important;
+
+      width: calc(100vw - 24px) !important;
+      min-width: 0 !important;
+      max-width: 400px !important;
+
+      height: 48px !important;
+      padding: 6px 10px !important;
+
+      overflow: hidden;
+    }
+
+    .camera-guidance strong {
+      font-size: 11px;
+      line-height: 1.2;
+    }
+
+    .camera-guidance small {
+      display: none !important;
+    }
+
+    .camera-guidance .scan-icon {
+      height: 30px;
+      width: 30px;
+    }
+
+    /* Status sensor di bawah marker */
+    .sensor-strip {
+      top: calc(116px + env(safe-area-inset-top)) !important;
+
+      max-width: calc(100vw - 24px) !important;
+
+      font-size: 10px !important;
+      gap: 7px !important;
+      padding: 7px 10px !important;
+    }
+
+    /* Panel interaksi */
+    .ar-dock {
+      max-height: 45dvh !important;
+
+      bottom: max(8px, env(safe-area-inset-bottom)) !important;
+    }
+
+    /* Saat panel kecil */
+    .ar-dock.compact {
+      top: auto !important;
+      max-height: none !important;
+    }
+
+    .dock-body {
+      overscroll-behavior: contain;
+    }
+
+    /* Tombol jawaban lebih mudah ditekan */
+    .answer {
+      min-height: 48px !important;
+      font-size: 13px !important;
+      padding: 11px !important;
+    }
+  }
+
+  /* =========================================
+   HP LANDSCAPE
+========================================= */
+
+  @media (max-width: 950px) and (orientation: landscape) {
+    .camera-guidance {
+      top: 53px !important;
+      left: 10px !important;
+
+      transform: none !important;
+      max-width: 275px !important;
+    }
+
+    .sensor-strip {
+      top: 110px !important;
+      left: 10px !important;
+
+      transform: none !important;
+    }
+
+    .ar-dock {
+      max-height: none !important;
+      width: min(350px, 46vw) !important;
+    }
+  }
 }

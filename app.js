@@ -2,19 +2,23 @@
 'use strict';
 
 // ==========================================
-// SOP-AR V5
-// MENU 3D + PEMBELAJARAN + SOAL + MQTT
+// SOP-AR V6
+// MENU 3D, MATERI, SOAL, MQTT
+// DAN INTERAKSI SENTUH MOBILE
 // ==========================================
 
-const MQTT_URL = 'wss://broker.emqx.io:8084/mqtt';
-const DEFAULT_TOPIC = 'sopar/demo/k3-58321/telemetry';
+const MQTT_URL =
+  'wss://broker.emqx.io:8084/mqtt';
+
+const DEFAULT_TOPIC =
+  'sopar/demo/k3-58321/telemetry';
+
 const DATA_TIMEOUT = 9000;
 
-const $ = (id) => document.getElementById(id);
+const $ = id => document.getElementById(id);
 
 // ==========================================
-// MATERI DAN SOAL
-// Contoh akademik, bukan peraturan resmi PT IRNC
+// DATA MATERI DAN SOAL
 // ==========================================
 
 const modules = {
@@ -30,12 +34,12 @@ const modules = {
       {
         title: 'Kehadiran dan izin',
         body:
-          'Pahami ketentuan kehadiran, pemberitahuan ketidakhadiran, serta alur izin melalui saluran yang ditetapkan perusahaan.'
+          'Pahami ketentuan kehadiran, pemberitahuan ketidakhadiran, dan alur izin melalui saluran resmi perusahaan.'
       },
       {
         title: 'Etika dan kerahasiaan',
         body:
-          'Jaga sikap profesional, patuhi aturan kerja, dan lindungi dokumen serta informasi internal perusahaan.'
+          'Jaga sikap profesional dan lindungi dokumen serta informasi internal perusahaan.'
       }
     ],
 
@@ -56,7 +60,7 @@ const modules = {
         choices: [
           'Menebak aturan',
           'Mengabaikan aturan',
-          'Bertanya kepada pihak HRD/atasan yang berwenang'
+          'Bertanya kepada HRD atau atasan berwenang'
         ],
         correct: 2
       },
@@ -78,30 +82,30 @@ const modules = {
 
     lessons: [
       {
-        title: 'Alat pelindung diri',
+        title: 'Alat Pelindung Diri',
         body:
           'Pilih APD berdasarkan risiko pekerjaan dan persyaratan area. Periksa kondisinya sebelum digunakan.'
       },
       {
-        title: 'Rambu K3',
+        title: 'Rambu keselamatan',
         body:
-          'Pahami rambu wajib, larangan, peringatan, serta petunjuk evakuasi yang berlaku di lingkungan kerja.'
+          'Pahami rambu wajib, larangan, peringatan, dan petunjuk evakuasi di lingkungan kerja.'
       },
       {
         title: 'Respons alarm',
         body:
-          'Kenali sinyal alarm. Saat kondisi darurat, ikuti prosedur lokasi serta arahan petugas yang berwenang.'
+          'Kenali alarm darurat. Ikuti prosedur lokasi dan arahan petugas berwenang.'
       }
     ],
 
     questions: [
       {
         question:
-          'Sebelum masuk area wajib helm, tindakan tepat adalah ...',
+          'Sebelum masuk area wajib helm, tindakan yang tepat adalah ...',
         choices: [
           'Masuk tanpa helm',
           'Pakai dan periksa helm yang sesuai',
-          'Pinjam helm apa saja'
+          'Memakai helm apa saja'
         ],
         correct: 1
       },
@@ -109,9 +113,9 @@ const modules = {
         question:
           'Ada rambu bahaya yang belum dipahami. Kamu sebaiknya ...',
         choices: [
-          'Mengabaikannya',
+          'Abaikan',
           'Langsung masuk',
-          'Mencari tahu arti dan mengikuti arahan'
+          'Cari tahu artinya dan ikuti arahan'
         ],
         correct: 2
       },
@@ -119,9 +123,9 @@ const modules = {
         question:
           'Saat alarm darurat aktif, tindakan awal yang tepat adalah ...',
         choices: [
-          'Mengabaikan alarm',
-          'Mengikuti prosedur dan arahan petugas',
-          'Mereset alarm nyata tanpa kewenangan'
+          'Abaikan alarm',
+          'Ikuti prosedur dan arahan petugas',
+          'Reset alarm nyata tanpa izin'
         ],
         correct: 1
       }
@@ -136,8 +140,8 @@ const modules = {
 const state = {
   view: 'menu',
   category: null,
-
   index: 0,
+
   answered: false,
   selection: null,
 
@@ -163,85 +167,111 @@ const state = {
 // HELPER
 // ==========================================
 
-function setText(id, value) {
+const text = (id, value) => {
   if ($(id)) {
     $(id).textContent = String(value);
   }
-}
+};
 
-function setValue(id, value) {
+const value = (id, val) => {
   if ($(id)) {
-    $(id).setAttribute('value', String(value));
+    $(id).setAttribute('value', String(val));
+  }
+};
+
+function show3D(id, yes) {
+  const el = $(id);
+
+  if (!el) return;
+
+  el.setAttribute('visible', Boolean(yes));
+
+  // Memastikan papan yang tidak aktif
+  // benar-benar disembunyikan.
+  if (el.object3D) {
+    el.object3D.visible = Boolean(yes);
   }
 }
 
-function visible(id, value) {
-  if ($(id)) {
-    $(id).setAttribute('visible', value);
-  }
-}
+const fresh = () =>
+  state.mqttConnected &&
+  !!state.telemetry &&
+  Date.now() - state.telemetryAt < DATA_TIMEOUT;
 
-function dataFresh() {
-  return (
-    state.mqttConnected &&
-    state.telemetry &&
-    Date.now() - state.telemetryAt < DATA_TIMEOUT
-  );
-}
+// ==========================================
+// NOTIFIKASI
+// ==========================================
 
-function toast(message) {
-  const el = $('toast');
+function toast(msg) {
+  const e = $('toast');
 
-  el.textContent = message;
-  el.hidden = false;
+  text('toast', msg);
+  e.hidden = false;
 
   clearTimeout(toast.timer);
 
   toast.timer = setTimeout(() => {
-    el.hidden = true;
-  }, 2600);
+    e.hidden = true;
+  }, 2500);
 }
 
 // ==========================================
-// MEMBUKA EMPAT MENU UTAMA
+// PANEL SENTUH HP
+// ==========================================
+
+function setDockOpen(open) {
+  const dock = document.querySelector('.ar-dock');
+
+  dock.classList.toggle('compact', !open);
+
+  text(
+    'minimizeDock',
+    open ? '−' : '+'
+  );
+}
+
+// ==========================================
+// SESSION
 // ==========================================
 
 function resetSession(view, category) {
-  state.view = view;
-  state.category = category;
+  Object.assign(state, {
+    view,
+    category,
+    index: 0,
 
-  state.index = 0;
-  state.answered = false;
-  state.selection = null;
+    answered: false,
+    selection: null,
 
-  state.correctCount = 0;
-  state.mistakes = [];
+    correctCount: 0,
+    mistakes: [],
 
-  state.iotPassed = false;
-  state.alarmArmed = false;
+    iotPassed: false,
+    alarmArmed: false,
 
-  state.result = null;
+    result: null
+  });
+
+  // Ketika belajar atau latihan dipilih,
+  // panel sentuh langsung terbuka.
+  setDockOpen(view !== 'menu');
 
   render();
 }
 
-function goMenu() {
-  resetSession('menu', null);
-}
+const goMenu = () => resetSession('menu', null);
 
-function startLearn(category) {
+const startLearn = category =>
   resetSession('learn', category);
-}
 
-function startQuiz(category) {
+const startQuiz = category =>
   resetSession('quiz', category);
-}
 
 // ==========================================
-// MENJAWAB SOAL 3D
+// JAWABAN SOAL
 // ==========================================
 
-function choose(index) {
+function choose(i) {
   if (
     state.view !== 'quiz' ||
     state.answered
@@ -249,28 +279,24 @@ function choose(index) {
     return;
   }
 
-  const question =
+  const q =
     modules[state.category].questions[state.index];
 
   state.answered = true;
-  state.selection = index;
+  state.selection = i;
 
-  if (index === question.correct) {
+  if (i === q.correct) {
     state.correctCount++;
-
-    toast('Jawaban dicatat. Ketuk LANJUT.');
   } else {
     state.mistakes.push({
       nomor: state.index + 1,
-      jawabanDipilih: 'ABC'[index]
+      jawabanDipilih: 'ABC'[i]
     });
-
-    toast(
-      'Jawaban dicatat. Lanjut ke soal berikutnya.'
-    );
   }
 
   render();
+
+  toast('Jawaban tersimpan. Ketuk LANJUT.');
 }
 
 // ==========================================
@@ -282,7 +308,6 @@ function proceed() {
 
   if (!m) return;
 
-  // LANJUT MATERI
   if (state.view === 'learn') {
     if (state.index < m.lessons.length - 1) {
       state.index++;
@@ -290,69 +315,67 @@ function proceed() {
     } else {
       startQuiz(state.category);
     }
-
-    return;
   }
 
-  // LANJUT SOAL
-  if (state.view === 'quiz') {
+  else if (state.view === 'quiz') {
     if (!state.answered) {
-      toast('Pilih jawaban A, B, atau C dahulu.');
-      return;
+      return toast(
+        'Pilih jawaban A, B, atau C dahulu.'
+      );
     }
 
     if (state.index < m.questions.length - 1) {
       state.index++;
-
       state.answered = false;
       state.selection = null;
 
       render();
-    } else if (state.category === 'k3') {
-      // Modul K3 dilanjutkan praktik IoT
+    }
+
+    else if (state.category === 'k3') {
       state.view = 'iot';
       state.alarmArmed = false;
 
       render();
-    } else {
-      // Peraturan Perusahaan selesai
-      finish();
     }
 
-    return;
+    else {
+      finish();
+    }
   }
 
-  if (state.view === 'result') {
+  else if (state.view === 'result') {
     startQuiz(state.category);
   }
 }
 
 // ==========================================
-// HITUNG NILAI AKHIR
+// HASIL NILAI
 // ==========================================
 
 function finish() {
+  const m = modules[state.category];
+
   const total =
-    modules[state.category].questions.length +
+    m.questions.length +
     (state.category === 'k3' ? 1 : 0);
 
   const earned =
     state.correctCount +
     (
-      state.category === 'k3' && state.iotPassed
-        ? 1
-        : 0
+      state.category === 'k3' &&
+      state.iotPassed ? 1 : 0
     );
 
   state.result = {
-    modul: modules[state.category].name,
+    modul: m.name,
 
-    nilai: Math.round(earned / total * 100),
+    nilai: Math.round(
+      100 * earned / total
+    ),
 
-    jawabanBenar: state.correctCount,
-
-    jumlahSoal:
-      modules[state.category].questions.length,
+    jumlahSoal: m.questions.length,
+    benar: state.correctCount,
 
     kesalahan: state.mistakes,
 
@@ -364,7 +387,7 @@ function finish() {
     waktu: new Date().toISOString(),
 
     catatan:
-      'Simulasi akademik, bukan asesmen atau sertifikasi resmi PT IRNC.'
+      'Simulasi akademik, bukan penilaian resmi PT IRNC.'
   };
 
   state.view = 'result';
@@ -373,62 +396,73 @@ function finish() {
 }
 
 // ==========================================
-// TOMBOL SENTUH CADANGAN HP
+// MEMBUAT TOMBOL SENTUH HTML
 // ==========================================
 
-function addTouchAction(label, action) {
-  const btn = document.createElement('button');
+function addAction(label, handler) {
+  const b = document.createElement('button');
 
-  btn.type = 'button';
-  btn.className = 'answer';
-  btn.textContent = label;
+  b.className = 'answer';
+  b.type = 'button';
+  b.textContent = label;
 
-  btn.addEventListener('click', action);
+  b.addEventListener('click', handler);
 
-  $('touchActions').append(btn);
+  $('touchActions').append(b);
 }
 
 // ==========================================
-// RENDER MENU, MATERI DAN SOAL 3D
+// MEMBATASI TEKS DI PAPAN 3D
+// ==========================================
+
+function shortText(str, max = 100) {
+  return str.length > max
+    ? str.slice(0, max - 1).trimEnd() + '…'
+    : str;
+}
+
+// ==========================================
+// MENAMPILKAN MENU, MATERI, SOAL
 // ==========================================
 
 function render() {
-  const menu = state.view === 'menu';
+  const isMenu = state.view === 'menu';
 
-  // Menampilkan salah satu papan
-  visible('menuWorld', menu);
-  visible('contentWorld', !menu);
+  show3D('menuWorld', isMenu);
+  show3D('contentWorld', !isMenu);
+
+  show3D(
+    'alarmBeacon',
+    state.view === 'iot'
+  );
 
   $('touchActions').replaceChildren();
 
-  // ======================================
   // MENU UTAMA
-  // ======================================
+  if (isMenu) {
+    text('dockTitle', 'Menu SOP-AR');
 
-  if (menu) {
-    setText('dockTitle', 'Menu SOP-AR');
-
-    setText(
+    text(
       'dockQuestion',
-      'Pilih salah satu dari empat tombol 3D di marker.'
+      'Pilih kartu 3D. Jika sulit disentuh, tekan + dan pilih di sini.'
     );
 
-    addTouchAction(
+    addAction(
       'Belajar Peraturan Perusahaan',
       () => startLearn('pp')
     );
 
-    addTouchAction(
-      'Belajar K3',
+    addAction(
+      'Belajar Keselamatan Kerja (K3)',
       () => startLearn('k3')
     );
 
-    addTouchAction(
+    addAction(
       'Latihan Soal Peraturan Perusahaan',
       () => startQuiz('pp')
     );
 
-    addTouchAction(
+    addAction(
       'Latihan Soal K3',
       () => startQuiz('k3')
     );
@@ -438,53 +472,54 @@ function render() {
 
   const m = modules[state.category];
 
-  visible(
+  show3D(
     'worldOptions',
     state.view === 'quiz'
   );
 
-  visible(
+  show3D(
     'worldNextGroup',
-    state.view !== 'iot'
+    ['learn', 'quiz', 'result'].includes(state.view)
   );
 
-  setText('dockTitle', m.name);
+  text('dockTitle', m.name);
 
-  addTouchAction(
-    'Kembali ke Menu Utama',
+  addAction(
+    '← Kembali ke Menu Utama',
     goMenu
   );
 
-  // ======================================
-  // BELAJAR DALAM AR
-  // ======================================
-
+  // MODE BELAJAR
   if (state.view === 'learn') {
     const item = m.lessons[state.index];
 
-    setValue(
+    value(
       'worldMode',
-      `BELAJAR • ${state.index + 1}/${m.lessons.length}`
+      `BELAJAR ${state.index + 1}/${m.lessons.length}`
     );
 
-    setValue('worldTitle', item.title);
-    setValue('worldBody', item.body);
+    value('worldTitle', item.title);
 
-    setValue(
+    value(
+      'worldBody',
+      shortText(item.body)
+    );
+
+    value(
       'worldHint',
-      'Baca materi, lalu ketuk LANJUT.'
+      'Baca penjelasan di panel sentuh.'
     );
 
-    setValue(
+    value(
       'worldNextText',
       state.index === m.lessons.length - 1
         ? 'MULAI SOAL'
         : 'LANJUT'
     );
 
-    setText('dockQuestion', item.body);
+    text('dockQuestion', item.body);
 
-    addTouchAction(
+    addAction(
       state.index === m.lessons.length - 1
         ? 'Mulai Latihan Soal'
         : 'Materi Berikutnya',
@@ -492,54 +527,49 @@ function render() {
     );
   }
 
-  // ======================================
-  // LATIHAN SOAL DALAM AR
-  // ======================================
-
-  if (state.view === 'quiz') {
+  // MODE LATIHAN
+  else if (state.view === 'quiz') {
     const q = m.questions[state.index];
 
-    setValue(
+    value(
       'worldMode',
-      `LATIHAN SOAL • ${state.index + 1}/${m.questions.length}`
+      `SOAL ${state.index + 1}/${m.questions.length}`
     );
 
-    setValue(
-      'worldTitle',
-      m.name
-    );
+    value('worldTitle', m.name);
 
-    setValue(
+    value(
       'worldBody',
-      q.question
+      shortText(q.question, 85)
     );
 
-    setValue(
+    value(
       'worldHint',
       state.answered
-        ? 'Jawaban tersimpan. Lanjut ke soal berikutnya.'
-        : 'Pilih jawaban A, B, atau C.'
+        ? 'Jawaban tersimpan. Tekan LANJUT.'
+        : 'Pilih A, B, atau C.'
     );
 
-    setValue('worldNextText', 'LANJUT');
+    value('worldNextText', 'LANJUT');
 
-    setText('dockQuestion', q.question);
+    text('dockQuestion', q.question);
 
     q.choices.forEach((choice, i) => {
-      setValue(
+      value(
         `optionText${i}`,
-        `${'ABC'[i]}. ${choice}`
+        `${'ABC'[i]}. ${shortText(choice, 32)}`
       );
 
-      $('option' + i).setAttribute(
+      $(`option${i}`).setAttribute(
         'color',
-        state.answered && state.selection === i
-          ? '#e3b757'
+        state.answered &&
+        state.selection === i
+          ? '#dfb75c'
           : '#dfeee0'
       );
 
       if (!state.answered) {
-        addTouchAction(
+        addAction(
           `${'ABC'[i]}. ${choice}`,
           () => choose(i)
         );
@@ -547,89 +577,86 @@ function render() {
     });
 
     if (state.answered) {
-      addTouchAction('Lanjut', proceed);
+      addAction(
+        'Lanjut ke Tahap Berikutnya',
+        proceed
+      );
     }
   }
 
-  // ======================================
-  // PRAKTIK IOT K3
-  // ======================================
+  // MODE PRAKTIK IOT
+  else if (state.view === 'iot') {
+    value('worldMode', 'PRAKTIK IOT K3');
 
-  if (state.view === 'iot') {
-    setValue(
-      'worldMode',
-      'PRAKTIK IOT • K3'
-    );
-
-    setValue(
+    value(
       'worldTitle',
       'Respons Alarm Wokwi'
     );
 
-    setValue(
+    value(
       'worldBody',
-      'Setelah status NORMAL diterima, tekan tombol ALARM di Wokwi. Skenario dinilai dari perubahan alarm yang baru.'
+      'Tunggu status NORMAL baru, lalu tekan tombol ALARM pada Wokwi.'
     );
 
     let help = 'Menunggu data MQTT terbaru.';
 
-    if (dataFresh()) {
+    if (fresh()) {
       if (state.telemetry.alarm) {
         help =
-          'Alarm masih aktif. Tekan RESET, lalu tunggu NORMAL.';
-      } else if (state.alarmArmed) {
+          'Alarm aktif. Tekan RESET di Wokwi dan tunggu status NORMAL.';
+      }
+
+      else if (state.alarmArmed) {
         help =
-          'NORMAL terdeteksi. Tekan tombol ALARM sekarang.';
-      } else {
-        help = 'Menunggu status NORMAL baru.';
+          'NORMAL diterima. Tekan ALARM sekarang.';
+      }
+
+      else {
+        help =
+          'Menunggu status NORMAL baru.';
       }
     }
 
-    setValue('worldHint', help);
-    setText('dockQuestion', help);
-  }
-
-  // ======================================
-  // HASIL EVALUASI DALAM AR
-  // ======================================
-
-  if (state.view === 'result') {
-    setValue(
-      'worldMode',
-      'HASIL LATIHAN'
+    value(
+      'worldHint',
+      shortText(help, 78)
     );
 
-    setValue(
+    text('dockQuestion', help);
+  }
+
+  // MODE HASIL
+  else if (state.view === 'result') {
+    value('worldMode', 'HASIL EVALUASI');
+
+    value(
       'worldTitle',
       `NILAI ${state.result.nilai}/100`
     );
 
-    setValue(
+    value(
       'worldBody',
-      `Modul: ${m.name}. Benar: ${state.result.jawabanBenar}/${state.result.jumlahSoal}. Kesalahan: ${state.mistakes.length}.`
+      `Benar ${state.result.benar}/${state.result.jumlahSoal}. Kesalahan ${state.mistakes.length}.`
     );
 
-    setValue(
+    value(
       'worldHint',
-      'Ini hasil simulasi latihan, bukan penilaian resmi perusahaan.'
+      'Latihan akademik, bukan sertifikasi resmi.'
     );
 
-    setValue(
-      'worldNextText',
-      'ULANG LATIHAN'
-    );
+    value('worldNextText', 'ULANGI');
 
-    setText(
+    text(
       'dockQuestion',
-      `Nilai akhir ${state.result.nilai}/100.`
+      `Nilai: ${state.result.nilai}/100. Benar: ${state.result.benar}.`
     );
 
-    addTouchAction(
+    addAction(
       'Ulangi Latihan',
       () => startQuiz(state.category)
     );
 
-    addTouchAction(
+    addAction(
       'Unduh Hasil JSON',
       downloadResult
     );
@@ -637,7 +664,7 @@ function render() {
 }
 
 // ==========================================
-// DOWNLOAD HASIL LATIHAN
+// DOWNLOAD HASIL
 // ==========================================
 
 function downloadResult() {
@@ -645,24 +672,20 @@ function downloadResult() {
 
   const blob = new Blob(
     [JSON.stringify(state.result, null, 2)],
-    {
-      type: 'application/json'
-    }
+    { type: 'application/json' }
   );
 
   const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
 
-  const link = document.createElement('a');
-
-  link.href = url;
-
-  link.download =
+  a.href = url;
+  a.download =
     `hasil-sop-ar-${state.category}.json`;
 
-  document.body.append(link);
+  document.body.append(a);
 
-  link.click();
-  link.remove();
+  a.click();
+  a.remove();
 
   setTimeout(() => {
     URL.revokeObjectURL(url);
@@ -670,31 +693,27 @@ function downloadResult() {
 }
 
 // ==========================================
-// MEMBACA JSON MQTT
+// MEMBACA DATA MQTT
 // ==========================================
 
-function readTelemetry(payload) {
+function parseTelemetry(message) {
   try {
-    const obj = JSON.parse(payload);
+    const v = JSON.parse(message);
 
     if (
-      typeof obj.alarm !== 'boolean' ||
-      typeof obj.alarm_manual !== 'boolean'
+      typeof v.alarm !== 'boolean' ||
+      typeof v.alarm_manual !== 'boolean'
     ) {
       return null;
     }
 
     return {
-      alarm: obj.alarm,
-
-      alarm_manual: obj.alarm_manual,
-
-      temperature: Number(obj.temperature),
-
-      sensor_ok: obj.sensor_ok === true
+      alarm: v.alarm,
+      alarm_manual: v.alarm_manual,
+      temperature: Number(v.temperature),
+      sensor_ok: v.sensor_ok === true
     };
-
-  } catch (_) {
+  } catch {
     return null;
   }
 }
@@ -705,23 +724,22 @@ function readTelemetry(payload) {
 
 function onTelemetry(packet) {
   const prev = state.telemetry;
-  const wasFresh = dataFresh();
+  const prevFresh = fresh();
 
   state.telemetry = packet;
   state.telemetryAt = Date.now();
 
-  // Praktik alarm harus mendeteksi
-  // perubahan NORMAL -> ALARM baru.
   if (state.view === 'iot') {
     if (
       !packet.alarm &&
       !packet.alarm_manual
     ) {
       state.alarmArmed = true;
+    }
 
-    } else if (
+    else if (
       state.alarmArmed &&
-      wasFresh &&
+      prevFresh &&
       prev &&
       !prev.alarm &&
       !prev.alarm_manual &&
@@ -743,7 +761,7 @@ function onTelemetry(packet) {
 }
 
 // ==========================================
-// TAMPILAN STATUS MQTT DAN SENSOR
+// STATUS MQTT
 // ==========================================
 
 function showTelemetry() {
@@ -757,34 +775,32 @@ function showTelemetry() {
     !state.mqttConnected
   );
 
-  setText(
+  text(
     'mqttText',
     state.mqttConnected
       ? 'MQTT terhubung'
       : 'MQTT terputus'
   );
 
-  const fresh = dataFresh();
-
-  setText(
+  text(
     'sensorConnection',
-    fresh
+    fresh()
       ? 'IoT: data terbaru'
-      : 'IoT: menunggu'
+      : 'IoT: menunggu data'
   );
 
-  setText(
+  text(
     'temp',
-    fresh &&
+    fresh() &&
     state.telemetry.sensor_ok &&
     Number.isFinite(state.telemetry.temperature)
       ? `${state.telemetry.temperature.toFixed(1)}°C`
       : '--°C'
   );
 
-  setText(
+  text(
     'alarm',
-    fresh
+    fresh()
       ? (
           state.telemetry.alarm
             ? 'AKTIF'
@@ -795,12 +811,12 @@ function showTelemetry() {
 
   $('alarmBeacon').setAttribute(
     'color',
-    fresh && state.telemetry.alarm
+    fresh() && state.telemetry.alarm
       ? '#e54f48'
       : '#69b77c'
   );
 
-  if (!fresh) {
+  if (!fresh()) {
     state.alarmArmed = false;
   }
 }
@@ -811,11 +827,7 @@ function showTelemetry() {
 
 function connectMQTT() {
   if (!window.mqtt) {
-    setText(
-      'mqttText',
-      'MQTT.js gagal dimuat'
-    );
-
+    text('mqttText', 'Library MQTT gagal');
     return;
   }
 
@@ -823,8 +835,7 @@ function connectMQTT() {
     MQTT_URL,
     {
       clientId:
-        `sopar-3d-${Math.random().toString(16).slice(2, 10)}`,
-
+        `sopar-v6-${Math.random().toString(16).slice(2, 10)}`,
       clean: true,
       reconnectPeriod: 3000,
       connectTimeout: 10000
@@ -844,38 +855,31 @@ function connectMQTT() {
     showTelemetry();
   });
 
-  client.on('message', (topic, payload) => {
+  client.on('message', (topic, buffer) => {
     if (topic !== state.topic) return;
 
-    const data = readTelemetry(
-      payload.toString()
+    const packet = parseTelemetry(
+      buffer.toString()
     );
 
-    if (data) {
-      onTelemetry(data);
-    }
+    if (packet) onTelemetry(packet);
   });
 
-  [
-    'offline',
-    'close',
-    'reconnect'
-  ].forEach((event) => {
-    client.on(event, () => {
+  ['offline', 'close', 'reconnect'].forEach(
+    event => client.on(event, () => {
       state.mqttConnected = false;
       state.alarmArmed = false;
-
       showTelemetry();
-    });
-  });
+    })
+  );
 
-  client.on('error', (err) => {
-    console.warn('MQTT:', err.message);
+  client.on('error', e => {
+    console.warn('MQTT:', e.message);
   });
 }
 
 // ==========================================
-// GANTI TOPIC MQTT
+// UBAH TOPIC MQTT
 // ==========================================
 
 function applyTopic() {
@@ -886,11 +890,10 @@ function applyTopic() {
     next.length > 170 ||
     /[+#\s]/.test(next)
   ) {
-    setText(
+    text(
       'settingsError',
-      'Topic tidak boleh kosong, berisi spasi, + atau #.'
+      'Topic tidak boleh kosong, spasi, +, atau #.'
     );
-
     return;
   }
 
@@ -905,25 +908,150 @@ function applyTopic() {
     if (state.mqttConnected) {
       state.mqttClient.unsubscribe(
         previous,
-        () => {
-          state.mqttClient.subscribe(
-            next,
-            { qos: 0 }
-          );
-        }
+        () => state.mqttClient.subscribe(
+          next,
+          { qos: 0 }
+        )
       );
     }
   }
 
-  setText('settingsError', '');
-
+  text('settingsError', '');
   $('settingsDialog').close();
-
   showTelemetry();
 }
 
 // ==========================================
-// INISIALISASI APLIKASI
+// PERBAIKAN SENTUH OBJEK 3D
+// KHUSUS MOBILE DAN DESKTOP
+// ==========================================
+
+function setupTouch3D() {
+  const scene = $('arScene');
+
+  const actions = {
+    'learn-pp': () => startLearn('pp'),
+    'learn-k3': () => startLearn('k3'),
+
+    'quiz-pp': () => startQuiz('pp'),
+    'quiz-k3': () => startQuiz('k3'),
+
+    'home': goMenu,
+    'next': proceed,
+
+    'answer-0': () => choose(0),
+    'answer-1': () => choose(1),
+    'answer-2': () => choose(2)
+  };
+
+  function clicked(event) {
+    if (
+      !state.markerVisible ||
+      !scene.camera
+    ) {
+      return;
+    }
+
+    const canvas = scene.canvas;
+
+    if (!canvas) return;
+
+    const r = canvas.getBoundingClientRect();
+
+    // Ubah koordinat sentuh HP
+    // menjadi koordinat raycasting 3D.
+    const x =
+      (event.clientX - r.left) / r.width * 2 - 1;
+
+    const y =
+      -((event.clientY - r.top) / r.height * 2 - 1);
+
+    const caster = new THREE.Raycaster();
+
+    caster.setFromCamera(
+      new THREE.Vector2(x, y),
+      scene.camera
+    );
+
+    // Hanya objek tombol yang terlihat
+    // yang boleh menerima sentuhan.
+    const targets = [
+      ...scene.querySelectorAll('.ar-hit')
+    ].filter(el => {
+      let p = el;
+
+      while (p && p !== scene) {
+        if (
+          p.object3D &&
+          !p.object3D.visible
+        ) {
+          return false;
+        }
+
+        p = p.parentElement;
+      }
+
+      return true;
+    });
+
+    const entries = targets
+      .map(el => ({
+        el,
+        mesh: el.getObject3D('mesh')
+      }))
+      .filter(item => item.mesh);
+
+    const intersections = caster.intersectObjects(
+      entries.map(item => item.mesh),
+      true
+    );
+
+    if (!intersections.length) return;
+
+    const hitObject = intersections[0].object;
+
+    const entry = entries.find(item => {
+      let node = hitObject;
+
+      while (node) {
+        if (node === item.mesh) {
+          return true;
+        }
+        node = node.parent;
+      }
+
+      return false;
+    });
+
+    const action = entry?.el?.dataset?.action;
+
+    if (action && actions[action]) {
+      event.preventDefault();
+      actions[action]();
+    }
+  }
+
+  function attach() {
+    scene.canvas?.addEventListener(
+      'pointerup',
+      clicked,
+      { passive: false }
+    );
+  }
+
+  if (scene.hasLoaded) {
+    attach();
+  } else {
+    scene.addEventListener(
+      'loaded',
+      attach,
+      { once: true }
+    );
+  }
+}
+
+// ==========================================
+// INISIALISASI
 // ==========================================
 
 function initialize() {
@@ -936,14 +1064,14 @@ function initialize() {
 
       $('markerNotice').classList.add('found');
 
-      setText(
+      text(
         'markerLabel',
         'Marker Hiro terdeteksi'
       );
 
-      setText(
+      text(
         'markerHelp',
-        'Sentuh salah satu tombol 3D pada marker.'
+        'Sentuh kartu 3D atau tekan + pada kontrol sentuh.'
       );
     }
   );
@@ -956,92 +1084,34 @@ function initialize() {
 
       $('markerNotice').classList.remove('found');
 
-      setText(
+      text(
         'markerLabel',
         'Arahkan kamera ke marker Hiro'
       );
 
-      setText(
+      text(
         'markerHelp',
-        'Menu 3D muncul lagi saat marker ditemukan.'
+        'Kontrol sentuh tetap bisa digunakan.'
       );
     }
   );
 
-  // ======================================
-  // EMPAT TOMBOL MENU 3D
-  // ======================================
+  // MENGAKTIFKAN SENTUH OBJEK 3D
+  setupTouch3D();
 
-  $('menuLearnPP').addEventListener(
-    'click',
-    () => startLearn('pp')
-  );
-
-  $('menuLearnK3').addEventListener(
-    'click',
-    () => startLearn('k3')
-  );
-
-  $('menuQuizPP').addEventListener(
-    'click',
-    () => startQuiz('pp')
-  );
-
-  $('menuQuizK3').addEventListener(
-    'click',
-    () => startQuiz('k3')
-  );
-
-  // ======================================
-  // PILIHAN JAWABAN 3D
-  // ======================================
-
-  for (let i = 0; i < 3; i++) {
-    $('option' + i).addEventListener(
-      'click',
-      () => choose(i)
-    );
-  }
-
-  // ======================================
-  // NAVIGASI DALAM AR
-  // ======================================
-
-  $('worldHome').addEventListener(
-    'click',
-    goMenu
-  );
-
-  $('worldNext').addEventListener(
-    'click',
-    proceed
-  );
-
-  // ======================================
-  // PANEL SENTUH ALTERNATIF HP
-  // ======================================
-
+  // BUKA / TUTUP PANEL
   $('minimizeDock').addEventListener(
     'click',
     () => {
-      const dock =
-        document.querySelector('.ar-dock');
+      const compact =
+        document.querySelector('.ar-dock')
+          .classList.contains('compact');
 
-      dock.classList.toggle('compact');
-
-      setText(
-        'minimizeDock',
-        dock.classList.contains('compact')
-          ? '+'
-          : '−'
-      );
+      setDockOpen(compact);
     }
   );
 
-  // ======================================
   // PENGATURAN MQTT
-  // ======================================
-
   $('openSettings').addEventListener(
     'click',
     () => {
@@ -1056,46 +1126,33 @@ function initialize() {
 
   $('topicInput').value = state.topic;
 
-  // PERIKSA HTTPS
   $('httpsHint').hidden =
     window.isSecureContext;
 
-  // ======================================
-  // PERIKSA DATA IOT BERKALA
-  // ======================================
-
+  // MEMERIKSA DATA IOT
   setInterval(() => {
-    const previouslyArmed = state.alarmArmed;
+    const wasArmed = state.alarmArmed;
 
     showTelemetry();
 
     if (
       state.view === 'iot' &&
-      previouslyArmed !== state.alarmArmed
+      wasArmed !== state.alarmArmed
     ) {
       render();
     }
   }, 1500);
 
-  // TAMPILKAN MENU UTAMA
   render();
-
   showTelemetry();
-
-  // KONEKSI KE WOKWI
   connectMQTT();
 }
-
-// ==========================================
-// MULAI APLIKASI
-// ==========================================
 
 if (document.readyState === 'loading') {
   document.addEventListener(
     'DOMContentLoaded',
     initialize
   );
-
 } else {
   initialize();
 }
