@@ -23,7 +23,6 @@
     <a-assets timeout="20000">
       <!-- Gambar persis dari referensi pengguna, bukan gambar yang digambar ulang. -->
       <img id="welcomeArt" src="./welcome-imip.png" alt="IMIP QUIZ">
-      <img id="mulaiArt" src="./welcome-mulai-v6.png" alt="MULAI">
     </a-assets>
 
     <a-camera
@@ -96,12 +95,6 @@
             <a-image src="#mulaiArt" position="0 0 0.027"
                      width="0.6561" height="0.2314"
                      material="shader: flat; transparent: true; alphaTest: 0.02; side: double"></a-image>
-
-            <!-- HITBOX INVISIBLE JAUH LEBIH LUAS daripada tombol visual.
-                 Posisi di depan gambar; tidak mengubah desain. -->
-            <a-plane id="start3dHit" class="clickable" data-action="start"
-                     position="0 0 0.061" width="0.92" height="0.34"
-                     material="color: #FFFFFF; transparent: true; opacity: 0; depthWrite: false; side: double"></a-plane>
           </a-entity>
         </a-entity>
       </a-entity>
