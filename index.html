@@ -1,0 +1,122 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  >
+
+  <meta name="theme-color" content="#087d29">
+
+  <title>SOP-AR IMIP | MindAR</title>
+
+  <link rel="stylesheet" href="style.css?v=1">
+
+  <!-- A-Frame -->
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+
+  <!-- MindAR -->
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+</head>
+
+<body>
+
+  <!-- KAMERA AR -->
+  <a-scene
+    id="arScene"
+    mindar-image="imageTargetSrc: ./targets.mind; autoStart: true;"
+    embedded
+    color-space="sRGB"
+    renderer="colorManagement: true; alpha: true"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false"
+  >
+
+    <!-- KAMERA -->
+    <a-camera
+      position="0 0 0"
+      look-controls="enabled: false">
+    </a-camera>
+
+    <!-- TARGET LOGO IMIP -->
+    <a-entity
+      id="imipTarget"
+      mindar-image-target="targetIndex: 0">
+
+      <!-- PAPAN 3D -->
+      <a-box
+        position="0 0 0.08"
+        width="0.9"
+        height="0.52"
+        depth="0.05"
+        color="#087d29">
+      </a-box>
+
+      <!-- AKSEN ORANYE -->
+      <a-box
+        position="0 0.24 0.12"
+        width="0.9"
+        height="0.04"
+        depth="0.02"
+        color="#ff9500">
+      </a-box>
+
+      <!-- JUDUL -->
+      <a-text
+        value="SOP-AR IMIP"
+        position="0 0.10 0.125"
+        align="center"
+        width="1.15"
+        color="#ffffff">
+      </a-text>
+
+      <!-- KETERANGAN -->
+      <a-text
+        value="LOGO BERHASIL TERDETEKSI"
+        position="0 -0.065 0.125"
+        align="center"
+        width="0.87"
+        color="#ffffff">
+      </a-text>
+
+      <!-- INDIKATOR -->
+      <a-sphere
+        position="0 -0.19 0.14"
+        radius="0.045"
+        color="#9ced49">
+      </a-sphere>
+
+    </a-entity>
+
+  </a-scene>
+
+  <!-- HEADER -->
+  <header class="app-header">
+    <div class="brand">
+      <strong>SOP-AR IMIP</strong>
+      <small>PEMBELAJARAN DAN LATIHAN HRD</small>
+    </div>
+
+    <span class="version">
+      MINDAR V1
+    </span>
+  </header>
+
+  <!-- STATUS MARKER -->
+  <div class="marker-status" id="markerStatus">
+    Arahkan kamera ke logo IMIP
+  </div>
+
+  <!-- PETUNJUK -->
+  <div class="bottom-help">
+    Tampilkan gambar IMIP di laptop, lalu pindai
+    menggunakan kamera belakang HP.
+  </div>
+
+  <script src="app.js?v=1"></script>
+
+</body>
+</html>
