@@ -1,515 +1,99 @@
-
-/* ========================================
-   QUIZ IMIP - MINDAR V4
-   TEMA HIJAU, ORANYE, PUTIH
-======================================== */
-
+/* IMIP QUIZ - MindAR V5. Warna logo: hijau, oranye, putih. */
 :root {
-  --green-dark: #045b12;
-  --green: #058901;
-  --green-light: #86d101;
-
-  --orange: #fd9802;
-  --orange-light: #febb02;
-
-  --white: #ffffff;
-  --cream: #f9fff4;
-
-  --text: #21482d;
-  --muted: #637a67;
-  --border: #d8ebcc;
+  --green:#058901;
+  --dark:#045b12;
+  --light:#86d101;
+  --orange:#fd9802;
+  --white:#fff;
+  --text:#21482d;
 }
-
-/* ========================================
-   RESET
-======================================== */
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+*,*::before,*::after { box-sizing:border-box; }
+html,body {
+  width:100%; height:100%; margin:0; padding:0;
+  overflow:hidden; overscroll-behavior:none;
+  background:#101f16;
+  font-family:Arial,Helvetica,sans-serif;
 }
+[hidden] { display:none !important; }
+button { font:inherit; cursor:pointer; touch-action:manipulation; }
+button:disabled { opacity:.65; cursor:not-allowed; }
 
-html,
-body {
-  width: 100%;
-  height: 100%;
-
-  margin: 0;
-  padding: 0;
-
-  overflow: hidden;
-  overscroll-behavior: none;
-
-  font-family:
-    Arial,
-    Helvetica,
-    sans-serif;
-
-  background: #101f16;
-}
-
-button {
-  font: inherit;
-  cursor: pointer;
-  touch-action: manipulation;
-}
-
-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.65;
-}
-
-[hidden] {
-  display: none !important;
-}
-
-/* ========================================
-   SCENE MINDAR
-======================================== */
-
-#arScene {
-  position: fixed;
-  inset: 0;
-
-  width: 100%;
-  height: 100vh;
-  height: 100dvh;
-
-  z-index: 0;
-}
-
-/*
-  MindAR mengatur ukuran video kamera
-  dan kanvas 3D secara otomatis.
-
-  Tidak perlu memaksa object-fit,
-  transform, atau ukuran video.
-*/
-
-/* ========================================
-   HEADER
-======================================== */
+/* MindAR sendiri mengatur resolusi dan letak video/canvas. */
+#arScene { position:fixed; inset:0; width:100%; height:100vh; height:100dvh; z-index:0; }
 
 .app-header {
-  position: fixed;
-
-  top: 0;
-  left: 0;
-  right: 0;
-
-  z-index: 20;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  gap: 12px;
-
-  padding:
-    max(12px, env(safe-area-inset-top))
-    14px
-    12px;
-
-  background: rgba(5, 137, 1, 0.93);
-  color: var(--white);
-
-  box-shadow:
-    0 3px 16px rgba(0, 0, 0, 0.20);
+  position:fixed; top:0; right:0; left:0; z-index:20;
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:max(12px,env(safe-area-inset-top)) 14px 12px;
+  background:rgba(5,137,1,.92); color:#fff;
+  box-shadow:0 3px 16px #0003;
 }
-
-/* Brand */
-
-.brand {
-  display: flex;
-  flex-direction: column;
-
-  gap: 4px;
-  min-width: 0;
-}
-
-.brand strong {
-  display: block;
-
-  font-size: 17px;
-  line-height: 1.2;
-
-  letter-spacing: 0.025em;
-}
-
-.brand small {
-  display: block;
-
-  color: #e3ffd2;
-
-  font-size: 9px;
-  line-height: 1.4;
-
-  letter-spacing: 0.05em;
-}
-
-/* ========================================
-   STATUS MARKER
-======================================== */
-
+.brand { display:flex; flex-direction:column; gap:4px; min-width:0; }
+.brand strong { font-size:17px; letter-spacing:.025em; }
+.brand small { color:#e3ffd2; font-size:9px; letter-spacing:.05em; }
 .status {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  max-width: 52%;
-  min-height: 32px;
-
-  flex: none;
-
-  padding: 7px 11px;
-
-  border: 1px solid #ffffff45;
-  border-radius: 24px;
-
-  background: #ffffff25;
-  color: white;
-
-  font-size: 11px;
-  font-weight: 600;
-
-  line-height: 1.35;
-  text-align: center;
+  flex:none; max-width:52%; padding:8px 11px;
+  border:1px solid #ffffff45; border-radius:24px;
+  background:#ffffff25; color:white;
+  font-size:11px; line-height:1.3; text-align:center;
 }
-
-.status.found {
-  background: #d4f6b1;
-  border-color: #d4f6b1;
-
-  color: #19521b;
-}
-
-.status.error {
-  background: #fff0d2;
-  border-color: #ffc46e;
-
-  color: #784400;
-}
-
-/* ========================================
-   PANEL SENTUH
-======================================== */
+.status.found { background:#d4f6b1; border-color:#d4f6b1; color:#19521b; }
+.status.error { background:#fff0d2; border-color:#ffc46e; color:#784400; }
 
 .touch-dock {
-  position: fixed;
-
-  left: 10px;
-  right: 10px;
-
-  bottom: max(
-    10px,
-    env(safe-area-inset-bottom)
-  );
-
-  z-index: 30;
-
-  display: flex;
-  flex-direction: column;
-
-  width: auto;
-  max-width: 460px;
-  max-height: 55dvh;
-
-  margin: 0 auto;
-
-  overflow: hidden;
-
-  background: rgba(255, 255, 255, 0.97);
-
-  border: 1px solid var(--border);
-  border-radius: 17px;
-
-  box-shadow:
-    0 14px 38px rgba(0, 0, 0, 0.25);
-
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  position:fixed; z-index:30;
+  left:10px; right:10px; bottom:max(10px,env(safe-area-inset-bottom));
+  display:flex; flex-direction:column;
+  width:auto; max-width:460px; max-height:55dvh; margin:0 auto;
+  overflow:hidden; background:rgba(255,255,255,.97);
+  border:1px solid #d8ebcc; border-radius:17px;
+  box-shadow:0 14px 38px #0004;
+  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
 }
-
-/* Header panel */
-
 .dock-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  gap: 12px;
-
-  padding: 12px 14px;
-
-  background: var(--green-dark);
-  color: var(--white);
+  display:flex; justify-content:space-between; align-items:center; gap:12px;
+  padding:12px 14px; background:var(--dark); color:#fff;
 }
-
-.dock-header > div {
-  display: flex;
-  flex-direction: column;
-
-  gap: 4px;
-  min-width: 0;
-}
-
-.dock-header small {
-  color: #ffcb75;
-
-  font-size: 9px;
-  font-weight: 800;
-
-  letter-spacing: 0.10em;
-}
-
-.dock-header strong {
-  font-size: 15px;
-  line-height: 1.3;
-}
-
-/* Tombol buka/tutup panel */
-
+.dock-header>div { display:flex; flex-direction:column; gap:4px; min-width:0; }
+.dock-header small { color:#ffcb75; font-size:9px; font-weight:800; letter-spacing:.1em; }
+.dock-header strong { font-size:15px; }
 #toggleDock {
-  display: grid;
-  place-items: center;
-
-  width: 36px;
-  height: 36px;
-
-  flex: none;
-
-  padding: 0;
-
-  border: 1px solid #ffffff65;
-  border-radius: 9px;
-
-  background: #ffffff24;
-  color: white;
-
-  font-size: 23px;
-  line-height: 1;
+  width:36px; height:36px; flex:none; border:1px solid #ffffff65;
+  border-radius:9px; background:#ffffff24; color:#fff; font-size:23px;
 }
-
-/* Isi panel */
-
 .dock-content {
-  min-height: 0;
-
-  padding: 13px 14px 15px;
-
-  overflow-y: auto;
-  overscroll-behavior: contain;
-
-  -webkit-overflow-scrolling: touch;
+  min-height:0; overflow-y:auto; overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch; padding:13px 14px 15px;
 }
-
-.touch-dock.collapsed .dock-content {
-  display: none;
-}
-
-/* ========================================
-   TEKS MATERI / SOAL
-======================================== */
-
-#dockDescription {
-  margin: 0 0 12px;
-
-  color: var(--text);
-
-  font-size: 13px;
-  line-height: 1.55;
-
-  white-space: pre-line;
-}
-
-/* ========================================
-   TOMBOL PANEL SENTUH
-======================================== */
-
-.touch-actions {
-  display: grid;
-  gap: 8px;
-}
-
+.touch-dock.collapsed .dock-content { display:none; }
+#dockDescription { white-space:pre-line; margin:0 0 12px; color:var(--text); font-size:13px; line-height:1.55; }
+.touch-actions { display:grid; gap:8px; }
 .touch-actions button {
-  display: block;
-
-  width: 100%;
-  min-height: 47px;
-
-  padding: 11px 12px;
-
-  background: #f4ffed;
-  color: var(--green-dark);
-
-  border: 1px solid #c7e7b5;
-  border-radius: 10px;
-
-  font-size: 13px;
-  font-weight: 650;
-
-  line-height: 1.45;
-  text-align: left;
-
-  transition:
-    background 0.15s ease,
-    border-color 0.15s ease;
+  width:100%; min-height:47px; padding:11px 12px;
+  border:1px solid #c7e7b5; border-radius:10px;
+  background:#f4ffed; color:var(--dark);
+  font-size:13px; font-weight:650; line-height:1.45; text-align:left;
 }
+.touch-actions button:active { background:#dbf5c7; }
+.touch-actions button.primary { background:var(--orange); border-color:var(--orange); color:#412900; font-weight:800; }
+.touch-actions button.selected { background:#ffe6bb; border-color:var(--orange); }
+button:focus-visible { outline:3px solid var(--orange); outline-offset:2px; }
+.note { margin:12px 0 0; color:#637a67; font-size:10px; line-height:1.5; }
 
-.touch-actions button:hover {
-  background: #e9fbdc;
-  border-color: #92c76b;
+@media(min-width:900px) {
+  .app-header { padding:14px 22px; }
+  .touch-dock { left:auto; right:20px; width:370px; max-height:75dvh; margin:0; }
 }
-
-.touch-actions button:active {
-  background: #dbf5c7;
+@media(max-width:600px) {
+  .app-header { gap:8px; padding:max(10px,env(safe-area-inset-top)) 11px 10px; }
+  .brand strong { font-size:15px; }
+  .brand small { font-size:8px; }
+  .status { max-width:49%; padding:7px 8px; font-size:10px; }
+  .touch-dock { left:9px; right:9px; max-height:48dvh; }
+  .dock-header { padding:10px 12px; }
+  .dock-content { padding:11px 12px 13px; }
 }
-
-/* Tombol utama */
-
-.touch-actions button.primary {
-  background: var(--orange);
-  color: #412900;
-
-  border-color: var(--orange);
-
-  font-weight: 800;
-}
-
-.touch-actions button.primary:hover {
-  background: var(--orange-light);
-}
-
-/* Jawaban yang dipilih */
-
-.touch-actions button.selected {
-  background: #ffe6bb;
-  border-color: var(--orange);
-}
-
-/* Fokus tombol */
-
-button:focus-visible {
-  outline: 3px solid var(--orange);
-  outline-offset: 2px;
-}
-
-/* ========================================
-   CATATAN SIMULASI
-======================================== */
-
-.note {
-  margin: 12px 0 0;
-
-  color: var(--muted);
-
-  font-size: 10px;
-  line-height: 1.5;
-}
-
-/* ========================================
-   DESKTOP DAN LAPTOP
-======================================== */
-
-@media (min-width: 900px) {
-  .app-header {
-    padding: 14px 22px;
-  }
-
-  .touch-dock {
-    left: auto;
-    right: 20px;
-
-    width: 370px;
-    max-height: 75dvh;
-
-    margin: 0;
-  }
-}
-
-/* ========================================
-   HP PORTRAIT
-======================================== */
-
-@media (max-width: 600px) {
-  .app-header {
-    padding:
-      max(10px, env(safe-area-inset-top))
-      11px
-      10px;
-
-    gap: 8px;
-  }
-
-  .brand strong {
-    font-size: 15px;
-  }
-
-  .brand small {
-    font-size: 8px;
-  }
-
-  .status {
-    max-width: 49%;
-
-    padding: 7px 8px;
-
-    font-size: 10px;
-  }
-
-  .touch-dock {
-    max-height: 48dvh;
-
-    left: 9px;
-    right: 9px;
-
-    bottom: max(
-      9px,
-      env(safe-area-inset-bottom)
-    );
-  }
-
-  .dock-header {
-    padding: 10px 12px;
-  }
-
-  .dock-content {
-    padding: 11px 12px 13px;
-  }
-
-  .touch-actions button {
-    min-height: 46px;
-    padding: 10px 12px;
-  }
-}
-
-/* ========================================
-   HP LANDSCAPE
-======================================== */
-
-@media (max-height: 500px)
-  and (orientation: landscape) {
-
-  .app-header {
-    padding: 7px 12px;
-  }
-
-  .touch-dock {
-    left: auto;
-    right: 10px;
-
-    width: min(340px, 46vw);
-    max-height: 78dvh;
-
-    margin: 0;
-  }
-
-  .dock-header {
-    padding: 8px 11px;
-  }
-
-  .dock-content {
-    padding: 9px 11px;
-  }
+@media(max-height:500px) and (orientation:landscape) {
+  .app-header { padding:7px 12px; }
+  .touch-dock { left:auto; right:10px; width:min(340px,46vw); max-height:78dvh; margin:0; }
 }

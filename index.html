@@ -1,46 +1,31 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-  >
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#058901">
-
-  <title>QUIZ IMIP | MindAR V4</title>
-
-  <link rel="stylesheet" href="style.css?v=4">
-
-  <!-- A-Frame -->
+  <title>IMIP QUIZ | MindAR V5</title>
+  <link rel="stylesheet" href="style.css?v=5">
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-
-  <!-- MindAR -->
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 </head>
-
 <body>
-
-  <!-- =====================================
-       KAMERA AUGMENTED REALITY
-  ====================================== -->
-
+  <!-- Tidak ada splash HTML: kamera AR langsung terbuka. -->
   <a-scene
     id="arScene"
     embedded
-    mindar-image="
-      imageTargetSrc: ./targets.mind;
-      autoStart: true;
-    "
+    mindar-image="imageTargetSrc: ./targets.mind; autoStart: true;"
     color-space="sRGB"
     renderer="colorManagement: true; alpha: true"
     vr-mode-ui="enabled: false"
     device-orientation-permission-ui="enabled: false">
 
-    <!-- Kamera dan interaksi sentuh 3D -->
+    <a-assets timeout="20000">
+      <!-- Gambar persis dari referensi pengguna, bukan gambar yang digambar ulang. -->
+      <img id="welcomeArt" src="./welcome-imip.png" alt="IMIP QUIZ">
+      <img id="mulaiArt" src="./welcome-mulai.png" alt="MULAI">
+    </a-assets>
+
     <a-camera
       position="0 0 0"
       look-controls="enabled: false"
@@ -48,650 +33,112 @@
       raycaster="objects: .clickable; far: 10000">
     </a-camera>
 
-    <!-- =====================================
-         IMAGE TARGET LOGO IMIP
-    ====================================== -->
+    <a-entity id="imipTarget" mindar-image-target="targetIndex: 0">
 
-    <a-entity
-      id="imipTarget"
-      mindar-image-target="targetIndex: 0">
-
-      <!-- =====================================
-           1. WELCOME AR 3D
-           MUNCUL SAAT LOGO IMIP DI-SCAN
-      ====================================== -->
-
-      <a-entity
-        id="welcome3d"
-        position="0 0 0.08"
-        visible="true">
-
-        <!-- Bayangan papan -->
-        <a-box
-          position="0.025 -0.025 -0.04"
-          width="1.14"
-          height="1.40"
-          depth="0.035"
-          color="#045B12">
-        </a-box>
-
-        <!-- Bingkai utama -->
-        <a-box
-          position="0 0 -0.015"
-          width="1.14"
-          height="1.40"
-          depth="0.025"
-          color="#058901">
-        </a-box>
-
-        <!-- Latar putih -->
-        <a-plane
-          position="0 0 0.005"
-          width="1.09"
-          height="1.35"
-          color="#FFFFFF">
-        </a-plane>
-
-        <!-- Aksen oranye atas -->
-        <a-box
-          position="0 0.67 0.02"
-          width="1.09"
-          height="0.035"
-          depth="0.015"
-          color="#FD9802">
-        </a-box>
-
-        <!-- =================================
-             LOGO ASLI IMIP
-        ================================== -->
-
+      <!-- PEMBUKA: gambar sama persis, menempel pada logo IMIP yang dipindai. -->
+      <a-entity id="welcome3d" position="0 0 0.08">
         <a-image
-          src="./imip.png"
-          position="0 0.45 0.035"
-          width="0.61"
-          height="0.61">
+          id="welcomeBoard"
+          src="#welcomeArt"
+          position="0 0 0"
+          width="1.25"
+          height="0.9375"
+          material="shader: flat; side: double; transparent: true">
         </a-image>
 
-        <!-- =================================
-             DEKORASI GEOMETRI 3D
-        ================================== -->
-
-        <!-- Kubus kiri -->
-        <a-box
-          position="-0.47 0.40 0.10"
-          width="0.11"
-          height="0.11"
-          depth="0.11"
-          rotation="20 25 35"
-          color="#86D101"
-          animation="
-            property: rotation;
-            to: 380 385 395;
-            loop: true;
-            dur: 9000;
-            easing: linear">
-        </a-box>
-
-        <!-- Kubus kanan -->
-        <a-box
-          position="0.47 0.36 0.10"
-          width="0.10"
-          height="0.10"
-          depth="0.10"
-          rotation="20 35 15"
-          color="#FD9802"
-          animation="
-            property: rotation;
-            to: 380 395 375;
-            loop: true;
-            dur: 11000;
-            easing: linear">
-        </a-box>
-
-        <!-- Prisma kiri -->
-        <a-octahedron
-          position="-0.43 -0.16 0.09"
-          radius="0.085"
-          color="#86D101"
-          rotation="15 25 20">
-        </a-octahedron>
-
-        <!-- Prisma kanan -->
-        <a-octahedron
-          position="0.43 -0.19 0.09"
-          radius="0.075"
-          color="#FD9802"
-          rotation="30 15 20">
-        </a-octahedron>
-
-        <!-- Dekorasi garis pancaran -->
-        <a-box
-          position="-0.37 0.13 0.04"
-          rotation="0 0 30"
-          width="0.025"
-          height="0.24"
-          depth="0.012"
-          color="#A6D94D">
-        </a-box>
-
-        <a-box
-          position="0.37 0.13 0.04"
-          rotation="0 0 -30"
-          width="0.025"
-          height="0.24"
-          depth="0.012"
-          color="#FDB33D">
-        </a-box>
-
-        <a-box
-          position="-0.28 -0.10 0.04"
-          rotation="0 0 65"
-          width="0.018"
-          height="0.16"
-          depth="0.012"
-          color="#FDB33D">
-        </a-box>
-
-        <a-box
-          position="0.28 -0.10 0.04"
-          rotation="0 0 -65"
-          width="0.018"
-          height="0.16"
-          depth="0.012"
-          color="#A6D94D">
-        </a-box>
-
-        <!-- =================================
-             JUDUL QUIZ IMIP
-             EFEK BAYANGAN / TIMBUL
-        ================================== -->
-
-        <!-- Bayangan tulisan QUIZ -->
-        <a-text
-          value="QUIZ"
-          position="0.014 0.035 0.055"
-          align="center"
-          width="1.30"
-          color="#B96A00">
-        </a-text>
-
-        <!-- Tulisan QUIZ -->
-        <a-text
-          value="QUIZ"
-          position="0 0.057 0.075"
-          align="center"
-          width="1.30"
-          color="#FD9802">
-        </a-text>
-
-        <!-- Bayangan tulisan IMIP -->
-        <a-text
-          value="IMIP"
-          position="0.014 -0.135 0.055"
-          align="center"
-          width="1.30"
-          color="#046100">
-        </a-text>
-
-        <!-- Tulisan IMIP -->
-        <a-text
-          value="IMIP"
-          position="0 -0.113 0.075"
-          align="center"
-          width="1.30"
-          color="#058901">
-        </a-text>
-
-        <!-- Subjudul -->
-        <a-text
-          value="PEMBELAJARAN DAN LATIHAN HRD"
-          position="0 -0.29 0.05"
-          align="center"
-          width="0.92"
-          color="#35713B">
-        </a-text>
-
-        <!-- =================================
-             TOMBOL 3D MULAI QUIZ
-        ================================== -->
-
+        <!-- Potongan tombol dari gambar ASLI, lapisan tersendiri agar bergerak. -->
         <a-entity
-          id="start3dGroup"
-          position="0 -0.46 0.10"
-          animation="
-            property: scale;
-            from: 1 1 1;
-            to: 1.035 1.035 1.035;
-            dur: 850;
-            dir: alternate;
-            loop: true;
-            easing: easeInOutSine">
-
-          <!-- Bayangan tombol -->
-          <a-box
-            position="0 -0.014 -0.014"
-            width="0.79"
-            height="0.17"
-            depth="0.035"
-            color="#045B12">
-          </a-box>
-
-          <!-- Tombol utama -->
-          <a-box
+          id="mulaiAnimated"
+          position="-0.0207 -0.2875 0.025"
+          animation="property: scale; from: 1 1 1; to: 1.045 1.045 1.045; dir: alternate; dur: 650; easing: easeInOutSine; loop: true"
+          animation__float="property: position; from: -0.0207 -0.2875 0.025; to: -0.0207 -0.2815 0.025; dir: alternate; dur: 800; easing: easeInOutSine; loop: true">
+          <a-image
             id="start3dButton"
             class="clickable"
             data-action="start"
-            width="0.79"
-            height="0.17"
-            depth="0.04"
-            color="#058901">
-          </a-box>
-
-          <a-text
-            value="MULAI QUIZ"
-            position="0 -0.026 0.028"
-            align="center"
-            width="0.69"
-            color="#FFFFFF">
-          </a-text>
-
+            src="#mulaiArt"
+            width="0.6561"
+            height="0.2314"
+            material="shader: flat; side: double; transparent: true">
+          </a-image>
         </a-entity>
-
-        <!-- Petunjuk -->
-        <a-text
-          value="SENTUH TOMBOL UNTUK MEMULAI"
-          position="0 -0.62 0.035"
-          align="center"
-          width="0.94"
-          color="#527D50">
-        </a-text>
-
       </a-entity>
 
-      <!-- =====================================
-           2. EMPAT MENU UTAMA 3D
-           AWALNYA TERSEMBUNYI
-      ====================================== -->
+      <!-- EMPAT MENU 3D: muncul setelah tombol MULAI ditekan. -->
+      <a-entity id="menu3d" position="0 0 0.08" visible="false">
+        <a-box width="1.07" height="0.82" depth="0.025" color="#058901"></a-box>
+        <a-box position="0 0.395 0.025" width="1.07" height="0.025" depth="0.01" color="#FD9802"></a-box>
+        <a-text value="IMIP QUIZ" position="0 0.315 0.04" align="center" width="1.0" color="#FFFFFF"></a-text>
+        <a-text value="PILIH MODUL" position="0 0.23 0.04" align="center" width="0.78" color="#FFE0A0"></a-text>
 
-      <a-entity
-        id="menu3d"
-        position="0 0 0.08"
-        visible="false">
+        <a-plane class="clickable" data-action="learn-pp" position="-0.25 0.095 0.045" width="0.47" height="0.21" color="#FFFFFF"></a-plane>
+        <a-text value="BELAJAR&#10;PERATURAN&#10;PERUSAHAAN" position="-0.25 0.095 0.055" align="center" anchor="center" baseline="center" width="0.46" color="#075F18"></a-text>
 
-        <!-- Papan utama -->
-        <a-box
-          position="0 0 0"
-          width="1.07"
-          height="0.82"
-          depth="0.025"
-          color="#058901">
-        </a-box>
+        <a-plane class="clickable" data-action="learn-k3" position="0.25 0.095 0.045" width="0.47" height="0.21" color="#86D101"></a-plane>
+        <a-text value="BELAJAR&#10;KESELAMATAN&#10;KERJA (K3)" position="0.25 0.095 0.055" align="center" anchor="center" baseline="center" width="0.46" color="#075F18"></a-text>
 
-        <!-- Aksen oranye -->
-        <a-box
-          position="0 0.395 0.025"
-          width="1.07"
-          height="0.025"
-          depth="0.01"
-          color="#FD9802">
-        </a-box>
+        <a-plane class="clickable" data-action="quiz-pp" position="-0.25 -0.16 0.045" width="0.47" height="0.21" color="#FFFFFF"></a-plane>
+        <a-text value="LATIHAN SOAL&#10;PERATURAN&#10;PERUSAHAAN" position="-0.25 -0.16 0.055" align="center" anchor="center" baseline="center" width="0.46" color="#075F18"></a-text>
 
-        <a-text
-          value="QUIZ IMIP"
-          position="0 0.315 0.04"
-          align="center"
-          width="1"
-          color="#FFFFFF">
-        </a-text>
+        <a-plane class="clickable" data-action="quiz-k3" position="0.25 -0.16 0.045" width="0.47" height="0.21" color="#86D101"></a-plane>
+        <a-text value="LATIHAN SOAL&#10;KESELAMATAN&#10;KERJA (K3)" position="0.25 -0.16 0.055" align="center" anchor="center" baseline="center" width="0.46" color="#075F18"></a-text>
 
-        <a-text
-          value="PILIH MODUL"
-          position="0 0.23 0.04"
-          align="center"
-          width="0.75"
-          color="#FFE2A6">
-        </a-text>
-
-        <!-- Menu 1: Belajar PP -->
-        <a-plane
-          class="clickable"
-          data-action="learn-pp"
-          position="-0.25 0.095 0.045"
-          width="0.47"
-          height="0.21"
-          color="#FFFFFF">
-        </a-plane>
-
-        <a-text
-          value="BELAJAR&#10;PERATURAN&#10;PERUSAHAAN"
-          position="-0.25 0.095 0.055"
-          align="center"
-          anchor="center"
-          baseline="center"
-          width="0.46"
-          color="#058901">
-        </a-text>
-
-        <!-- Menu 2: Belajar K3 -->
-        <a-plane
-          class="clickable"
-          data-action="learn-k3"
-          position="0.25 0.095 0.045"
-          width="0.47"
-          height="0.21"
-          color="#86D101">
-        </a-plane>
-
-        <a-text
-          value="BELAJAR&#10;KESELAMATAN&#10;KERJA (K3)"
-          position="0.25 0.095 0.055"
-          align="center"
-          anchor="center"
-          baseline="center"
-          width="0.46"
-          color="#075F18">
-        </a-text>
-
-        <!-- Menu 3: Latihan PP -->
-        <a-plane
-          class="clickable"
-          data-action="quiz-pp"
-          position="-0.25 -0.16 0.045"
-          width="0.47"
-          height="0.21"
-          color="#FFFFFF">
-        </a-plane>
-
-        <a-text
-          value="LATIHAN SOAL&#10;PERATURAN&#10;PERUSAHAAN"
-          position="-0.25 -0.16 0.055"
-          align="center"
-          anchor="center"
-          baseline="center"
-          width="0.46"
-          color="#058901">
-        </a-text>
-
-        <!-- Menu 4: Latihan K3 -->
-        <a-plane
-          class="clickable"
-          data-action="quiz-k3"
-          position="0.25 -0.16 0.045"
-          width="0.47"
-          height="0.21"
-          color="#86D101">
-        </a-plane>
-
-        <a-text
-          value="LATIHAN SOAL&#10;KESELAMATAN&#10;KERJA (K3)"
-          position="0.25 -0.16 0.055"
-          align="center"
-          anchor="center"
-          baseline="center"
-          width="0.46"
-          color="#075F18">
-        </a-text>
-
-        <a-text
-          value="SENTUH KARTU UNTUK MEMULAI"
-          position="0 -0.335 0.045"
-          align="center"
-          width="0.88"
-          color="#FFFFFF">
-        </a-text>
-
+        <a-text value="SENTUH KARTU UNTUK MEMULAI" position="0 -0.335 0.045" align="center" width="0.88" color="#FFFFFF"></a-text>
       </a-entity>
 
-      <!-- =====================================
-           3. PAPAN MATERI DAN SOAL 3D
-      ====================================== -->
+      <!-- MATERI, PILIHAN JAWABAN, HASIL (kode kompatibel dengan V4) -->
+      <a-entity id="content3d" position="0 0 0.10" visible="false">
+        <a-box width="1.08" height="1.45" depth="0.025" color="#FFFFFF"></a-box>
+        <a-plane position="0 0.59 0.025" width="1.08" height="0.26" color="#058901"></a-plane>
+        <a-text id="worldMode" value="BELAJAR" position="-0.47 0.665 0.04" width="0.93" color="#FFE2A6"></a-text>
+        <a-text id="worldTitle" value="Judul" position="-0.47 0.56 0.04" width="0.93" wrap-count="29" color="#FFFFFF"></a-text>
+        <a-text id="worldBody" value="Isi akan muncul di sini." position="-0.46 0.40 0.04" baseline="top" width="0.91" wrap-count="35" color="#184C2B"></a-text>
+        <a-text id="worldHint" value="" position="-0.46 0.025 0.04" baseline="top" width="0.91" wrap-count="35" color="#55735C"></a-text>
 
-      <a-entity
-        id="content3d"
-        position="0 0 0.10"
-        visible="false">
-
-        <!-- Latar papan -->
-        <a-box
-          width="1.08"
-          height="1.45"
-          depth="0.025"
-          color="#FFFFFF">
-        </a-box>
-
-        <!-- Header hijau -->
-        <a-plane
-          position="0 0.59 0.025"
-          width="1.08"
-          height="0.26"
-          color="#058901">
-        </a-plane>
-
-        <a-text
-          id="worldMode"
-          value="BELAJAR"
-          position="-0.47 0.665 0.04"
-          width="0.93"
-          color="#FFE2A6">
-        </a-text>
-
-        <a-text
-          id="worldTitle"
-          value="Judul"
-          position="-0.47 0.56 0.04"
-          width="0.93"
-          wrap-count="29"
-          color="#FFFFFF">
-        </a-text>
-
-        <!-- Isi materi / pertanyaan -->
-        <a-text
-          id="worldBody"
-          value="Isi akan muncul di sini."
-          position="-0.46 0.40 0.04"
-          baseline="top"
-          width="0.91"
-          wrap-count="35"
-          color="#184C2B">
-        </a-text>
-
-        <!-- Petunjuk -->
-        <a-text
-          id="worldHint"
-          value=""
-          position="-0.46 0.025 0.04"
-          baseline="top"
-          width="0.91"
-          wrap-count="35"
-          color="#55735C">
-        </a-text>
-
-        <!-- =================================
-             PILIHAN JAWABAN A, B, C
-        ================================== -->
-
-        <a-entity
-          id="worldChoices"
-          visible="false">
-
-          <!-- Jawaban A -->
-          <a-plane
-            id="option0"
-            class="clickable"
-            data-action="answer-0"
-            position="0 -0.135 0.045"
-            width="0.94"
-            height="0.145"
-            color="#EBF8DC">
-          </a-plane>
-
-          <a-text
-            id="optionText0"
-            value="A"
-            position="-0.44 -0.15 0.055"
-            width="0.88"
-            wrap-count="36"
-            color="#058901">
-          </a-text>
-
-          <!-- Jawaban B -->
-          <a-plane
-            id="option1"
-            class="clickable"
-            data-action="answer-1"
-            position="0 -0.315 0.045"
-            width="0.94"
-            height="0.145"
-            color="#EBF8DC">
-          </a-plane>
-
-          <a-text
-            id="optionText1"
-            value="B"
-            position="-0.44 -0.33 0.055"
-            width="0.88"
-            wrap-count="36"
-            color="#058901">
-          </a-text>
-
-          <!-- Jawaban C -->
-          <a-plane
-            id="option2"
-            class="clickable"
-            data-action="answer-2"
-            position="0 -0.495 0.045"
-            width="0.94"
-            height="0.145"
-            color="#EBF8DC">
-          </a-plane>
-
-          <a-text
-            id="optionText2"
-            value="C"
-            position="-0.44 -0.51 0.055"
-            width="0.88"
-            wrap-count="36"
-            color="#058901">
-          </a-text>
-
+        <a-entity id="worldChoices" visible="false">
+          <a-plane id="option0" class="clickable" data-action="answer-0" position="0 -0.135 0.045" width="0.94" height="0.145" color="#EBF8DC"></a-plane>
+          <a-text id="optionText0" value="A" position="-0.44 -0.15 0.055" width="0.88" wrap-count="36" color="#058901"></a-text>
+          <a-plane id="option1" class="clickable" data-action="answer-1" position="0 -0.315 0.045" width="0.94" height="0.145" color="#EBF8DC"></a-plane>
+          <a-text id="optionText1" value="B" position="-0.44 -0.33 0.055" width="0.88" wrap-count="36" color="#058901"></a-text>
+          <a-plane id="option2" class="clickable" data-action="answer-2" position="0 -0.495 0.045" width="0.94" height="0.145" color="#EBF8DC"></a-plane>
+          <a-text id="optionText2" value="C" position="-0.44 -0.51 0.055" width="0.88" wrap-count="36" color="#058901"></a-text>
         </a-entity>
 
-        <!-- Tombol kembali -->
-        <a-plane
-          class="clickable"
-          data-action="home"
-          position="-0.25 -0.635 0.045"
-          width="0.46"
-          height="0.12"
-          color="#DCEBDD">
-        </a-plane>
-
-        <a-text
-          value="MENU"
-          position="-0.25 -0.655 0.055"
-          align="center"
-          width="0.40"
-          color="#058901">
-        </a-text>
-
-        <!-- Tombol selanjutnya -->
+        <a-plane class="clickable" data-action="home" position="-0.25 -0.635 0.045" width="0.46" height="0.12" color="#DCEBDD"></a-plane>
+        <a-text value="MENU" position="-0.25 -0.655 0.055" align="center" width="0.40" color="#058901"></a-text>
         <a-entity id="nextGroup">
-
-          <a-plane
-            class="clickable"
-            data-action="next"
-            position="0.25 -0.635 0.045"
-            width="0.46"
-            height="0.12"
-            color="#FD9802">
-          </a-plane>
-
-          <a-text
-            id="nextText"
-            value="LANJUT"
-            position="0.25 -0.655 0.055"
-            align="center"
-            width="0.40"
-            color="#FFFFFF">
-          </a-text>
-
+          <a-plane class="clickable" data-action="next" position="0.25 -0.635 0.045" width="0.46" height="0.12" color="#FD9802"></a-plane>
+          <a-text id="nextText" value="LANJUT" position="0.25 -0.655 0.055" align="center" width="0.40" color="#FFFFFF"></a-text>
         </a-entity>
-
       </a-entity>
 
     </a-entity>
-
   </a-scene>
 
-  <!-- =====================================
-       HEADER APLIKASI
-  ====================================== -->
-
   <header class="app-header">
-
     <div class="brand">
-      <strong>QUIZ IMIP</strong>
+      <strong>IMIP QUIZ</strong>
       <small>PEMBELAJARAN & LATIHAN HRD</small>
     </div>
-
-    <span
-      class="status"
-      id="markerStatus"
-      aria-live="polite">
-      Menyiapkan kamera...
-    </span>
-
+    <span class="status" id="markerStatus" aria-live="polite">Menyiapkan kamera...</span>
   </header>
 
-  <!-- =====================================
-       PANEL KONTROL SENTUH ALTERNATIF
-  ====================================== -->
-
-  <section
-    id="touchDock"
-    class="touch-dock collapsed"
-    aria-label="Kontrol QUIZ IMIP"
-    hidden>
-
+  <!-- Kontrol cadangan untuk materi/soal, tidak menutup pembuka AR. -->
+  <section id="touchDock" class="touch-dock collapsed" aria-label="Kontrol IMIP QUIZ" hidden>
     <div class="dock-header">
-
       <div>
         <small>KONTROL SENTUH</small>
-        <strong id="dockTitle">
-          Menu QUIZ IMIP
-        </strong>
+        <strong id="dockTitle">Menu IMIP QUIZ</strong>
       </div>
-
-      <button
-        id="toggleDock"
-        type="button"
-        aria-label="Buka atau tutup panel">
-        +
-      </button>
-
+      <button id="toggleDock" type="button" aria-label="Buka atau tutup panel">+</button>
     </div>
-
     <div class="dock-content">
-
-      <p id="dockDescription">
-        Pilih modul pembelajaran atau latihan soal.
-      </p>
-
-      <div
-        id="touchActions"
-        class="touch-actions">
-      </div>
-
-      <p class="note">
-        Simulasi akademik.
-        Materi ini bukan SOP resmi PT IRNC.
-      </p>
-
+      <p id="dockDescription">Pilih modul pembelajaran atau latihan.</p>
+      <div id="touchActions" class="touch-actions"></div>
+      <p class="note">Simulasi akademik; bukan SOP resmi PT IRNC.</p>
     </div>
-
   </section>
 
-  <script src="app.js?v=4"></script>
-
+  <script src="app.js?v=5"></script>
 </body>
 </html>
