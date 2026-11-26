@@ -2,16 +2,19 @@
 "use strict";
 
 // ========================================
-// QUIZ IMIP - MINDAR V4
+// IMIP QUIZ - MINDAR V5
 // WELCOME AR + MENU + BELAJAR + KUIS
 // ========================================
+
+// Tampilan pembuka menggunakan gambar
+// welcome-imip.png dan welcome-mulai.png
+//
+// Materi dan soal adalah contoh akademik,
+// bukan SOP resmi PT IRNC.
 
 // ========================================
 // 1. DATA MATERI DAN SOAL
 // ========================================
-
-// Materi contoh untuk simulasi akademik.
-// Belum merupakan SOP resmi perusahaan.
 
 const modules = {
   pp: {
@@ -21,23 +24,21 @@ const modules = {
       {
         title: "Pengenalan PP",
         body:
-          "Peraturan Perusahaan berisi ketentuan " +
-          "kerja, hak, dan kewajiban yang perlu " +
-          "dipahami oleh karyawan."
+          "Peraturan Perusahaan berisi ketentuan kerja, " +
+          "hak, dan kewajiban yang perlu dipahami " +
+          "oleh karyawan."
       },
       {
         title: "Kedisiplinan",
         body:
-          "Karyawan perlu mengikuti aturan " +
-          "kehadiran, waktu kerja, dan tata " +
-          "tertib yang berlaku."
+          "Karyawan perlu mengikuti aturan kehadiran, " +
+          "waktu kerja, dan tata tertib yang berlaku."
       },
       {
         title: "Pelaporan",
         body:
-          "Ketika terjadi kendala pekerjaan, " +
-          "laporkan melalui jalur komunikasi " +
-          "yang telah ditetapkan."
+          "Ketika terjadi kendala pekerjaan, laporkan " +
+          "melalui jalur komunikasi yang telah ditetapkan."
       }
     ],
 
@@ -56,7 +57,7 @@ const modules = {
       },
       {
         question:
-          "Apa yang harus dilakukan jika berhalangan hadir?",
+          "Apa yang dilakukan jika berhalangan hadir?",
 
         options: [
           "Tidak memberi kabar",
@@ -88,23 +89,21 @@ const modules = {
       {
         title: "Pengenalan K3",
         body:
-          "Keselamatan dan Kesehatan Kerja " +
-          "bertujuan membantu mencegah " +
-          "kecelakaan dan risiko kerja."
+          "Keselamatan dan Kesehatan Kerja bertujuan " +
+          "membantu mencegah kecelakaan dan risiko kerja."
       },
       {
         title: "Penggunaan APD",
         body:
-          "Gunakan Alat Pelindung Diri " +
-          "yang sesuai dengan bahaya " +
-          "dan jenis pekerjaan."
+          "Gunakan Alat Pelindung Diri sesuai bahaya " +
+          "dan jenis pekerjaan, serta periksa kondisinya " +
+          "sebelum digunakan."
       },
       {
         title: "Respons Alarm",
         body:
-          "Saat alarm bahaya aktif, " +
-          "ikuti prosedur darurat dan " +
-          "arahan petugas berwenang."
+          "Saat alarm bahaya aktif, ikuti prosedur " +
+          "darurat dan arahan petugas berwenang."
       }
     ],
 
@@ -135,7 +134,7 @@ const modules = {
       },
       {
         question:
-          "Saat alarm darurat aktif, tindakan yang tepat adalah?",
+          "Saat alarm darurat aktif, apa tindakan yang tepat?",
 
         options: [
           "Mengabaikan alarm",
@@ -154,22 +153,25 @@ const modules = {
 // ========================================
 
 const state = {
+
+  // Alur:
+  // welcome -> menu -> learn / quiz -> result
+
+  screen: "welcome",
+
   started: false,
 
-  // Saat pertama kali scan,
-  // tampilkan welcome AR terlebih dahulu.
-  screen: "welcome",
+  markerFound: false,
 
   category: null,
 
   lessonIndex: 0,
+
   questionIndex: 0,
 
   selectedAnswer: null,
 
-  score: 0,
-
-  markerFound: false
+  score: 0
 };
 
 // ========================================
@@ -178,13 +180,13 @@ const state = {
 
 const $ = (id) => document.getElementById(id);
 
-function setText(id, value) {
+function setText(id, text) {
   const element = $(id);
 
   if (element) {
     element.setAttribute(
       "value",
-      String(value)
+      String(text)
     );
   }
 }
@@ -200,16 +202,15 @@ function setVisible(id, visible) {
   }
 }
 
-function openDock(open) {
-  const dock = $("touchDock");
-  const toggle = $("toggleDock");
+function setDockOpen(open) {
 
-  dock.classList.toggle(
+  $("touchDock").classList.toggle(
     "collapsed",
     !open
   );
 
-  toggle.textContent = open ? "−" : "+";
+  $("toggleDock").textContent =
+    open ? "−" : "+";
 }
 
 function clearButtons() {
@@ -217,15 +218,16 @@ function clearButtons() {
 }
 
 function addButton(
-  label,
-  onClick,
+  text,
+  callback,
   primary = false,
   selected = false
 ) {
+
   const button = document.createElement("button");
 
   button.type = "button";
-  button.textContent = label;
+  button.textContent = text;
 
   if (primary) {
     button.classList.add("primary");
@@ -235,49 +237,54 @@ function addButton(
     button.classList.add("selected");
   }
 
-  button.addEventListener("click", onClick);
+  button.addEventListener(
+    "click",
+    callback
+  );
 
-  $("touchActions").appendChild(button);
+  $("touchActions").append(button);
 
   return button;
 }
 
-function setDescription(text) {
+function describe(text) {
   $("dockDescription").textContent = text;
 }
 
 // ========================================
-// 4. MULAI QUIZ
+// 4. TOMBOL MULAI QUIZ
 // ========================================
 
 function startExperience() {
 
-  // Tombol hanya aktif jika logo terlihat.
+  // Harus mendeteksi logo IMIP dahulu
   if (!state.markerFound) {
     return;
   }
 
-  // Hindari tombol diproses berulang.
+  // Tidak boleh mulai dua kali
   if (state.started) {
     return;
   }
 
+  // Hanya bekerja pada halaman welcome
+  if (state.screen !== "welcome") {
+    return;
+  }
+
   state.started = true;
+
   state.screen = "menu";
 
-  state.category = null;
-  state.lessonIndex = 0;
-  state.questionIndex = 0;
-
-  state.selectedAnswer = null;
-  state.score = 0;
-
-  openDock(false);
+  setDockOpen(false);
 
   render();
 
+  $("markerStatus").textContent =
+    "Pilih menu IMIP QUIZ";
+
   console.log(
-    "QUIZ IMIP: welcome selesai, menu dibuka"
+    "IMIP QUIZ: tombol mulai berhasil ditekan"
   );
 }
 
@@ -295,29 +302,29 @@ function openModule(screen, category) {
     return;
   }
 
-  if (
-    screen !== "learn" &&
-    screen !== "quiz"
-  ) {
+  if (!["learn", "quiz"].includes(screen)) {
     return;
   }
 
   state.screen = screen;
+
   state.category = category;
 
   state.lessonIndex = 0;
+
   state.questionIndex = 0;
 
   state.selectedAnswer = null;
+
   state.score = 0;
 
-  openDock(true);
+  setDockOpen(true);
 
   render();
 }
 
 // ========================================
-// 6. KEMBALI KE EMPAT MENU
+// 6. KEMBALI KE MENU
 // ========================================
 
 function goHome() {
@@ -327,15 +334,18 @@ function goHome() {
   }
 
   state.screen = "menu";
+
   state.category = null;
 
   state.lessonIndex = 0;
+
   state.questionIndex = 0;
 
   state.selectedAnswer = null;
+
   state.score = 0;
 
-  openDock(false);
+  setDockOpen(false);
 
   render();
 }
@@ -350,16 +360,12 @@ function chooseAnswer(index) {
     return;
   }
 
-  // Mencegah satu soal dijawab berkali-kali.
+  // Jawaban tidak bisa dipilih berulang
   if (state.selectedAnswer !== null) {
     return;
   }
 
   const module = modules[state.category];
-
-  if (!module) {
-    return;
-  }
 
   const question =
     module.questions[state.questionIndex];
@@ -374,22 +380,19 @@ function chooseAnswer(index) {
 
   state.selectedAnswer = index;
 
+  // Tambah nilai jika jawaban benar
   if (index === question.correct) {
-    state.score += 1;
+    state.score++;
   }
 
   render();
 }
 
 // ========================================
-// 8. LANJUT KE MATERI / SOAL BERIKUTNYA
+// 8. LANJUT MATERI / SOAL
 // ========================================
 
 function nextStep() {
-
-  if (!state.category) {
-    return;
-  }
 
   const module = modules[state.category];
 
@@ -408,9 +411,13 @@ function nextStep() {
       module.lessons.length - 1;
 
     if (!lastLesson) {
-      state.lessonIndex += 1;
+
+      state.lessonIndex++;
+
       render();
+
     } else {
+
       openModule(
         "quiz",
         state.category
@@ -426,7 +433,7 @@ function nextStep() {
 
   if (state.screen === "quiz") {
 
-    // Wajib pilih jawaban terlebih dahulu.
+    // Wajib memilih jawaban
     if (state.selectedAnswer === null) {
       return;
     }
@@ -437,23 +444,22 @@ function nextStep() {
 
     if (!lastQuestion) {
 
-      state.questionIndex += 1;
-      state.selectedAnswer = null;
+      state.questionIndex++;
 
-      render();
+      state.selectedAnswer = null;
 
     } else {
 
       state.screen = "result";
-
-      render();
     }
+
+    render();
 
     return;
   }
 
   // ------------------------------------
-  // HASIL
+  // HASIL LATIHAN
   // ------------------------------------
 
   if (state.screen === "result") {
@@ -462,7 +468,6 @@ function nextStep() {
       "quiz",
       state.category
     );
-
   }
 }
 
@@ -472,80 +477,65 @@ function nextStep() {
 
 function handleAction(action) {
 
-  // ------------------------------------
-  // WELCOME: MULAI QUIZ
-  // ------------------------------------
-
+  // Tombol MULAI pada gambar pembuka
   if (action === "start") {
 
-    if (state.screen === "welcome") {
-      startExperience();
-    }
+    startExperience();
 
     return;
   }
 
-  // Semua aksi selain MULAI
-  // hanya tersedia setelah welcome selesai.
   if (!state.started) {
     return;
   }
 
-  // ------------------------------------
-  // EMPAT MENU
-  // ------------------------------------
-
+  // Empat pilihan menu utama
   const menuActions = {
+
     "learn-pp": ["learn", "pp"],
+
     "learn-k3": ["learn", "k3"],
 
     "quiz-pp": ["quiz", "pp"],
+
     "quiz-k3": ["quiz", "k3"]
+
   };
 
   if (menuActions[action]) {
 
-    if (state.screen !== "menu") {
-      return;
+    if (state.screen === "menu") {
+
+      const [screen, category] =
+        menuActions[action];
+
+      openModule(screen, category);
     }
 
-    const [screen, category] =
-      menuActions[action];
-
-    openModule(screen, category);
-
     return;
   }
 
-  // ------------------------------------
-  // TOMBOL KEMBALI
-  // ------------------------------------
-
+  // Tombol kembali
   if (action === "home") {
+
     goHome();
+
     return;
   }
 
-  // ------------------------------------
-  // TOMBOL LANJUT
-  // ------------------------------------
-
+  // Tombol lanjut
   if (action === "next") {
+
     nextStep();
+
     return;
   }
 
-  // ------------------------------------
-  // PILIHAN JAWABAN
-  // ------------------------------------
-
-  if (
-    typeof action === "string" &&
-    action.startsWith("answer-")
-  ) {
+  // Jawaban A, B, C
+  if (action.startsWith("answer-")) {
 
     const index = Number(
-      action.replace("answer-", "")
+      action.slice(7)
     );
 
     chooseAnswer(index);
@@ -553,19 +543,17 @@ function handleAction(action) {
 }
 
 // ========================================
-// 10. TAMPILKAN EMPAT MENU
+// 10. TAMPILKAN MENU UTAMA
 // ========================================
 
 function renderMenu() {
 
   $("dockTitle").textContent =
-    "Menu QUIZ IMIP";
+    "Menu IMIP QUIZ";
 
-  setDescription(
-    "Pilih salah satu dari empat modul " +
-    "melalui kartu 3D di atas logo IMIP. " +
-    "Kamu juga dapat memakai tombol " +
-    "pada panel ini."
+  describe(
+    "Sentuh salah satu dari empat menu " +
+    "pada logo IMIP, atau gunakan kontrol ini."
   );
 
   addButton(
@@ -600,21 +588,16 @@ function renderLearn() {
   const lesson =
     module.lessons[state.lessonIndex];
 
-  const total = module.lessons.length;
-
   const lastLesson =
-    state.lessonIndex === total - 1;
+    state.lessonIndex ===
+    module.lessons.length - 1;
 
   $("dockTitle").textContent =
     module.name;
 
-  // ------------------------------------
-  // PAPAN AR
-  // ------------------------------------
-
   setText(
     "worldMode",
-    `BELAJAR ${state.lessonIndex + 1}/${total}`
+    `BELAJAR ${state.lessonIndex + 1}/${module.lessons.length}`
   );
 
   setText(
@@ -639,14 +622,10 @@ function renderLearn() {
       : "LANJUT"
   );
 
-  // ------------------------------------
-  // PANEL SENTUH
-  // ------------------------------------
-
-  setDescription(
+  describe(
     `${lesson.title}\n\n` +
     `${lesson.body}\n\n` +
-    `Materi ${state.lessonIndex + 1} dari ${total}`
+    `Materi ${state.lessonIndex + 1} dari ${module.lessons.length}`
   );
 
   addButton(
@@ -664,7 +643,7 @@ function renderLearn() {
 }
 
 // ========================================
-// 12. TAMPILKAN LATIHAN SOAL
+// 12. TAMPILKAN SOAL
 // ========================================
 
 function renderQuiz() {
@@ -674,24 +653,19 @@ function renderQuiz() {
   const question =
     module.questions[state.questionIndex];
 
-  const total = module.questions.length;
-
   const answered =
     state.selectedAnswer !== null;
 
   const lastQuestion =
-    state.questionIndex === total - 1;
+    state.questionIndex ===
+    module.questions.length - 1;
 
   $("dockTitle").textContent =
     module.name;
 
-  // ------------------------------------
-  // PAPAN AR
-  // ------------------------------------
-
   setText(
     "worldMode",
-    `SOAL ${state.questionIndex + 1}/${total}`
+    `SOAL ${state.questionIndex + 1}/${module.questions.length}`
   );
 
   setText(
@@ -718,23 +692,18 @@ function renderQuiz() {
       : "LANJUT"
   );
 
-  // Tombol LANJUT tidak aktif
-  // sampai pengguna memilih jawaban.
+  // Tombol lanjut hanya muncul setelah dijawab
   setVisible(
     "nextGroup",
     answered
   );
 
-  // ------------------------------------
-  // PANEL SENTUH
-  // ------------------------------------
-
-  setDescription(
-    `Soal ${state.questionIndex + 1} dari ${total}\n\n` +
+  describe(
+    `Soal ${state.questionIndex + 1} dari ${module.questions.length}\n\n` +
     question.question +
     (
       answered
-        ? "\n\nJawaban sudah dicatat."
+        ? "\n\nJawaban dicatat."
         : ""
     )
   );
@@ -755,8 +724,8 @@ function renderQuiz() {
 
       const plane = $(`option${index}`);
 
-      // Hanya pilihan peserta yang disorot.
-      // Kunci jawaban tidak ditampilkan.
+      // Sorot jawaban yang dipilih,
+      // bukan menampilkan kunci jawaban
       plane.setAttribute(
         "color",
         state.selectedAnswer === index
@@ -764,25 +733,14 @@ function renderQuiz() {
           : "#EBF8DC"
       );
 
-      if (!answered) {
+      const button = addButton(
+        `${letter}. ${option}`,
+        () => chooseAnswer(index),
+        false,
+        state.selectedAnswer === index
+      );
 
-        addButton(
-          `${letter}. ${option}`,
-          () => chooseAnswer(index)
-        );
-
-      } else {
-
-        const button = addButton(
-          `${letter}. ${option}`,
-          () => {},
-          false,
-          state.selectedAnswer === index
-        );
-
-        button.disabled = true;
-      }
-
+      button.disabled = answered;
     }
   );
 
@@ -800,12 +758,11 @@ function renderQuiz() {
       nextStep,
       true
     );
-
   }
 }
 
 // ========================================
-// 13. TAMPILKAN HASIL KUIS
+// 13. TAMPILKAN HASIL LATIHAN
 // ========================================
 
 function renderResult() {
@@ -824,10 +781,6 @@ function renderResult() {
   $("dockTitle").textContent =
     "Hasil Latihan";
 
-  // ------------------------------------
-  // PAPAN AR
-  // ------------------------------------
-
   setText(
     "worldMode",
     "HASIL LATIHAN"
@@ -840,8 +793,7 @@ function renderResult() {
 
   setText(
     "worldBody",
-    `Jawaban benar: ${correct} dari ${total}. ` +
-    "Latihan telah selesai."
+    `Jawaban benar: ${correct} dari ${total}. Latihan selesai.`
   );
 
   setText(
@@ -854,17 +806,12 @@ function renderResult() {
     "ULANGI"
   );
 
-  // ------------------------------------
-  // PANEL SENTUH
-  // ------------------------------------
-
-  setDescription(
+  describe(
     `Kategori: ${module.name}\n\n` +
     `Nilai: ${score}/100\n` +
     `Jumlah soal: ${total}\n` +
     `Benar: ${correct}\n` +
-    `Salah: ${wrong}\n\n` +
-    "Ini merupakan hasil latihan akademik."
+    `Salah: ${wrong}`
   );
 
   addButton(
@@ -883,88 +830,73 @@ function renderResult() {
 }
 
 // ========================================
-// 14. RENDER TAMPILAN UTAMA
+// 14. RENDER SEMUA TAMPILAN
 // ========================================
 
 function render() {
 
-  const isWelcome =
+  const welcome =
     state.screen === "welcome";
 
-  const isMenu =
+  const menu =
     state.screen === "menu";
 
-  const isQuiz =
+  const quiz =
     state.screen === "quiz";
 
-  // ------------------------------------
-  // PILIH TAMPILAN AR
-  // ------------------------------------
-
-  // Pembuka QUIZ IMIP
+  // Pembuka IMIP QUIZ
   setVisible(
     "welcome3d",
-    isWelcome
+    welcome
   );
 
-  // Empat menu 3D
+  // Empat menu utama
   setVisible(
     "menu3d",
-    isMenu
+    menu
   );
 
-  // Papan materi, soal, atau hasil
+  // Materi / soal / hasil
   setVisible(
     "content3d",
-    !isWelcome && !isMenu
+    !welcome && !menu
   );
 
-  // Pilihan A, B, C
+  // Pilihan jawaban
   setVisible(
     "worldChoices",
-    isQuiz
+    quiz
   );
 
-  // Tombol LANJUT
+  // Tombol lanjut
   setVisible(
     "nextGroup",
-    !isWelcome && !isMenu && !isQuiz
+    !welcome && !menu && !quiz
   );
 
-  // ------------------------------------
-  // PANEL SENTUH
-  // ------------------------------------
-
-  // Panel disembunyikan saat welcome AR.
-  // Setelah MULAI, panel tersedia kembali.
-  $("touchDock").hidden = isWelcome;
+  // Panel sentuh disembunyikan
+  // sebelum tombol MULAI ditekan
+  $("touchDock").hidden = welcome;
 
   clearButtons();
 
-  // ------------------------------------
-  // PILIH RENDER BERDASARKAN SCREEN
-  // ------------------------------------
-
-  if (isWelcome) {
+  if (welcome) {
     return;
   }
 
-  if (isMenu) {
+  if (menu) {
     renderMenu();
-    return;
   }
 
-  if (state.screen === "learn") {
+  else if (state.screen === "learn") {
     renderLearn();
-    return;
   }
 
-  if (isQuiz) {
+  else if (quiz) {
     renderQuiz();
-    return;
   }
 
-  if (state.screen === "result") {
+  else if (state.screen === "result") {
     renderResult();
   }
 }
@@ -976,6 +908,7 @@ function render() {
 function initialize() {
 
   const scene = $("arScene");
+
   const target = $("imipTarget");
 
   const status = $("markerStatus");
@@ -989,6 +922,7 @@ function initialize() {
     () => {
 
       if (!state.markerFound) {
+
         status.textContent =
           "Scan logo IMIP";
       }
@@ -998,7 +932,7 @@ function initialize() {
   );
 
   // ------------------------------------
-  // ERROR KAMERA / TRACKING
+  // ERROR KAMERA / TARGET
   // ------------------------------------
 
   scene.addEventListener(
@@ -1006,14 +940,11 @@ function initialize() {
     () => {
 
       status.textContent =
-        "Gagal membuka AR";
+        "Gagal membuka kamera / target";
 
       status.classList.remove("found");
-      status.classList.add("error");
 
-      console.error(
-        "MindAR: kamera atau target gagal"
-      );
+      status.classList.add("error");
     }
   );
 
@@ -1027,22 +958,17 @@ function initialize() {
 
       state.markerFound = true;
 
+      status.classList.add("found");
+
       status.textContent =
         state.started
           ? "Logo IMIP terdeteksi"
-          : "Sentuh MULAI QUIZ";
-
-      status.classList.add("found");
-      status.classList.remove("error");
-
-      console.log(
-        "MindAR: logo IMIP ditemukan"
-      );
+          : "Sentuh tombol MULAI";
     }
   );
 
   // ------------------------------------
-  // LOGO IMIP HILANG DARI KAMERA
+  // LOGO IMIP HILANG
   // ------------------------------------
 
   target.addEventListener(
@@ -1051,14 +977,10 @@ function initialize() {
 
       state.markerFound = false;
 
-      status.textContent =
-        "Arahkan ke logo IMIP";
-
       status.classList.remove("found");
 
-      console.log(
-        "MindAR: target tidak terlihat"
-      );
+      status.textContent =
+        "Arahkan ke logo IMIP";
     }
   );
 
@@ -1074,7 +996,7 @@ function initialize() {
       "click",
       () => {
 
-        // Abaikan sentuhan jika marker hilang.
+        // Abaikan jika marker tidak terlihat
         if (!state.markerFound) {
           return;
         }
@@ -1082,31 +1004,19 @@ function initialize() {
         const action =
           element.dataset.action;
 
-        // Sebelum welcome selesai,
-        // hanya tombol MULAI yang bekerja.
-        if (
-          !state.started &&
-          action !== "start"
-        ) {
-          return;
-        }
-
         handleAction(action);
       }
     );
-
   });
 
   // ------------------------------------
-  // PANEL KONTROL SENTUH
+  // PANEL SENTUH HP
   // ------------------------------------
 
   $("toggleDock").addEventListener(
     "click",
     () => {
 
-      // Panel tidak bisa digunakan
-      // sebelum welcome selesai.
       if (!state.started) {
         return;
       }
@@ -1115,7 +1025,7 @@ function initialize() {
         $("touchDock")
           .classList.contains("collapsed");
 
-      openDock(collapsed);
+      setDockOpen(collapsed);
     }
   );
 
@@ -1127,7 +1037,7 @@ function initialize() {
 }
 
 // ========================================
-// 16. MENJALANKAN APLIKASI
+// 16. MULAI APLIKASI
 // ========================================
 
 if (document.readyState === "loading") {
@@ -1140,5 +1050,4 @@ if (document.readyState === "loading") {
 } else {
 
   initialize();
-
 }
