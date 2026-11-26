@@ -1,14 +1,9 @@
-
-/* ===================================
-   SOP-AR IMIP - MINDAR V2
-   RESPONSIVE GREEN ORANGE THEME
-=================================== */
-
 :root {
-  --green-dark: #075f28;
-  --green: #087d29;
-  --green-light: #a7e35e;
-  --orange: #ff9500;
+  --green-dark: #058901;
+  --green: #0ba10a;
+  --green-light: #86d101;
+  --orange: #fd9802;
+  --orange-light: #febb02;
   --white: #ffffff;
   --text: #21482d;
 }
@@ -25,73 +20,270 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
-
   overflow: hidden;
   overscroll-behavior: none;
-
-  font-family:
-    Arial,
-    Helvetica,
-    sans-serif;
-
+  font-family: Arial, Helvetica, sans-serif;
   background: #101f16;
 }
-
-/* ===================================
-   SCENE AR
-=================================== */
 
 #arScene {
   position: fixed;
   inset: 0;
-
   width: 100%;
   height: 100vh;
   height: 100dvh;
-
   z-index: 0;
 }
 
-/*
-  Video dan canvas dikelola oleh MindAR.
-  Jangan ubah transform atau
-  object-fit keduanya secara terpisah.
-*/
+/* ==============================
+   SPLASH SCREEN
+============================== */
 
-/* ===================================
+.intro-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at center, #ffffff 0%, #f6fff0 45%, #dff5c6 100%);
+  transition:
+    opacity 0.35s ease,
+    visibility 0.35s ease,
+    transform 0.35s ease;
+}
+
+.intro-screen.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.intro-bg-shapes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.shape {
+  position: absolute;
+  display: block;
+  opacity: 0.95;
+  transform: rotate(18deg);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.08);
+}
+
+.shape-1 {
+  width: 90px;
+  height: 90px;
+  top: 13%;
+  left: 12%;
+  background: linear-gradient(135deg, var(--green-light), var(--green));
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+
+.shape-2 {
+  width: 60px;
+  height: 60px;
+  top: 20%;
+  right: 14%;
+  background: linear-gradient(135deg, var(--orange-light), var(--orange));
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+
+.shape-3 {
+  width: 28px;
+  height: 28px;
+  left: 20%;
+  bottom: 18%;
+  background: var(--orange);
+}
+
+.shape-4 {
+  width: 32px;
+  height: 32px;
+  right: 17%;
+  bottom: 24%;
+  background: var(--green-light);
+}
+
+.shape-5 {
+  width: 48px;
+  height: 48px;
+  top: 56%;
+  left: 8%;
+  background: linear-gradient(135deg, #ffffff, #d6f4b7);
+  border: 2px solid #b9e68c;
+  transform: rotate(32deg);
+}
+
+.shape-6 {
+  width: 40px;
+  height: 40px;
+  top: 63%;
+  right: 11%;
+  background: linear-gradient(135deg, #fff2d6, var(--orange-light));
+  transform: rotate(28deg);
+}
+
+.shape-7 {
+  width: 22px;
+  height: 22px;
+  top: 30%;
+  left: 30%;
+  background: var(--green-dark);
+}
+
+.shape-8 {
+  width: 18px;
+  height: 18px;
+  top: 34%;
+  right: 28%;
+  background: var(--orange);
+}
+
+.intro-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 680px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.intro-logo-card {
+  width: 165px;
+  height: 115px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 18px 35px rgba(5, 137, 1, 0.12);
+  margin-bottom: 14px;
+}
+
+.intro-logo-card img {
+  width: 145px;
+  max-height: 95px;
+  object-fit: contain;
+}
+
+.intro-mini-title {
+  margin: 8px 0 14px;
+  color: var(--green-dark);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.intro-title {
+  margin: 0;
+  line-height: 0.9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: rotate(-4deg);
+}
+
+.intro-title-top,
+.intro-title-bottom {
+  display: block;
+  font-family: Arial Black, Arial, sans-serif;
+  font-weight: 900;
+  letter-spacing: -0.06em;
+}
+
+.intro-title-top {
+  font-size: clamp(72px, 14vw, 132px);
+  color: var(--orange);
+  -webkit-text-stroke: 3px #ffffff;
+  text-shadow:
+    0 5px 0 #d97f00,
+    0 10px 0 #b86c00,
+    0 18px 24px rgba(0, 0, 0, 0.12);
+}
+
+.intro-title-bottom {
+  font-size: clamp(80px, 15vw, 145px);
+  color: var(--green);
+  -webkit-text-stroke: 3px #ffffff;
+  text-shadow:
+    0 5px 0 #067400,
+    0 10px 0 #055e00,
+    0 18px 24px rgba(0, 0, 0, 0.13);
+}
+
+.intro-description {
+  max-width: 560px;
+  margin: 18px 0 22px;
+  color: #2d5431;
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.start-quiz-button {
+  min-width: 220px;
+  min-height: 56px;
+  padding: 14px 28px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--green-dark), var(--green));
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  box-shadow: 0 14px 28px rgba(5, 137, 1, 0.25);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.start-quiz-button:hover {
+  transform: translateY(-1px);
+}
+
+.start-quiz-button:active {
+  transform: translateY(1px);
+}
+
+.intro-help {
+  margin: 14px 0 0;
+  color: #5e7b5d;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* ==============================
    HEADER
-=================================== */
+============================== */
 
 .app-header {
   position: fixed;
-
   top: 0;
   left: 0;
   right: 0;
-
   z-index: 20;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   gap: 12px;
-
   padding:
     max(12px, env(safe-area-inset-top))
     14px
     12px;
-
-  background: rgba(7, 95, 40, 0.94);
+  background: rgba(5, 137, 1, 0.93);
   color: var(--white);
-
-  box-shadow: 0 3px 15px #0003;
+  box-shadow: 0 3px 15px rgba(0,0,0,0.18);
 }
 
 .brand {
   display: flex;
   flex-direction: column;
-
   gap: 4px;
   min-width: 0;
 }
@@ -103,90 +295,60 @@ body {
 
 .brand small {
   font-size: 9px;
-  color: #d9f6d5;
-
+  color: #e3ffd2;
   letter-spacing: 0.04em;
 }
 
-/* ===================================
-   STATUS MARKER
-=================================== */
-
 .status {
   flex: none;
-
   max-width: 50%;
-
   padding: 8px 10px;
-
   border: 1px solid #ffffff42;
   border-radius: 20px;
-
   background: #ffffff23;
   color: white;
-
   font-size: 11px;
   text-align: center;
   line-height: 1.4;
 }
 
 .status.found {
-  background: #b3ed7d;
-  color: #124820;
-
-  border-color: #b3ed7d;
+  background: #c8f69b;
+  color: #184d14;
+  border-color: #c8f69b;
 }
 
-/* ===================================
-   PANEL SENTUH
-=================================== */
+/* ==============================
+   TOUCH DOCK
+============================== */
 
 .touch-dock {
   position: fixed;
-
   left: 10px;
   right: 10px;
-
-  bottom: max(
-    10px,
-    env(safe-area-inset-bottom)
-  );
-
+  bottom: max(10px, env(safe-area-inset-bottom));
   z-index: 30;
-
   display: flex;
   flex-direction: column;
-
   width: auto;
   max-width: 460px;
   max-height: 55dvh;
-
   margin: 0 auto;
-
   overflow: hidden;
-
   background: rgba(255, 255, 255, 0.97);
-
-  border: 1px solid #d9efcd;
+  border: 1px solid #d8efc4;
   border-radius: 17px;
-
-  box-shadow: 0 14px 38px #0005;
-
+  box-shadow: 0 14px 38px rgba(0,0,0,0.2);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
-
-/* Header panel */
 
 .dock-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   gap: 12px;
-
   padding: 12px 14px;
-
   background: var(--green-dark);
   color: white;
 }
@@ -194,16 +356,13 @@ body {
 .dock-header div {
   display: flex;
   flex-direction: column;
-
   gap: 4px;
 }
 
 .dock-header small {
-  color: #ffc36c;
-
+  color: #ffd28b;
   font-size: 9px;
   font-weight: bold;
-
   letter-spacing: 0.1em;
 }
 
@@ -212,37 +371,25 @@ body {
   line-height: 1.3;
 }
 
-/* Buka / tutup panel */
-
 #toggleDock {
   width: 36px;
   height: 36px;
-
   flex: none;
-
   border: 1px solid #ffffff65;
   border-radius: 9px;
-
   background: #ffffff24;
   color: white;
-
   font-size: 23px;
   line-height: 1;
-
   cursor: pointer;
   touch-action: manipulation;
 }
 
-/* Isi panel */
-
 .dock-content {
   min-height: 0;
-
   overflow-y: auto;
   overscroll-behavior: contain;
-
   -webkit-overflow-scrolling: touch;
-
   padding: 13px 14px 15px;
 }
 
@@ -250,67 +397,44 @@ body {
   display: none;
 }
 
-/* Teks */
-
 #dockDescription {
   margin: 0 0 12px;
-
   color: var(--text);
-
   font-size: 13px;
   line-height: 1.55;
-
   white-space: pre-line;
 }
 
-/* ===================================
-   TOMBOL MENU DAN JAWABAN
-=================================== */
-
 .touch-actions {
   display: grid;
-
   gap: 8px;
 }
 
 .touch-actions button {
   width: 100%;
   min-height: 46px;
-
   padding: 11px 12px;
-
-  border: 1px solid #bfe3a6;
+  border: 1px solid #cae8aa;
   border-radius: 10px;
-
-  background: #f0f9e9;
+  background: #f5ffeb;
   color: var(--green-dark);
-
   font-size: 13px;
   font-weight: 600;
-
   text-align: left;
   line-height: 1.45;
-
   cursor: pointer;
   touch-action: manipulation;
 }
 
 .touch-actions button:active {
-  background: #d8f3c4;
+  background: #e6f9cd;
 }
 
 .touch-actions button.primary {
   background: var(--orange);
   border-color: var(--orange);
-
-  color: #402900;
-
+  color: #412900;
   font-weight: 700;
-}
-
-.touch-actions button:disabled {
-  opacity: 0.65;
-  cursor: not-allowed;
 }
 
 .touch-actions button.selected {
@@ -318,35 +442,33 @@ body {
   border-color: var(--orange);
 }
 
+.touch-actions button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
 button:focus-visible {
   outline: 3px solid var(--orange);
   outline-offset: 2px;
 }
 
-/* Catatan */
-
 .note {
   margin: 12px 0 0;
-
   color: #6a806c;
-
   font-size: 10px;
   line-height: 1.5;
 }
 
-/* ===================================
-   DESKTOP
-=================================== */
+/* ==============================
+   RESPONSIVE
+============================== */
 
 @media (min-width: 900px) {
-
   .touch-dock {
     left: auto;
     right: 20px;
-
     width: 370px;
     max-height: 75dvh;
-
     margin: 0;
   }
 
@@ -355,12 +477,7 @@ button:focus-visible {
   }
 }
 
-/* ===================================
-   HP PORTRAIT
-=================================== */
-
 @media (max-width: 600px) {
-
   .brand strong {
     font-size: 15px;
   }
@@ -385,15 +502,29 @@ button:focus-visible {
   .dock-content {
     padding: 11px 12px 13px;
   }
+
+  .intro-logo-card {
+    width: 130px;
+    height: 95px;
+  }
+
+  .intro-logo-card img {
+    width: 118px;
+  }
+
+  .intro-description {
+    font-size: 14px;
+    margin: 16px 0 20px;
+  }
+
+  .start-quiz-button {
+    min-width: 190px;
+    min-height: 52px;
+    font-size: 15px;
+  }
 }
 
-/* ===================================
-   HP LANDSCAPE
-=================================== */
-
-@media (max-height: 500px)
-  and (orientation: landscape) {
-
+@media (max-height: 500px) and (orientation: landscape) {
   .app-header {
     padding: 7px 12px;
   }
@@ -401,13 +532,11 @@ button:focus-visible {
   .touch-dock {
     left: auto;
     right: 10px;
-
     width: min(340px, 46vw);
-
     max-height: 78dvh;
   }
 
-  .dock-header {
-    padding: 8px 11px;
+  .intro-content {
+    transform: scale(0.88);
   }
-}
+}   
