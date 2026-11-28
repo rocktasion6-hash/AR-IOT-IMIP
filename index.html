@@ -23,6 +23,7 @@
     <script src="menu-3d.js?v=9"></script>
     <script src="content-3d.js?v=11"></script>
     <script src="k3-learn-3d.js?v=14"></script>
+    <script src="k3-buttons.js?v=17"></script>
   </head>
 
   <body>
@@ -657,85 +658,6 @@
               width="0.57"
               wrap-count="25"
               color="#A85C00"
-            >
-            </a-text>
-
-            <!-- Navigasi: semua tombol langsung di objek AR -->
-            <!-- TOMBOL MENU -->
-            <a-box
-              class="clickable"
-              data-action="home"
-              position="-0.465 -0.540 0.106"
-              width="0.455"
-              height="0.210"
-              depth="0.040"
-              color="#86D101"
-              material="roughness: 0.35"
-            >
-            </a-box>
-
-            <a-text
-              value="MENU"
-              position="-0.465 -0.540 0.145"
-              align="center"
-              anchor="center"
-              baseline="center"
-              width="0.55"
-              wrap-count="13"
-              color="#164B20"
-            >
-            </a-text>
-
-            <!-- TOMBOL SEBELUMNYA -->
-            <a-entity id="k3PrevGroup" visible="false">
-              <a-box
-                class="clickable"
-                data-action="k3-prev"
-                position="0 -0.540 0.106"
-                width="0.455"
-                height="0.210"
-                depth="0.040"
-                color="#E8F6DF"
-                material="roughness: 0.35"
-              >
-              </a-box>
-
-              <a-text
-                value="SEBELUMNYA"
-                position="0 -0.540 0.145"
-                align="center"
-                anchor="center"
-                baseline="center"
-                width="0.60"
-                wrap-count="16"
-                color="#166127"
-              >
-              </a-text>
-            </a-entity>
-
-            <!-- TOMBOL LANJUT -->
-            <a-box
-              class="clickable"
-              data-action="next"
-              position="0.465 -0.540 0.106"
-              width="0.455"
-              height="0.210"
-              depth="0.040"
-              color="#FD9802"
-              material="roughness: 0.35"
-            >
-            </a-box>
-
-            <a-text
-              id="k3NextLabel"
-              value="LANJUT"
-              position="0.465 -0.540 0.145"
-              align="center"
-              anchor="center"
-              baseline="center"
-              width="0.57"
-              wrap-count="15"
-              color="#FFFFFF"
             >
             </a-text>
           </a-entity>
