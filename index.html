@@ -533,65 +533,211 @@
         <a-entity id="k3Learn3d" position="0 0 0.14" visible="false">
           <a-entity
             id="k3BoardFloat"
-            animation__float="property: position; from: 0 0 0; to: 0 0.012 0; dir: alternate; dur: 2700; loop: true; easing: easeInOutSine">
-
+            animation__float="property: position; from: 0 0 0; to: 0 0.012 0; dir: alternate; dur: 2700; loop: true; easing: easeInOutSine"
+          >
             <!-- Papan tebal sesuai tema welcome IMIP -->
-            <a-box position="0 -0.012 -0.032" width="1.52" height="1.42" depth="0.085" color="#045B12"></a-box>
-            <a-box position="0 0 -0.002" width="1.48" height="1.38" depth="0.047" color="#FD9802"></a-box>
-            <a-plane position="0 0 0.027" width="1.43" height="1.33" color="#FFFFFF"></a-plane>
+            <a-box
+              position="0 -0.012 -0.032"
+              width="1.52"
+              height="1.42"
+              depth="0.085"
+              color="#045B12"
+            ></a-box>
+            <a-box
+              position="0 0 -0.002"
+              width="1.48"
+              height="1.38"
+              depth="0.047"
+              color="#FD9802"
+            ></a-box>
+            <a-plane
+              position="0 0 0.027"
+              width="1.43"
+              height="1.33"
+              color="#FFFFFF"
+            ></a-plane>
 
             <!-- Header -->
-            <a-box position="0 0.548 0.061" width="1.42" height="0.17" depth="0.036" color="#058901"></a-box>
-            <a-text value="BELAJAR KESELAMATAN KERJA" position="0 0.528 0.091" align="center" width="1.26" color="#FFFFFF"></a-text>
-            <a-text id="k3Counter" value="1 / 8" position="0 0.410 0.068" align="center" width="0.61" color="#058901"></a-text>
+            <a-box
+              position="0 0.548 0.061"
+              width="1.42"
+              height="0.17"
+              depth="0.036"
+              color="#058901"
+            ></a-box>
+            <a-text
+              value="BELAJAR KESELAMATAN KERJA"
+              position="0 0.528 0.091"
+              align="center"
+              width="1.26"
+              color="#FFFFFF"
+            ></a-text>
+            <a-text
+              id="k3Counter"
+              value="1 / 8"
+              position="0 0.410 0.068"
+              align="center"
+              width="0.61"
+              color="#058901"
+            ></a-text>
 
             <!-- Area model sebelah kiri -->
-            <a-box position="-0.35 0.000 0.050" width="0.65" height="0.69" depth="0.035" color="#E5F5DB"></a-box>
-            <a-plane position="-0.35 -0.286 0.074" width="0.53" height="0.030" color="#86D101"></a-plane>
+            <a-box
+              position="-0.35 0.000 0.050"
+              width="0.65"
+              height="0.69"
+              depth="0.035"
+              color="#E5F5DB"
+            ></a-box>
+            <a-plane
+              position="-0.35 -0.286 0.074"
+              width="0.53"
+              height="0.030"
+              color="#86D101"
+            ></a-plane>
             <a-entity
               id="k3Model3d"
               k3-apd-model="type: helmet"
               position="-0.35 0.02 0.222"
-              scale="1 1 1">
+              scale="1 1 1"
+            >
             </a-entity>
-            <a-text value="OBJEK BERPUTAR OTOMATIS" position="-0.35 -0.374 0.08" align="center" width="0.58" color="#43774B"></a-text>
+            <a-text
+              value="OBJEK BERPUTAR OTOMATIS"
+              position="-0.35 -0.374 0.08"
+              align="center"
+              width="0.58"
+              color="#43774B"
+            ></a-text>
 
             <!-- Penjelasan di sebelah kanan -->
-            <a-plane position="0.37 0.005 0.054" width="0.66" height="0.70" color="#F7FFF2"></a-plane>
-            <a-plane position="0.067 0.005 0.065" width="0.013" height="0.62" color="#86D101"></a-plane>
+            <a-plane
+              position="0.37 0.005 0.054"
+              width="0.66"
+              height="0.70"
+              color="#F7FFF2"
+            ></a-plane>
+            <a-plane
+              position="0.067 0.005 0.065"
+              width="0.013"
+              height="0.62"
+              color="#86D101"
+            ></a-plane>
             <a-text
-              id="k3ItemTitle" value="HELM KESELAMATAN"
-              position="0.09 0.284 0.082" align="left" anchor="left" baseline="top"
-              width="0.56" wrap-count="18" color="#058901">
+              id="k3ItemTitle"
+              value="HELM KESELAMATAN"
+              position="0.09 0.284 0.082"
+              align="left"
+              anchor="left"
+              baseline="top"
+              width="0.56"
+              wrap-count="18"
+              color="#058901"
+            >
             </a-text>
             <a-text
-              id="k3ItemDescription" value="Penjelasan APD akan muncul di sini."
-              position="0.09 0.128 0.082" align="left" anchor="left" baseline="top"
-              width="0.57" wrap-count="23" color="#184C2B">
+              id="k3ItemDescription"
+              value="Penjelasan APD akan muncul di sini."
+              position="0.09 0.128 0.082"
+              align="left"
+              anchor="left"
+              baseline="top"
+              width="0.57"
+              wrap-count="23"
+              color="#184C2B"
+            >
             </a-text>
             <a-text
-              id="k3ItemCheck" value="Periksa kondisi APD."
-              position="0.09 -0.197 0.082" align="left" anchor="left" baseline="top"
-              width="0.57" wrap-count="25" color="#A85C00">
+              id="k3ItemCheck"
+              value="Periksa kondisi APD."
+              position="0.09 -0.197 0.082"
+              align="left"
+              anchor="left"
+              baseline="top"
+              width="0.57"
+              wrap-count="25"
+              color="#A85C00"
+            >
             </a-text>
 
             <!-- Navigasi: semua tombol langsung di objek AR -->
-            <a-plane class="clickable" data-action="home"
-              position="-0.465 -0.558 0.095" width="0.40" height="0.145" color="#86D101"></a-plane>
-            <a-text value="MENU" position="-0.465 -0.579 0.115"
-              width="0.36" align="center" color="#164B20"></a-text>
+            <!-- TOMBOL MENU -->
+            <a-box
+              class="clickable"
+              data-action="home"
+              position="-0.465 -0.540 0.106"
+              width="0.455"
+              height="0.210"
+              depth="0.040"
+              color="#86D101"
+              material="roughness: 0.35"
+            >
+            </a-box>
 
+            <a-text
+              value="MENU"
+              position="-0.465 -0.540 0.145"
+              align="center"
+              anchor="center"
+              baseline="center"
+              width="0.55"
+              wrap-count="13"
+              color="#164B20"
+            >
+            </a-text>
+
+            <!-- TOMBOL SEBELUMNYA -->
             <a-entity id="k3PrevGroup" visible="false">
-              <a-plane class="clickable" data-action="k3-prev"
-                position="0 -0.558 0.095" width="0.40" height="0.145" color="#E8F6DF"></a-plane>
-              <a-text value="SEBELUMNYA" position="0 -0.579 0.115"
-                width="0.36" align="center" color="#166127"></a-text>
+              <a-box
+                class="clickable"
+                data-action="k3-prev"
+                position="0 -0.540 0.106"
+                width="0.455"
+                height="0.210"
+                depth="0.040"
+                color="#E8F6DF"
+                material="roughness: 0.35"
+              >
+              </a-box>
+
+              <a-text
+                value="SEBELUMNYA"
+                position="0 -0.540 0.145"
+                align="center"
+                anchor="center"
+                baseline="center"
+                width="0.60"
+                wrap-count="16"
+                color="#166127"
+              >
+              </a-text>
             </a-entity>
 
-            <a-plane class="clickable" data-action="next"
-              position="0.465 -0.558 0.095" width="0.40" height="0.145" color="#FD9802"></a-plane>
-            <a-text id="k3NextLabel" value="LANJUT" position="0.465 -0.579 0.115"
-              width="0.36" align="center" color="#FFFFFF"></a-text>
+            <!-- TOMBOL LANJUT -->
+            <a-box
+              class="clickable"
+              data-action="next"
+              position="0.465 -0.540 0.106"
+              width="0.455"
+              height="0.210"
+              depth="0.040"
+              color="#FD9802"
+              material="roughness: 0.35"
+            >
+            </a-box>
+
+            <a-text
+              id="k3NextLabel"
+              value="LANJUT"
+              position="0.465 -0.540 0.145"
+              align="center"
+              anchor="center"
+              baseline="center"
+              width="0.57"
+              wrap-count="15"
+              color="#FFFFFF"
+            >
+            </a-text>
           </a-entity>
         </a-entity>
       </a-entity>
