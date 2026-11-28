@@ -200,34 +200,6 @@
   }
 
   // ==========================================
-  // LENGKUNGAN ORANYE
-  // ==========================================
-
-  function orangeArc(group) {
-
-    const curve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(-0.15, 0.553, 0.15),
-      new THREE.Vector3(-0.075, 0.594, 0.15),
-      new THREE.Vector3(0, 0.604, 0.15),
-      new THREE.Vector3(0.075, 0.594, 0.15),
-      new THREE.Vector3(0.15, 0.553, 0.15)
-    ]);
-
-    const mesh = new THREE.Mesh(
-      new THREE.TubeGeometry(
-        curve,
-        32,
-        0.009,
-        6,
-        false
-      ),
-      mat(C.orange)
-    );
-
-    group.add(mesh);
-  }
-
-  // ==========================================
   // MEMBACA OUTLINE FONT
   // ==========================================
 
@@ -370,7 +342,7 @@
 
     rear.position.set(
       0.009,
-      0.388,
+      0.468,
       0.183
     );
 
@@ -393,7 +365,7 @@
 
     front.position.set(
       0,
-      0.401,
+      0.481,
       0.207
     );
 
@@ -455,28 +427,13 @@
         ));
 
         // ================================
-        // PLAKAT IMIP DI ATAS
-        // ================================
-
-        add(plate(
-          root,
-          0.41, 0.15, 0.035,
-          0, 0.579, 0.119,
-          C.white,
-          C.greenLight,
-          0.055
-        ));
-
-        orangeArc(root);
-
-        // ================================
         // HEADER IMIP QUIZ
         // ================================
 
         add(plate(
           root,
           1.02, 0.18, 0.035,
-          0, 0.395, 0.148,
+          0, 0.475, 0.148,
           C.orange,
           C.orangeDark,
           0.060
@@ -485,7 +442,7 @@
         add(plate(
           root,
           0.984, 0.150, 0.022,
-          0, 0.400, 0.170,
+          0, 0.480, 0.170,
           C.white,
           "#DBEACF",
           0.050
@@ -493,7 +450,7 @@
 
         add(line(
           root,
-          0, 0.282, 0.15,
+          0, 0.345, 0.15,
           0.88, 0.018,
           0,
           C.orange
