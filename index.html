@@ -21,6 +21,7 @@
     <!-- Desain 3D -->
     <script src="welcome-3d.js?v=8"></script>
     <script src="menu-3d.js?v=9"></script>
+    <script src="content-3d.js?v=10"></script>
   </head>
 
   <body>
@@ -296,174 +297,231 @@
           </a-entity>
         </a-entity>
 
-        <!-- ================================
-           PAPAN MATERI DAN SOAL
-           TETAP V8
-      ================================= -->
+        <!-- =========================================
+     IMIP QUIZ V10
+     PAPAN MATERI, SOAL DAN HASIL 3D
+========================================= -->
 
         <a-entity id="content3d" position="0 0 0.10" visible="false">
-          <a-box width="1.08" height="1.45" depth="0.025" color="#FFFFFF">
-          </a-box>
-
-          <a-plane
-            position="0 0.59 0.025"
-            width="1.08"
-            height="0.26"
-            color="#058901"
+          <a-entity
+            id="contentFloat"
+            imip-content-3d
+            animation__float="
+      property: position;
+      from: 0 0 0;
+      to: 0 0 0.012;
+      dur: 2600;
+      dir: alternate;
+      loop: true;
+      easing: easeInOutSine"
+            animation__tilt="
+      property: rotation;
+      from: 0 -1.4 0;
+      to: 0 1.4 0;
+      dur: 4300;
+      dir: alternate;
+      loop: true;
+      easing: easeInOutSine"
           >
-          </a-plane>
-
-          <a-text
-            id="worldMode"
-            value="BELAJAR"
-            position="-0.47 0.665 0.04"
-            width="0.93"
-            color="#FFE2A6"
-          >
-          </a-text>
-
-          <a-text
-            id="worldTitle"
-            value="Judul"
-            position="-0.47 0.56 0.04"
-            width="0.93"
-            wrap-count="29"
-            color="#FFFFFF"
-          >
-          </a-text>
-
-          <a-text
-            id="worldBody"
-            value="Isi akan muncul di sini."
-            position="-0.46 0.40 0.04"
-            baseline="top"
-            width="0.91"
-            wrap-count="35"
-            color="#184C2B"
-          >
-          </a-text>
-
-          <a-text
-            id="worldHint"
-            value=""
-            position="-0.46 0.025 0.04"
-            baseline="top"
-            width="0.91"
-            wrap-count="35"
-            color="#55735C"
-          >
-          </a-text>
-
-          <!-- JAWABAN A, B, C -->
-
-          <a-entity id="worldChoices" visible="false">
-            <a-plane
-              id="option0"
-              class="clickable"
-              data-action="answer-0"
-              position="0 -0.135 0.045"
-              width="0.94"
-              height="0.145"
-              color="#EBF8DC"
-            >
-            </a-plane>
+            <!-- ===============================
+         HEADER PAPAN
+    ================================ -->
 
             <a-text
-              id="optionText0"
-              value="A"
-              position="-0.44 -0.15 0.055"
-              width="0.88"
-              wrap-count="36"
-              color="#058901"
+              id="worldMode"
+              value="BELAJAR"
+              position="-0.50 0.833 0.246"
+              anchor="left"
+              align="left"
+              baseline="top"
+              width="1.00"
+              wrap-count="29"
+              color="#FFEAB8"
             >
             </a-text>
 
-            <a-plane
-              id="option1"
-              class="clickable"
-              data-action="answer-1"
-              position="0 -0.315 0.045"
-              width="0.94"
-              height="0.145"
-              color="#EBF8DC"
-            >
-            </a-plane>
-
             <a-text
-              id="optionText1"
-              value="B"
-              position="-0.44 -0.33 0.055"
-              width="0.88"
-              wrap-count="36"
-              color="#058901"
-            >
-            </a-text>
-
-            <a-plane
-              id="option2"
-              class="clickable"
-              data-action="answer-2"
-              position="0 -0.495 0.045"
-              width="0.94"
-              height="0.145"
-              color="#EBF8DC"
-            >
-            </a-plane>
-
-            <a-text
-              id="optionText2"
-              value="C"
-              position="-0.44 -0.51 0.055"
-              width="0.88"
-              wrap-count="36"
-              color="#058901"
-            >
-            </a-text>
-          </a-entity>
-
-          <!-- KEMBALI -->
-
-          <a-plane
-            class="clickable"
-            data-action="home"
-            position="-0.25 -0.635 0.045"
-            width="0.46"
-            height="0.12"
-            color="#DCEBDD"
-          >
-          </a-plane>
-
-          <a-text
-            value="MENU"
-            position="-0.25 -0.655 0.055"
-            align="center"
-            width="0.40"
-            color="#058901"
-          >
-          </a-text>
-
-          <!-- LANJUT -->
-
-          <a-entity id="nextGroup">
-            <a-plane
-              class="clickable"
-              data-action="next"
-              position="0.25 -0.635 0.045"
-              width="0.46"
-              height="0.12"
-              color="#FD9802"
-            >
-            </a-plane>
-
-            <a-text
-              id="nextText"
-              value="LANJUT"
-              position="0.25 -0.655 0.055"
-              align="center"
-              width="0.40"
+              id="worldTitle"
+              value="Judul"
+              position="-0.50 0.728 0.247"
+              anchor="left"
+              align="left"
+              baseline="top"
+              width="1.03"
+              wrap-count="26"
               color="#FFFFFF"
             >
             </a-text>
+
+            <!-- ===============================
+         KARTU MATERI / PERTANYAAN
+    ================================ -->
+
+            <a-text
+              id="worldBody"
+              value="Isi akan muncul di sini."
+              position="-0.49 0.498 0.246"
+              anchor="left"
+              align="left"
+              baseline="top"
+              width="1.04"
+              wrap-count="31"
+              line-height="1.20"
+              color="#184C2B"
+            >
+            </a-text>
+
+            <!-- ===============================
+         PILIHAN JAWABAN A, B, C
+    ================================ -->
+
+            <a-entity id="worldChoices" visible="false">
+              <!-- PILIHAN A -->
+
+              <a-plane
+                id="option0"
+                class="clickable"
+                data-action="answer-0"
+                position="0 -0.115 0.244"
+                width="1.065"
+                height="0.160"
+                color="#EBF8DC"
+              >
+              </a-plane>
+
+              <a-text
+                id="optionText0"
+                value="A"
+                position="-0.49 -0.115 0.269"
+                anchor="left"
+                align="left"
+                baseline="center"
+                width="0.98"
+                wrap-count="29"
+                color="#075B1A"
+              >
+              </a-text>
+
+              <!-- PILIHAN B -->
+
+              <a-plane
+                id="option1"
+                class="clickable"
+                data-action="answer-1"
+                position="0 -0.317 0.244"
+                width="1.065"
+                height="0.160"
+                color="#EBF8DC"
+              >
+              </a-plane>
+
+              <a-text
+                id="optionText1"
+                value="B"
+                position="-0.49 -0.317 0.269"
+                anchor="left"
+                align="left"
+                baseline="center"
+                width="0.98"
+                wrap-count="29"
+                color="#075B1A"
+              >
+              </a-text>
+
+              <!-- PILIHAN C -->
+
+              <a-plane
+                id="option2"
+                class="clickable"
+                data-action="answer-2"
+                position="0 -0.519 0.244"
+                width="1.065"
+                height="0.160"
+                color="#EBF8DC"
+              >
+              </a-plane>
+
+              <a-text
+                id="optionText2"
+                value="C"
+                position="-0.49 -0.519 0.269"
+                anchor="left"
+                align="left"
+                baseline="center"
+                width="0.98"
+                wrap-count="29"
+                color="#075B1A"
+              >
+              </a-text>
+            </a-entity>
+
+            <!-- ===============================
+         PETUNJUK JAWABAN
+    ================================ -->
+
+            <a-text
+              id="worldHint"
+              value=""
+              position="0 -0.674 0.247"
+              anchor="center"
+              align="center"
+              baseline="center"
+              width="1.08"
+              wrap-count="38"
+              color="#43724A"
+            >
+            </a-text>
+
+            <!-- ===============================
+         TOMBOL KEMBALI KE MENU
+    ================================ -->
+
+            <a-entity id="homeGroup" position="-0.283 -0.827 0">
+              <a-plane
+                class="clickable"
+                data-action="home"
+                position="0 0 0.245"
+                width="0.53"
+                height="0.158"
+                color="#E6F7DE"
+              >
+              </a-plane>
+
+              <a-text
+                value="MENU"
+                position="0 -0.016 0.270"
+                align="center"
+                width="0.43"
+                color="#075B1A"
+              >
+              </a-text>
+            </a-entity>
+
+            <!-- ===============================
+         TOMBOL LANJUT / LIHAT HASIL
+    ================================ -->
+
+            <a-entity id="nextGroup" position="0.283 -0.827 0">
+              <a-plane
+                class="clickable"
+                data-action="next"
+                position="0 0 0.245"
+                width="0.53"
+                height="0.158"
+                color="#FD9802"
+              >
+              </a-plane>
+
+              <a-text
+                id="nextText"
+                value="LANJUT"
+                position="0 -0.016 0.270"
+                align="center"
+                width="0.43"
+                color="#FFFFFF"
+              >
+              </a-text>
+            </a-entity>
           </a-entity>
         </a-entity>
       </a-entity>

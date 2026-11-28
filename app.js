@@ -400,7 +400,7 @@ function openModule(screen, category) {
 
   state.score = 0;
 
-  setDockOpen(true);
+  setDockOpen(false);
 
   render();
 }
