@@ -1,26 +1,35 @@
 
 "use strict";
 
-// ========================================
-// IMIP QUIZ - MINDAR V10
+// ==============================================
+// IMIP QUIZ - MINDAR V11
 // CONTENT-3D.JS
-// ========================================
+// ==============================================
 
 // Desain 3D untuk:
-// - Pembelajaran PP / K3
+// - Materi PP dan K3
 // - Latihan soal
-// - Pilihan jawaban A, B, C
+// - Pilihan A, B, C
 // - Hasil nilai
+// - Tombol MENU dan LANJUT
 //
-// Tidak menggunakan gambar tambahan.
-// ========================================
+// Desain welcome dan menu tidak diubah.
+// ==============================================
+
+console.log(
+  "IMIP QUIZ V11: content-3d.js berhasil dimuat"
+);
 
 (function () {
+
+  // ============================================
+  // 1. PERIKSA A-FRAME
+  // ============================================
 
   if (!window.AFRAME) {
 
     console.error(
-      "content-3d.js: A-Frame belum dimuat."
+      "A-Frame belum tersedia untuk content-3d.js"
     );
 
     return;
@@ -28,29 +37,33 @@
 
   const T = AFRAME.THREE;
 
-  // ======================================
-  // 1. WARNA TEMA IMIP
-  // ======================================
+  // ============================================
+  // 2. WARNA IMIP
+  // ============================================
 
   const C = {
 
     green: "#058901",
+
     dark: "#045B12",
+
     lime: "#86D101",
 
     orange: "#FD9802",
+
     burnt: "#A65A00",
 
     white: "#FFFFFF",
+
     pale: "#F5FFF0",
+
     border: "#D9ECCF"
 
   };
 
-
-  // ======================================
-  // 2. MATERIAL 3D
-  // ======================================
+  // ============================================
+  // 3. MATERIAL THREE.JS
+  // ============================================
 
   function mat(
     color,
@@ -60,17 +73,18 @@
 
     return new T.MeshStandardMaterial({
 
-      color,
-      metalness,
-      roughness
+      color: color,
+
+      metalness: metalness,
+
+      roughness: roughness
 
     });
   }
 
-
-  // ======================================
-  // 3. BENTUK SUDUT MELENGKUNG
-  // ======================================
+  // ============================================
+  // 4. MEMBUAT SUDUT MELENGKUNG
+  // ============================================
 
   function roundedShape(
     width,
@@ -87,65 +101,67 @@
     const x = -width / 2;
     const y = -height / 2;
 
-    const s = new T.Shape();
+    const shape = new T.Shape();
 
-    s.moveTo(x + r, y);
+    shape.moveTo(
+      x + r,
+      y
+    );
 
-    s.lineTo(
+    shape.lineTo(
       x + width - r,
       y
     );
 
-    s.quadraticCurveTo(
+    shape.quadraticCurveTo(
       x + width,
       y,
       x + width,
       y + r
     );
 
-    s.lineTo(
+    shape.lineTo(
       x + width,
       y + height - r
     );
 
-    s.quadraticCurveTo(
+    shape.quadraticCurveTo(
       x + width,
       y + height,
       x + width - r,
       y + height
     );
 
-    s.lineTo(
+    shape.lineTo(
       x + r,
       y + height
     );
 
-    s.quadraticCurveTo(
+    shape.quadraticCurveTo(
       x,
       y + height,
       x,
       y + height - r
     );
 
-    s.lineTo(
+    shape.lineTo(
       x,
       y + r
     );
 
-    s.quadraticCurveTo(
+    shape.quadraticCurveTo(
       x,
       y,
       x + r,
       y
     );
 
-    return s;
+    return shape;
   }
 
-
-  // ======================================
-  // 4. MEMBUAT PAPAN 3D BERLAPIS
-  // ======================================
+  // ============================================
+  // 5. MEMBUAT PAPAN 3D
+  // ============================================
 
   function plate(
     parent,
@@ -160,17 +176,19 @@
     radius = 0.05
   ) {
 
+    const shape = roundedShape(
+      width,
+      height,
+      radius
+    );
+
     const geometry = new T.ExtrudeGeometry(
 
-      roundedShape(
-        width,
-        height,
-        radius
-      ),
+      shape,
 
       {
 
-        depth,
+        depth: depth,
 
         steps: 1,
 
@@ -185,7 +203,6 @@
         bevelSegments: 3
 
       }
-
     );
 
     const mesh = new T.Mesh(
@@ -193,10 +210,20 @@
       geometry,
 
       [
-        mat(faceColor, 0.12, 0.31),
-        mat(sideColor, 0.08, 0.42)
-      ]
 
+        mat(
+          faceColor,
+          0.12,
+          0.31
+        ),
+
+        mat(
+          sideColor,
+          0.08,
+          0.42
+        )
+
+      ]
     );
 
     mesh.position.set(
@@ -210,10 +237,9 @@
     return mesh;
   }
 
-
-  // ======================================
-  // 5. GARIS AKSEN 3D
-  // ======================================
+  // ============================================
+  // 6. MEMBUAT GARIS AKSEN 3D
+  // ============================================
 
   function bar(
     parent,
@@ -226,19 +252,22 @@
     angle = 0
   ) {
 
-    const mesh = new T.Mesh(
-
-      new T.BoxGeometry(
-        width,
-        height,
-        0.012
-      ),
-
-      mat(color, 0.08, 0.35)
-
+    const geometry = new T.BoxGeometry(
+      width,
+      height,
+      0.012
     );
 
-    mesh.position.set(x, y, z);
+    const mesh = new T.Mesh(
+      geometry,
+      mat(color, 0.08, 0.35)
+    );
+
+    mesh.position.set(
+      x,
+      y,
+      z
+    );
 
     mesh.rotation.z = angle;
 
@@ -247,10 +276,9 @@
     return mesh;
   }
 
-
-  // ======================================
-  // 6. KUBUS DEKORATIF
-  // ======================================
+  // ============================================
+  // 7. MEMBUAT KUBUS 3D
+  // ============================================
 
   function cube(
     parent,
@@ -261,19 +289,22 @@
     color
   ) {
 
-    const mesh = new T.Mesh(
-
-      new T.BoxGeometry(
-        size,
-        size,
-        size
-      ),
-
-      mat(color, 0.20, 0.26)
-
+    const geometry = new T.BoxGeometry(
+      size,
+      size,
+      size
     );
 
-    mesh.position.set(x, y, z);
+    const mesh = new T.Mesh(
+      geometry,
+      mat(color, 0.20, 0.26)
+    );
+
+    mesh.position.set(
+      x,
+      y,
+      z
+    );
 
     mesh.rotation.set(
       0.25,
@@ -286,23 +317,33 @@
     return mesh;
   }
 
-
-  // ======================================
-  // 7. KOMPONEN CONTENT 3D
-  // ======================================
+  // ============================================
+  // 8. KOMPONEN CONTENT 3D
+  // ============================================
 
   AFRAME.registerComponent(
     "imip-content-3d",
     {
 
+      // ========================================
+      // MEMBUAT SELURUH OBJEK
+      // ========================================
+
       init() {
+
+        console.log(
+          "IMIP QUIZ V11: komponen 3D diinisialisasi"
+        );
 
         this.owned = [];
 
         this.cubes = [];
 
-        const root =
-          this.el.object3D;
+        const root = this.el.object3D;
+
+        // ====================================
+        // ELEMEN HTML A-FRAME
+        // ====================================
 
         const choicesEntity =
           document.getElementById(
@@ -319,10 +360,9 @@
             "nextGroup"
           );
 
-
-        // =================================
-        // VALIDASI ELEMEN
-        // =================================
+        // ====================================
+        // VALIDASI
+        // ====================================
 
         if (
           !choicesEntity ||
@@ -331,13 +371,11 @@
         ) {
 
           console.error(
-            "V10: worldChoices, homeGroup " +
-            "atau nextGroup tidak ditemukan."
+            "V11: Ada elemen content3d yang tidak ditemukan"
           );
 
           return;
         }
-
 
         const choices =
           choicesEntity.object3D;
@@ -348,8 +386,7 @@
         const next =
           nextEntity.object3D;
 
-
-        // Simpan mesh untuk dibersihkan
+        // Menyimpan mesh
         const own = (mesh) => {
 
           this.owned.push(mesh);
@@ -357,375 +394,405 @@
           return mesh;
         };
 
+        // ====================================
+        // 9. PAPAN UTAMA 3D
+        // ====================================
 
-        // =================================
-        // 8. PAPAN UTAMA 3D
-        // =================================
-
-        // Bingkai hijau tua
-        own(plate(
-          root,
-
-          1.31,
-          1.90,
-          0.100,
-
-          0,
-          0,
-          0.038,
-
-          C.dark,
-          "#023A16",
-
-          0.105
-        ));
-
-
-        // Lapisan oranye
-        own(plate(
-          root,
-
-          1.27,
-          1.86,
-          0.066,
-
-          0,
-          0.009,
-          0.080,
-
-          C.orange,
-          C.burnt,
-
-          0.100
-        ));
-
-
-        // Permukaan papan putih
-        own(plate(
-          root,
-
-          1.22,
-          1.81,
-          0.038,
-
-          0,
-          0.018,
-          0.124,
-
-          C.white,
-          C.border,
-
-          0.095
-        ));
-
-
-        // =================================
-        // 9. HEADER HIJAU 3D
-        // =================================
-
-        own(plate(
-          root,
-
-          1.11,
-          0.235,
-          0.033,
-
-          0,
-          0.746,
-          0.179,
-
-          C.green,
-          C.dark,
-
-          0.062
-        ));
-
-
-        // Garis oranye di bawah header
-        own(bar(
-          root,
-
-          0.99,
-          0.014,
-
-          0,
-          0.610,
-          0.198,
-
-          C.orange
-        ));
-
-
-        // =================================
-        // 10. KARTU MATERI / SOAL
-        // =================================
-
-        // Lapisan oranye
-        own(plate(
-          root,
-
-          1.115,
-          0.495,
-          0.036,
-
-          0,
-          0.316,
-          0.180,
-
-          C.orange,
-          C.burnt,
-
-          0.068
-        ));
-
-
-        // Permukaan hijau sangat muda
-        own(plate(
-          root,
-
-          1.087,
-          0.469,
-          0.021,
-
-          0,
-          0.328,
-          0.209,
-
-          C.pale,
-          C.border,
-
-          0.057
-        ));
-
-
-        // Aksen garis hijau
-        own(bar(
-          root,
-
-          0.016,
-          0.34,
-
-          -0.512,
-          0.320,
-          0.224,
-
-          C.lime
-        ));
-
-
-        // Aksen oranye kecil
-        own(bar(
-          root,
-
-          0.19,
-          0.014,
-
-          0.400,
-          0.538,
-          0.225,
-
-          C.orange
-        ));
-
-
-        // =================================
-        // 11. KUBUS DEKORATIF
-        // =================================
-
-        this.cubes.push(
-          own(cube(
+        // LAPISAN HIJAU TUA
+        own(
+          plate(
             root,
-            0.095,
 
-            -0.64,
-            0.64,
-            0.19,
+            1.31,
+            1.90,
+            0.100,
 
-            C.lime
-          ))
+            0,
+            0,
+            0.038,
+
+            C.dark,
+            "#023A16",
+
+            0.105
+          )
         );
 
-
-        this.cubes.push(
-          own(cube(
+        // LAPISAN ORANYE
+        own(
+          plate(
             root,
-            0.088,
 
-            0.64,
-            0.60,
-            0.19,
+            1.27,
+            1.86,
+            0.066,
+
+            0,
+            0.009,
+            0.080,
+
+            C.orange,
+            C.burnt,
+
+            0.100
+          )
+        );
+
+        // LAPISAN PUTIH
+        own(
+          plate(
+            root,
+
+            1.22,
+            1.81,
+            0.038,
+
+            0,
+            0.018,
+            0.124,
+
+            C.white,
+            C.border,
+
+            0.095
+          )
+        );
+
+        // ====================================
+        // 10. HEADER HIJAU
+        // ====================================
+
+        own(
+          plate(
+            root,
+
+            1.11,
+            0.235,
+            0.033,
+
+            0,
+            0.746,
+            0.179,
+
+            C.green,
+            C.dark,
+
+            0.062
+          )
+        );
+
+        // GARIS ORANYE HEADER
+        own(
+          bar(
+            root,
+
+            0.99,
+            0.014,
+
+            0,
+            0.610,
+            0.198,
 
             C.orange
-          ))
+          )
         );
 
+        // ====================================
+        // 11. KARTU PERTANYAAN
+        // ====================================
 
-        this.cubes.push(
-          own(cube(
+        // DASAR ORANYE
+        own(
+          plate(
             root,
-            0.067,
 
-            -0.64,
-            -0.57,
-            0.19,
+            1.115,
+            0.495,
+            0.036,
 
-            C.orange
-          ))
+            0,
+            0.316,
+            0.180,
+
+            C.orange,
+            C.burnt,
+
+            0.068
+          )
         );
 
-
-        this.cubes.push(
-          own(cube(
+        // PERMUKAAN HIJAU MUDA
+        own(
+          plate(
             root,
-            0.067,
 
-            0.64,
-            -0.57,
-            0.19,
+            1.087,
+            0.469,
+            0.021,
+
+            0,
+            0.328,
+            0.209,
+
+            C.pale,
+            C.border,
+
+            0.057
+          )
+        );
+
+        // AKSEN HIJAU SAMPING
+        own(
+          bar(
+            root,
+
+            0.016,
+            0.34,
+
+            -0.512,
+            0.320,
+            0.224,
 
             C.lime
-          ))
+          )
         );
 
+        // AKSEN ORANYE ATAS
+        own(
+          bar(
+            root,
 
-        // Garis dekoratif kiri
-        own(bar(
-          root,
+            0.19,
+            0.014,
 
-          0.022,
-          0.15,
+            0.400,
+            0.538,
+            0.225,
 
-          -0.650,
-          0.100,
-          0.130,
+            C.orange
+          )
+        );
 
-          C.orange,
-          -0.80
-        ));
+        // ====================================
+        // 12. KUBUS DEKORASI
+        // ====================================
 
+        this.cubes.push(
+          own(
+            cube(
+              root,
 
-        // Garis dekoratif kanan
-        own(bar(
-          root,
+              0.095,
 
-          0.022,
-          0.15,
+              -0.64,
+              0.64,
+              0.19,
 
-          0.650,
-          0.100,
-          0.130,
+              C.lime
+            )
+          )
+        );
 
-          C.lime,
-          0.80
-        ));
+        this.cubes.push(
+          own(
+            cube(
+              root,
 
+              0.088,
 
-        // =================================
-        // 12. TIGA KARTU JAWABAN 3D
-        // =================================
+              0.64,
+              0.60,
+              0.19,
 
-        // Letak jawaban A, B, C
+              C.orange
+            )
+          )
+        );
+
+        this.cubes.push(
+          own(
+            cube(
+              root,
+
+              0.067,
+
+              -0.64,
+              -0.57,
+              0.19,
+
+              C.orange
+            )
+          )
+        );
+
+        this.cubes.push(
+          own(
+            cube(
+              root,
+
+              0.067,
+
+              0.64,
+              -0.57,
+              0.19,
+
+              C.lime
+            )
+          )
+        );
+
+        // ====================================
+        // 13. GARIS DEKORASI
+        // ====================================
+
+        // GARIS KIRI
+        own(
+          bar(
+            root,
+
+            0.022,
+            0.15,
+
+            -0.650,
+            0.100,
+            0.130,
+
+            C.orange,
+            -0.80
+          )
+        );
+
+        // GARIS KANAN
+        own(
+          bar(
+            root,
+
+            0.022,
+            0.15,
+
+            0.650,
+            0.100,
+            0.130,
+
+            C.lime,
+            0.80
+          )
+        );
+
+        // ====================================
+        // 14. KARTU JAWABAN A B C
+        // ====================================
+
         const answerY = [
           -0.115,
           -0.317,
           -0.519
         ];
 
+        answerY.forEach(
+          (y, i) => {
 
-        answerY.forEach((y, i) => {
+            // Lapisan bingkai jawaban
+            own(
+              plate(
+                choices,
 
-          // Bingkai dan ketebalan kartu
-          own(plate(
-            choices,
+                1.120,
+                0.174,
+                0.038,
 
-            1.120,
-            0.174,
-            0.038,
+                0.005,
+                y - 0.008,
 
-            0.005,
-            y - 0.008,
-            0.208,
+                // Posisi lapisan depan V11
+                0.232,
 
-            i === 1
-              ? C.lime
-              : C.orange,
+                i === 1
+                  ? C.lime
+                  : C.orange,
 
-            i === 1
-              ? C.green
-              : C.burnt,
+                i === 1
+                  ? C.green
+                  : C.burnt,
+
+                0.045
+              )
+            );
+
+            // Garis aksen di kiri
+            own(
+              bar(
+                choices,
+
+                0.014,
+                0.111,
+
+                -0.505,
+                y,
+                0.251,
+
+                i === 1
+                  ? C.orange
+                  : C.green
+              )
+            );
+          }
+        );
+
+        // ====================================
+        // 15. TOMBOL MENU
+        // ====================================
+
+        own(
+          plate(
+            home,
+
+            0.525,
+            0.154,
+            0.045,
+
+            0,
+            -0.008,
+            0.205,
+
+            C.lime,
+            C.green,
 
             0.045
-          ));
+          )
+        );
 
+        // ====================================
+        // 16. TOMBOL LANJUT
+        // ====================================
 
-          // Garis aksen tiap pilihan
-          own(bar(
-            choices,
+        own(
+          plate(
+            next,
 
-            0.014,
-            0.111,
+            0.525,
+            0.154,
+            0.045,
 
-            -0.505,
-            y,
-            0.251,
+            0,
+            -0.008,
+            0.205,
 
-            i === 1
-              ? C.orange
-              : C.green
-          ));
+            C.orange,
+            C.burnt,
 
-        });
+            0.045
+          )
+        );
 
-
-        // =================================
-        // 13. TOMBOL MENU 3D
-        // =================================
-
-        own(plate(
-          home,
-
-          0.525,
-          0.154,
-          0.045,
-
-          0,
-          -0.008,
-          0.205,
-
-          C.lime,
-          C.green,
-
-          0.045
-        ));
-
-
-        // =================================
-        // 14. TOMBOL LANJUT 3D
-        // =================================
-
-        own(plate(
-          next,
-
-          0.525,
-          0.154,
-          0.045,
-
-          0,
-          -0.008,
-          0.205,
-
-          C.orange,
-          C.burnt,
-
-          0.045
-        ));
-
+        console.log(
+          "IMIP QUIZ V11: papan materi dan soal 3D berhasil dibuat"
+        );
       },
 
-
-      // =================================
-      // 15. ANIMASI DEKORASI
-      // =================================
+      // ========================================
+      // 17. ANIMASI KUBUS
+      // ========================================
 
       tick(time) {
 
@@ -744,6 +811,7 @@
         this.cubes.forEach(
           (mesh, i) => {
 
+            // Rotasi kubus
             mesh.rotation.y =
               (
                 i % 2 === 0
@@ -753,19 +821,17 @@
               time *
               0.00038 + i;
 
+            // Gerakan halus
             mesh.rotation.z = Math.sin(
               time * 0.001 + i
             ) * 0.20;
-
           }
         );
-
       },
 
-
-      // =================================
-      // 16. MEMBERSIHKAN GEOMETRI
-      // =================================
+      // ========================================
+      // 18. MEMBERSIHKAN GEOMETRI
+      // ========================================
 
       remove() {
 
@@ -787,20 +853,19 @@
 
             materials.forEach(
               (m) => {
+
                 if (m) {
                   m.dispose();
                 }
               }
             );
-
           }
         );
 
         this.owned = [];
+
         this.cubes = [];
-
       }
-
     }
   );
 
