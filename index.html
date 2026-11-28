@@ -1,89 +1,71 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
+  <head>
+    <meta charset="utf-8" />
 
-<head>
-  <meta charset="UTF-8">
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-  >
+    <meta name="theme-color" content="#058901" />
 
-  <meta name="theme-color" content="#058901">
+    <title>IMIP QUIZ | MindAR V12</title>
 
-  <title>IMIP QUIZ | MindAR V11</title>
+    <link rel="stylesheet" href="style.css?v=8" />
 
-  <!-- CSS TETAP -->
-  <link rel="stylesheet" href="style.css?v=8">
+    <!-- A-Frame dan MindAR -->
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
-  <!-- LIBRARY A-FRAME DAN MINDAR -->
-  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <!-- Desain 3D -->
+    <script src="welcome-3d.js?v=8"></script>
+    <script src="menu-3d.js?v=9"></script>
+    <script src="content-3d.js?v=11"></script>
+    <script src="k3-learn-3d.js?v=12"></script>
+  </head>
 
-  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  <body>
+    <a-scene
+      id="arScene"
+      embedded
+      mindar-image="imageTargetSrc: ./targets.mind; autoStart: true;"
+      color-space="sRGB"
+      renderer="colorManagement: true; alpha: true"
+      vr-mode-ui="enabled: false"
+      device-orientation-permission-ui="enabled: false"
+    >
+      <a-camera
+        position="0 0 0"
+        look-controls="enabled: false"
+        cursor="fuse: false; rayOrigin: mouse"
+        raycaster="objects: .clickable; far: 10000"
+      >
+      </a-camera>
 
-  <!-- DESAIN 3D YANG SUDAH ADA -->
-  <script src="welcome-3d.js?v=8"></script>
-  <script src="menu-3d.js?v=9"></script>
+      <!-- TARGET LOGO IMIP -->
+      <a-entity id="imipTarget" mindar-image-target="targetIndex: 0">
+        <!-- PENCAHAYAAN 3D -->
+        <a-light type="ambient" intensity="0.82" color="#FFFFFF"> </a-light>
 
-  <!-- DESAIN QUIZ TERBARU -->
-  <script src="content-3d.js?v=11"></script>
-</head>
+        <a-light
+          type="point"
+          position="-0.75 0.85 1.3"
+          intensity="0.68"
+          color="#FFFFFF"
+          distance="3"
+        >
+        </a-light>
 
-<body>
+        <!-- ================================
+           WELCOME V8 (TETAP)
+      ================================= -->
 
-  <a-scene
-    id="arScene"
-    embedded
-    mindar-image="imageTargetSrc: ./targets.mind; autoStart: true;"
-    color-space="sRGB"
-    renderer="colorManagement: true; alpha: true"
-    vr-mode-ui="enabled: false"
-    device-orientation-permission-ui="enabled: false">
-
-    <!-- KAMERA DAN INTERAKSI -->
-    <a-camera
-      position="0 0 0"
-      look-controls="enabled: false"
-      cursor="fuse: false; rayOrigin: mouse"
-      raycaster="objects: .clickable; far: 10000">
-    </a-camera>
-
-    <!-- TARGET LOGO IMIP -->
-    <a-entity
-      id="imipTarget"
-      mindar-image-target="targetIndex: 0">
-
-      <!-- PENCAHAYAAN -->
-      <a-light
-        type="ambient"
-        intensity="0.82"
-        color="#FFFFFF">
-      </a-light>
-
-      <a-light
-        type="point"
-        position="-0.75 0.85 1.3"
-        intensity="0.68"
-        color="#FFFFFF"
-        distance="3">
-      </a-light>
-
-      <!-- =================================
-           WELCOME V8
-           TIDAK DIUBAH
-      ================================== -->
-
-      <a-entity
-        id="welcome3d"
-        position="0 0 0.10"
-        visible="true">
-
-        <a-entity
-          id="welcomeFloat"
-          imip-welcome-3d
-
-          animation__float="
+        <a-entity id="welcome3d" position="0 0 0.10" visible="true">
+          <a-entity
+            id="welcomeFloat"
+            imip-welcome-3d
+            animation__float="
             property: position;
             from: 0 0 0;
             to: 0 0 0.016;
@@ -91,66 +73,55 @@
             dur: 2400;
             loop: true;
             easing: easeInOutSine"
-
-          animation__tilt="
+            animation__tilt="
             property: rotation;
             from: 0 -2.5 0;
             to: 0 2.5 0;
             dir: alternate;
             dur: 3800;
             loop: true;
-            easing: easeInOutSine">
-
-          <!-- TOMBOL MULAI 3D -->
-          <a-entity
-            id="startButton3d"
-            position="0 -0.48 0.12"
-
-            animation__pulse="
+            easing: easeInOutSine"
+          >
+            <a-entity
+              id="startButton3d"
+              position="0 -0.48 0.12"
+              animation__pulse="
               property: scale;
               from: 1 1 1;
               to: 1.055 1.055 1.055;
               dir: alternate;
               dur: 850;
               loop: true;
-              easing: easeInOutSine">
-
-            <a-plane
-              id="start3dHit"
-              class="clickable"
-              data-action="start"
-              position="0 0.005 0.20"
-              width="1.00"
-              height="0.27"
-
-              material="
+              easing: easeInOutSine"
+            >
+              <a-plane
+                id="start3dHit"
+                class="clickable"
+                data-action="start"
+                position="0 0.005 0.20"
+                width="1.00"
+                height="0.27"
+                material="
                 shader: flat;
                 opacity: 0;
                 transparent: true;
                 depthWrite: false;
-                side: double">
-            </a-plane>
-
+                side: double"
+              >
+              </a-plane>
+            </a-entity>
           </a-entity>
-
         </a-entity>
-      </a-entity>
 
-      <!-- =================================
-           MENU V9
-           TIDAK DIUBAH
-      ================================== -->
+        <!-- ================================
+           MENU UTAMA 3D V9
+      ================================= -->
 
-      <a-entity
-        id="menu3d"
-        position="0 0 0.10"
-        visible="false">
-
-        <a-entity
-          id="menuFloat"
-          imip-menu-3d
-
-          animation__float="
+        <a-entity id="menu3d" position="0 0 0.10" visible="false">
+          <a-entity
+            id="menuFloat"
+            imip-menu-3d
+            animation__float="
             property: position;
             from: 0 0 0;
             to: 0 0 0.012;
@@ -158,461 +129,523 @@
             dur: 2600;
             loop: true;
             easing: easeInOutSine"
-
-          animation__tilt="
+            animation__tilt="
             property: rotation;
             from: 0 -1.8 0;
             to: 0 1.8 0;
             dir: alternate;
             dur: 4200;
             loop: true;
-            easing: easeInOutSine">
-
-          <!-- JUDUL IMIP QUIZ -->
-          <a-text
-            id="menuTitleFallback"
-            value="IMIP QUIZ"
-            position="0 0.475 0.185"
-            align="center"
-            width="1.02"
-            color="#058901">
-          </a-text>
-
-          <a-text
-            value="PILIH MODUL"
-            position="0 0.315 0.179"
-            align="center"
-            width="0.84"
-            color="#058901">
-          </a-text>
-
-          <!-- MENU 1: BELAJAR PP -->
-          <a-entity
-            id="cardLearnPP"
-            position="-0.267 0.081 0">
-
-            <a-text
-              value="BELAJAR&#10;PERATURAN&#10;PERUSAHAAN"
-              position="0 0.012 0.219"
-              align="center"
-              anchor="center"
-              baseline="center"
-              width="0.52"
-              color="#045B12">
-            </a-text>
-
-            <a-plane
-              class="clickable"
-              data-action="learn-pp"
-              width="0.515"
-              height="0.246"
-              position="0 0 0.270"
-              material="
-                shader: flat;
-                transparent: true;
-                opacity: 0;
-                depthWrite: false;
-                side: double">
-            </a-plane>
-          </a-entity>
-
-          <!-- MENU 2: BELAJAR K3 -->
-          <a-entity
-            id="cardLearnK3"
-            position="0.267 0.081 0">
-
-            <a-text
-              value="BELAJAR&#10;KESELAMATAN&#10;KERJA (K3)"
-              position="0 0.012 0.219"
-              align="center"
-              anchor="center"
-              baseline="center"
-              width="0.52"
-              color="#045B12">
-            </a-text>
-
-            <a-plane
-              class="clickable"
-              data-action="learn-k3"
-              width="0.515"
-              height="0.246"
-              position="0 0 0.270"
-              material="
-                shader: flat;
-                transparent: true;
-                opacity: 0;
-                depthWrite: false;
-                side: double">
-            </a-plane>
-          </a-entity>
-
-          <!-- MENU 3: LATIHAN PP -->
-          <a-entity
-            id="cardQuizPP"
-            position="-0.267 -0.185 0">
-
-            <a-text
-              value="LATIHAN SOAL&#10;PERATURAN&#10;PERUSAHAAN"
-              position="0 0.012 0.219"
-              align="center"
-              anchor="center"
-              baseline="center"
-              width="0.52"
-              color="#045B12">
-            </a-text>
-
-            <a-plane
-              class="clickable"
-              data-action="quiz-pp"
-              width="0.515"
-              height="0.246"
-              position="0 0 0.270"
-              material="
-                shader: flat;
-                transparent: true;
-                opacity: 0;
-                depthWrite: false;
-                side: double">
-            </a-plane>
-          </a-entity>
-
-          <!-- MENU 4: LATIHAN K3 -->
-          <a-entity
-            id="cardQuizK3"
-            position="0.267 -0.185 0">
-
-            <a-text
-              value="LATIHAN SOAL&#10;KESELAMATAN&#10;KERJA (K3)"
-              position="0 0.012 0.219"
-              align="center"
-              anchor="center"
-              baseline="center"
-              width="0.52"
-              color="#045B12">
-            </a-text>
-
-            <a-plane
-              class="clickable"
-              data-action="quiz-k3"
-              width="0.515"
-              height="0.246"
-              position="0 0 0.270"
-              material="
-                shader: flat;
-                transparent: true;
-                opacity: 0;
-                depthWrite: false;
-                side: double">
-            </a-plane>
-          </a-entity>
-
-          <a-text
-            value="SENTUH KARTU UNTUK MEMULAI"
-            position="0 -0.412 0.154"
-            align="center"
-            width="0.84"
-            color="#226432">
-          </a-text>
-
-        </a-entity>
-      </a-entity>
-
-      <!-- =================================
-           CONTENT QUIZ V11
-           TAMPILAN 3D DIPERBAIKI
-      ================================== -->
-
-      <a-entity
-        id="content3d"
-        position="0 0 0.10"
-        visible="false">
-
-        <a-entity
-          id="contentFloat"
-          imip-content-3d
-
-          animation__float="
-            property: position;
-            from: 0 0 0;
-            to: 0 0 0.012;
-            dur: 2600;
-            dir: alternate;
-            loop: true;
             easing: easeInOutSine"
-
-          animation__tilt="
-            property: rotation;
-            from: 0 -1.4 0;
-            to: 0 1.4 0;
-            dur: 4300;
-            dir: alternate;
-            loop: true;
-            easing: easeInOutSine">
-
-          <!-- HEADER -->
-
-          <a-text
-            id="worldMode"
-            value="BELAJAR"
-            position="-0.50 0.833 0.246"
-            anchor="left"
-            align="left"
-            baseline="top"
-            width="1.00"
-            wrap-count="29"
-            color="#FFEAB8">
-          </a-text>
-
-          <a-text
-            id="worldTitle"
-            value="Judul"
-            position="-0.50 0.728 0.247"
-            anchor="left"
-            align="left"
-            baseline="top"
-            width="1.03"
-            wrap-count="26"
-            color="#FFFFFF">
-          </a-text>
-
-          <!-- TEKS MATERI / PERTANYAAN -->
-
-          <a-text
-            id="worldBody"
-            value="Isi akan muncul di sini."
-            position="-0.49 0.498 0.246"
-            anchor="left"
-            align="left"
-            baseline="top"
-            width="1.04"
-            wrap-count="31"
-            line-height="1.20"
-            color="#184C2B">
-          </a-text>
-
-          <!-- PILIHAN JAWABAN -->
-
-          <a-entity
-            id="worldChoices"
-            visible="false">
-
-            <!-- JAWABAN A -->
-            <a-plane
-              id="option0"
-              class="clickable"
-              data-action="answer-0"
-              position="0 -0.115 0.244"
-              width="1.025"
-              height="0.140"
-              color="#EBF8DC">
-            </a-plane>
-
+          >
+            <!-- JUDUL CADANGAN -->
             <a-text
-              id="optionText0"
-              value="A"
-              position="-0.49 -0.115 0.269"
-              anchor="left"
-              align="left"
-              baseline="center"
-              width="0.98"
-              wrap-count="29"
-              color="#075B1A">
-            </a-text>
-
-            <!-- JAWABAN B -->
-            <a-plane
-              id="option1"
-              class="clickable"
-              data-action="answer-1"
-              position="0 -0.317 0.244"
-              width="1.025"
-              height="0.140"
-              color="#EBF8DC">
-            </a-plane>
-
-            <a-text
-              id="optionText1"
-              value="B"
-              position="-0.49 -0.317 0.269"
-              anchor="left"
-              align="left"
-              baseline="center"
-              width="0.98"
-              wrap-count="29"
-              color="#075B1A">
-            </a-text>
-
-            <!-- JAWABAN C -->
-            <a-plane
-              id="option2"
-              class="clickable"
-              data-action="answer-2"
-              position="0 -0.519 0.244"
-              width="1.025"
-              height="0.140"
-              color="#EBF8DC">
-            </a-plane>
-
-            <a-text
-              id="optionText2"
-              value="C"
-              position="-0.49 -0.519 0.269"
-              anchor="left"
-              align="left"
-              baseline="center"
-              width="0.98"
-              wrap-count="29"
-              color="#075B1A">
-            </a-text>
-
-          </a-entity>
-
-          <!-- PETUNJUK -->
-
-          <a-text
-            id="worldHint"
-            value=""
-            position="0 -0.674 0.247"
-            anchor="center"
-            align="center"
-            baseline="center"
-            width="1.08"
-            wrap-count="38"
-            color="#43724A">
-          </a-text>
-
-          <!-- TOMBOL MENU -->
-
-          <a-entity
-            id="homeGroup"
-            position="-0.283 -0.827 0">
-
-            <a-plane
-              class="clickable"
-              data-action="home"
-              position="0 0 0.245"
-              width="0.53"
-              height="0.158"
-              color="#E6F7DE">
-            </a-plane>
-
-            <a-text
-              value="MENU"
-              position="0 -0.016 0.270"
+              id="menuTitleFallback"
+              value="IMIP QUIZ"
+              position="0 0.475 0.185"
               align="center"
-              width="0.43"
-              color="#075B1A">
+              width="1.02"
+              color="#058901"
+            >
             </a-text>
-          </a-entity>
-
-          <!-- TOMBOL LANJUT -->
-
-          <a-entity
-            id="nextGroup"
-            position="0.283 -0.827 0">
-
-            <a-plane
-              class="clickable"
-              data-action="next"
-              position="0 0 0.245"
-              width="0.53"
-              height="0.158"
-              color="#FD9802">
-            </a-plane>
 
             <a-text
-              id="nextText"
-              value="LANJUT"
-              position="0 -0.016 0.270"
+              value="PILIH MODUL"
+              position="0 0.315 0.179"
               align="center"
-              width="0.43"
-              color="#FFFFFF">
+              width="0.84"
+              color="#058901"
+            >
+            </a-text>
+
+            <!-- ==========================
+               KARTU 1: BELAJAR PP
+          =========================== -->
+
+            <a-entity id="cardLearnPP" position="-0.267 0.081 0">
+              <a-text
+                value="BELAJAR&#10;PERATURAN&#10;PERUSAHAAN"
+                position="0 0.012 0.219"
+                align="center"
+                anchor="center"
+                baseline="center"
+                width="0.52"
+                color="#045B12"
+              >
+              </a-text>
+
+              <a-plane
+                class="clickable"
+                data-action="learn-pp"
+                width="0.515"
+                height="0.246"
+                position="0 0 0.270"
+                material="
+                shader: flat;
+                transparent: true;
+                opacity: 0;
+                depthWrite: false;
+                side: double"
+              >
+              </a-plane>
+            </a-entity>
+
+            <!-- ==========================
+               KARTU 2: BELAJAR K3
+          =========================== -->
+
+            <a-entity id="cardLearnK3" position="0.267 0.081 0">
+              <a-text
+                value="BELAJAR&#10;KESELAMATAN&#10;KERJA (K3)"
+                position="0 0.012 0.219"
+                align="center"
+                anchor="center"
+                baseline="center"
+                width="0.52"
+                color="#045B12"
+              >
+              </a-text>
+
+              <a-plane
+                class="clickable"
+                data-action="learn-k3"
+                width="0.515"
+                height="0.246"
+                position="0 0 0.270"
+                material="
+                shader: flat;
+                transparent: true;
+                opacity: 0;
+                depthWrite: false;
+                side: double"
+              >
+              </a-plane>
+            </a-entity>
+
+            <!-- ==========================
+               KARTU 3: LATIHAN PP
+          =========================== -->
+
+            <a-entity id="cardQuizPP" position="-0.267 -0.185 0">
+              <a-text
+                value="LATIHAN SOAL&#10;PERATURAN&#10;PERUSAHAAN"
+                position="0 0.012 0.219"
+                align="center"
+                anchor="center"
+                baseline="center"
+                width="0.52"
+                color="#045B12"
+              >
+              </a-text>
+
+              <a-plane
+                class="clickable"
+                data-action="quiz-pp"
+                width="0.515"
+                height="0.246"
+                position="0 0 0.270"
+                material="
+                shader: flat;
+                transparent: true;
+                opacity: 0;
+                depthWrite: false;
+                side: double"
+              >
+              </a-plane>
+            </a-entity>
+
+            <!-- ==========================
+               KARTU 4: LATIHAN K3
+          =========================== -->
+
+            <a-entity id="cardQuizK3" position="0.267 -0.185 0">
+              <a-text
+                value="LATIHAN SOAL&#10;KESELAMATAN&#10;KERJA (K3)"
+                position="0 0.012 0.219"
+                align="center"
+                anchor="center"
+                baseline="center"
+                width="0.52"
+                color="#045B12"
+              >
+              </a-text>
+
+              <a-plane
+                class="clickable"
+                data-action="quiz-k3"
+                width="0.515"
+                height="0.246"
+                position="0 0 0.270"
+                material="
+                shader: flat;
+                transparent: true;
+                opacity: 0;
+                depthWrite: false;
+                side: double"
+              >
+              </a-plane>
+            </a-entity>
+
+            <!-- PETUNJUK MENU -->
+            <a-text
+              value="SENTUH KARTU UNTUK MEMULAI"
+              position="0 -0.412 0.154"
+              align="center"
+              width="0.84"
+              color="#226432"
+            >
             </a-text>
           </a-entity>
+        </a-entity>
 
+        <!-- =========================================
+     IMIP QUIZ V10
+     PAPAN MATERI, SOAL DAN HASIL 3D
+========================================= -->
+
+        <a-entity id="content3d" position="0 0 0.10" visible="false">
+          <a-entity
+            id="contentFloat"
+            imip-content-3d
+            animation__float="
+      property: position;
+      from: 0 0 0;
+      to: 0 0 0.012;
+      dur: 2600;
+      dir: alternate;
+      loop: true;
+      easing: easeInOutSine"
+            animation__tilt="
+      property: rotation;
+      from: 0 -1.4 0;
+      to: 0 1.4 0;
+      dur: 4300;
+      dir: alternate;
+      loop: true;
+      easing: easeInOutSine"
+          >
+            <!-- ===============================
+         HEADER PAPAN
+    ================================ -->
+
+            <a-text
+              id="worldMode"
+              value="BELAJAR"
+              position="-0.50 0.833 0.246"
+              anchor="left"
+              align="left"
+              baseline="top"
+              width="1.00"
+              wrap-count="29"
+              color="#FFEAB8"
+            >
+            </a-text>
+
+            <a-text
+              id="worldTitle"
+              value="Judul"
+              position="-0.50 0.728 0.247"
+              anchor="left"
+              align="left"
+              baseline="top"
+              width="1.03"
+              wrap-count="26"
+              color="#FFFFFF"
+            >
+            </a-text>
+
+            <!-- ===============================
+         KARTU MATERI / PERTANYAAN
+    ================================ -->
+
+            <a-text
+              id="worldBody"
+              value="Isi akan muncul di sini."
+              position="-0.49 0.498 0.246"
+              anchor="left"
+              align="left"
+              baseline="top"
+              width="1.04"
+              wrap-count="31"
+              line-height="1.20"
+              color="#184C2B"
+            >
+            </a-text>
+
+            <!-- ===============================
+         PILIHAN JAWABAN A, B, C
+    ================================ -->
+
+            <a-entity id="worldChoices" visible="false">
+              <!-- PILIHAN A -->
+
+              <a-plane
+                id="option0"
+                class="clickable"
+                data-action="answer-0"
+                position="0 -0.115 0.244"
+                width="1.025"
+                height="0.140"
+                color="#EBF8DC"
+              >
+              </a-plane>
+
+              <a-text
+                id="optionText0"
+                value="A"
+                position="-0.49 -0.115 0.269"
+                anchor="left"
+                align="left"
+                baseline="center"
+                width="0.98"
+                wrap-count="29"
+                color="#075B1A"
+              >
+              </a-text>
+
+              <!-- PILIHAN B -->
+
+              <a-plane
+                id="option1"
+                class="clickable"
+                data-action="answer-1"
+                position="0 -0.317 0.244"
+                width="1.025"
+                height="0.140"
+                color="#EBF8DC"
+              >
+              </a-plane>
+
+              <a-text
+                id="optionText1"
+                value="B"
+                position="-0.49 -0.317 0.269"
+                anchor="left"
+                align="left"
+                baseline="center"
+                width="0.98"
+                wrap-count="29"
+                color="#075B1A"
+              >
+              </a-text>
+
+              <!-- PILIHAN C -->
+
+              <a-plane
+                id="option2"
+                class="clickable"
+                data-action="answer-2"
+                position="0 -0.519 0.244"
+                width="1.025"
+                height="0.140"
+                color="#EBF8DC"
+              >
+              </a-plane>
+
+              <a-text
+                id="optionText2"
+                value="C"
+                position="-0.49 -0.519 0.269"
+                anchor="left"
+                align="left"
+                baseline="center"
+                width="0.98"
+                wrap-count="29"
+                color="#075B1A"
+              >
+              </a-text>
+            </a-entity>
+
+            <!-- ===============================
+         PETUNJUK JAWABAN
+    ================================ -->
+
+            <a-text
+              id="worldHint"
+              value=""
+              position="0 -0.674 0.247"
+              anchor="center"
+              align="center"
+              baseline="center"
+              width="1.08"
+              wrap-count="38"
+              color="#43724A"
+            >
+            </a-text>
+
+            <!-- ===============================
+         TOMBOL KEMBALI KE MENU
+    ================================ -->
+
+            <a-entity id="homeGroup" position="-0.283 -0.827 0">
+              <a-plane
+                class="clickable"
+                data-action="home"
+                position="0 0 0.245"
+                width="0.53"
+                height="0.158"
+                color="#E6F7DE"
+              >
+              </a-plane>
+
+              <a-text
+                value="MENU"
+                position="0 -0.016 0.270"
+                align="center"
+                width="0.43"
+                color="#075B1A"
+              >
+              </a-text>
+            </a-entity>
+
+            <!-- ===============================
+         TOMBOL LANJUT / LIHAT HASIL
+    ================================ -->
+
+            <a-entity id="nextGroup" position="0.283 -0.827 0">
+              <a-plane
+                class="clickable"
+                data-action="next"
+                position="0 0 0.245"
+                width="0.53"
+                height="0.158"
+                color="#FD9802"
+              >
+              </a-plane>
+
+              <a-text
+                id="nextText"
+                value="LANJUT"
+                position="0 -0.016 0.270"
+                align="center"
+                width="0.43"
+                color="#FFFFFF"
+              >
+              </a-text>
+            </a-entity>
+          </a-entity>
+        </a-entity>
+
+        <!-- ========================================
+             BELAJAR K3: GALERI APD 3D V12
+             HANYA TAMPIL PADA MENU BELAJAR K3
+        ========================================= -->
+        <a-entity id="k3Learn3d" position="0 0 0.14" visible="false">
+          <a-entity
+            id="k3BoardFloat"
+            animation__float="property: position; from: 0 0 0; to: 0 0.012 0; dir: alternate; dur: 2700; loop: true; easing: easeInOutSine">
+
+            <!-- Papan tebal sesuai tema welcome IMIP -->
+            <a-box position="0 -0.012 -0.032" width="1.52" height="1.42" depth="0.085" color="#045B12"></a-box>
+            <a-box position="0 0 -0.002" width="1.48" height="1.38" depth="0.047" color="#FD9802"></a-box>
+            <a-plane position="0 0 0.027" width="1.43" height="1.33" color="#FFFFFF"></a-plane>
+
+            <!-- Header -->
+            <a-box position="0 0.548 0.061" width="1.42" height="0.17" depth="0.036" color="#058901"></a-box>
+            <a-text value="BELAJAR KESELAMATAN KERJA" position="0 0.528 0.091" align="center" width="1.26" color="#FFFFFF"></a-text>
+            <a-text id="k3Counter" value="1 / 8" position="0 0.410 0.068" align="center" width="0.61" color="#058901"></a-text>
+
+            <!-- Area model sebelah kiri -->
+            <a-box position="-0.35 0.000 0.050" width="0.65" height="0.69" depth="0.035" color="#E5F5DB"></a-box>
+            <a-plane position="-0.35 -0.286 0.074" width="0.53" height="0.030" color="#86D101"></a-plane>
+            <a-entity
+              id="k3Model3d"
+              k3-apd-model="type: helmet"
+              position="-0.35 0.02 0.222"
+              scale="1 1 1">
+            </a-entity>
+            <a-text value="OBJEK BERPUTAR OTOMATIS" position="-0.35 -0.374 0.08" align="center" width="0.58" color="#43774B"></a-text>
+
+            <!-- Penjelasan di sebelah kanan -->
+            <a-plane position="0.37 0.005 0.054" width="0.66" height="0.70" color="#F7FFF2"></a-plane>
+            <a-plane position="0.067 0.005 0.065" width="0.013" height="0.62" color="#86D101"></a-plane>
+            <a-text
+              id="k3ItemTitle" value="HELM KESELAMATAN"
+              position="0.09 0.284 0.082" align="left" anchor="left" baseline="top"
+              width="0.56" wrap-count="18" color="#058901">
+            </a-text>
+            <a-text
+              id="k3ItemDescription" value="Penjelasan APD akan muncul di sini."
+              position="0.09 0.128 0.082" align="left" anchor="left" baseline="top"
+              width="0.57" wrap-count="23" color="#184C2B">
+            </a-text>
+            <a-text
+              id="k3ItemCheck" value="Periksa kondisi APD."
+              position="0.09 -0.197 0.082" align="left" anchor="left" baseline="top"
+              width="0.57" wrap-count="25" color="#A85C00">
+            </a-text>
+
+            <!-- Navigasi: semua tombol langsung di objek AR -->
+            <a-plane class="clickable" data-action="home"
+              position="-0.465 -0.558 0.095" width="0.40" height="0.145" color="#86D101"></a-plane>
+            <a-text value="MENU" position="-0.465 -0.579 0.115"
+              width="0.36" align="center" color="#164B20"></a-text>
+
+            <a-entity id="k3PrevGroup" visible="false">
+              <a-plane class="clickable" data-action="k3-prev"
+                position="0 -0.558 0.095" width="0.40" height="0.145" color="#E8F6DF"></a-plane>
+              <a-text value="SEBELUMNYA" position="0 -0.579 0.115"
+                width="0.36" align="center" color="#166127"></a-text>
+            </a-entity>
+
+            <a-plane class="clickable" data-action="next"
+              position="0.465 -0.558 0.095" width="0.40" height="0.145" color="#FD9802"></a-plane>
+            <a-text id="k3NextLabel" value="LANJUT" position="0.465 -0.579 0.115"
+              width="0.36" align="center" color="#FFFFFF"></a-text>
+          </a-entity>
         </a-entity>
       </a-entity>
+    </a-scene>
 
-    </a-entity>
-  </a-scene>
-
-  <!-- =================================
-       HEADER WEB
-  ================================== -->
-
-  <header class="app-header">
-
-    <div class="brand">
-      <strong>IMIP QUIZ</strong>
-      <small>PEMBELAJARAN & LATIHAN HRD</small>
-    </div>
-
-    <span
-      class="status"
-      id="markerStatus"
-      aria-live="polite">
-      Menyiapkan kamera...
-    </span>
-
-  </header>
-
-  <!-- =================================
-       PANEL KONTROL SENTUH
-  ================================== -->
-
-  <section
-    id="touchDock"
-    class="touch-dock collapsed"
-    aria-label="Kontrol IMIP QUIZ"
-    hidden>
-
-    <div class="dock-header">
-
-      <div>
-        <small>KONTROL SENTUH</small>
-        <strong id="dockTitle">Menu IMIP QUIZ</strong>
+    <!-- HEADER -->
+    <header class="app-header">
+      <div class="brand">
+        <strong>IMIP QUIZ</strong>
+        <small>PEMBELAJARAN & LATIHAN HRD</small>
       </div>
 
-      <button
-        id="toggleDock"
-        type="button"
-        aria-label="Buka atau tutup panel">
-        +
-      </button>
+      <span class="status" id="markerStatus" aria-live="polite">
+        Menyiapkan kamera...
+      </span>
+    </header>
 
-    </div>
+    <!-- PANEL SENTUH -->
+    <section
+      id="touchDock"
+      class="touch-dock collapsed"
+      aria-label="Kontrol IMIP QUIZ"
+      hidden
+    >
+      <div class="dock-header">
+        <div>
+          <small>KONTROL SENTUH</small>
+          <strong id="dockTitle">Menu IMIP QUIZ</strong>
+        </div>
 
-    <div class="dock-content">
-
-      <p id="dockDescription">
-        Pilih modul pembelajaran atau latihan.
-      </p>
-
-      <div
-        id="touchActions"
-        class="touch-actions">
+        <button
+          id="toggleDock"
+          type="button"
+          aria-label="Buka atau tutup panel"
+        >
+          +
+        </button>
       </div>
 
-      <p class="note">
-        Simulasi akademik; bukan SOP resmi PT IRNC.
-      </p>
+      <div class="dock-content">
+        <p id="dockDescription">Pilih modul pembelajaran atau latihan.</p>
 
-    </div>
-  </section>
+        <div id="touchActions" class="touch-actions"></div>
 
-  <!-- TOMBOL MULAI CADANGAN -->
+        <p class="note">Simulasi akademik; bukan SOP resmi PT IRNC.</p>
+      </div>
+    </section>
 
-  <button
-    id="startBackup"
-    type="button"
-    class="start-backup"
-    hidden>
-    <span aria-hidden="true">▶</span>
-    MULAI QUIZ
-  </button>
+    <!-- TOMBOL MULAI CADANGAN -->
+    <button id="startBackup" type="button" class="start-backup" hidden>
+      <span aria-hidden="true">▶</span>
+      MULAI QUIZ
+    </button>
 
-  <!-- LOGIKA APLIKASI TETAP -->
-  <script src="app.js?v=8"></script>
-
-</body>
+    <script src="app.js?v=12"></script>
+  </body>
 </html>

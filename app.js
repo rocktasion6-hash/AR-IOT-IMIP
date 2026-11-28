@@ -1,28 +1,31 @@
 
 "use strict";
 
-// ================================================
-// IMIP QUIZ - MINDAR V8
+// ========================================
+// IMIP QUIZ - MINDAR V12
 // APP.JS
-// ================================================
-// FITUR:
-// - Scan logo IMIP
-// - Pembuka IMIP QUIZ full 3D
-// - Tombol MULAI interaktif
-// - Area sentuh cadangan
-// - Empat menu AR
-// - Pembelajaran PP dan K3
-// - Latihan pilihan ganda
-// - Hasil nilai
+// ========================================
 //
-// Materi dan soal merupakan contoh akademik.
+// Fitur:
+// 1. Welcome IMIP QUIZ 3D
+// 2. Empat menu utama
+// 3. Belajar PP
+// 4. Belajar K3 dengan objek APD 3D
+// 5. Delapan objek APD
+// 6. Navigasi sebelumnya dan selanjutnya
+// 7. Latihan soal PP dan K3
+// 8. Perhitungan nilai otomatis
+// 9. Deteksi marker IMIP
+// 10. Tombol MULAI alternatif
+//
+// Materi merupakan simulasi akademik.
 // Bukan SOP resmi PT IRNC.
-// ================================================
+// ========================================
 
 
-// ================================================
+// ========================================
 // 1. DATA MATERI DAN SOAL
-// ================================================
+// ========================================
 
 const modules = {
 
@@ -34,9 +37,9 @@ const modules = {
       {
         title: "Pengenalan PP",
         body:
-          "Peraturan Perusahaan berisi ketentuan kerja, " +
-          "hak, dan kewajiban yang perlu dipahami " +
-          "oleh karyawan."
+          "Peraturan Perusahaan berisi ketentuan " +
+          "kerja, hak, dan kewajiban yang perlu " +
+          "dipahami oleh karyawan."
       },
       {
         title: "Kedisiplinan",
@@ -67,7 +70,6 @@ const modules = {
 
         correct: 0
       },
-
       {
         question:
           "Apa yang dilakukan jika berhalangan hadir?",
@@ -80,7 +82,6 @@ const modules = {
 
         correct: 1
       },
-
       {
         question:
           "Jika ada kendala kerja, tindakan yang tepat adalah?",
@@ -96,7 +97,6 @@ const modules = {
     ]
   },
 
-
   k3: {
 
     name: "Keselamatan Kerja (K3)",
@@ -105,23 +105,23 @@ const modules = {
       {
         title: "Pengenalan K3",
         body:
-          "Keselamatan dan Kesehatan Kerja bertujuan " +
-          "membantu mencegah kecelakaan dan risiko kerja."
+          "Keselamatan dan Kesehatan Kerja " +
+          "bertujuan membantu mencegah " +
+          "kecelakaan dan risiko kerja."
       },
-
       {
         title: "Penggunaan APD",
         body:
-          "Gunakan Alat Pelindung Diri sesuai bahaya " +
-          "dan jenis pekerjaan, serta periksa " +
-          "kondisinya sebelum digunakan."
+          "Gunakan Alat Pelindung Diri sesuai " +
+          "bahaya dan jenis pekerjaan, serta " +
+          "periksa kondisinya sebelum digunakan."
       },
-
       {
         title: "Respons Alarm",
         body:
-          "Saat alarm bahaya aktif, ikuti prosedur " +
-          "darurat dan arahan petugas berwenang."
+          "Saat alarm bahaya aktif, ikuti " +
+          "prosedur darurat dan arahan " +
+          "petugas berwenang."
       }
     ],
 
@@ -138,10 +138,10 @@ const modules = {
 
         correct: 1
       },
-
       {
         question:
-          "Sebelum masuk area berbahaya, karyawan harus?",
+          "Sebelum masuk area berbahaya, " +
+          "karyawan harus?",
 
         options: [
           "Memakai APD yang sesuai",
@@ -151,10 +151,10 @@ const modules = {
 
         correct: 0
       },
-
       {
         question:
-          "Saat alarm darurat aktif, apa tindakan yang tepat?",
+          "Saat alarm darurat aktif, " +
+          "apa tindakan yang tepat?",
 
         options: [
           "Mengabaikan alarm",
@@ -166,16 +166,15 @@ const modules = {
       }
     ]
   }
+
 };
 
 
-// ================================================
-// 2. STATUS APLIKASI
-// ================================================
+// ========================================
+// 2. STATE APLIKASI
+// ========================================
 
 const state = {
-
-  // welcome -> menu -> learn / quiz -> result
 
   screen: "welcome",
 
@@ -195,42 +194,46 @@ const state = {
 };
 
 
-// ================================================
-// 3. FUNGSI BANTUAN
-// ================================================
+// ========================================
+// 3. HELPER
+// ========================================
 
 const $ = (id) => document.getElementById(id);
 
 
-// Mengubah teks objek 3D
+// Mengubah tulisan objek 3D
 function setText(id, text) {
 
   const element = $(id);
 
   if (element) {
+
     element.setAttribute(
       "value",
       String(text)
     );
+
   }
 }
 
 
-// Menampilkan / menyembunyikan objek
+// Menampilkan atau menyembunyikan objek
 function setVisible(id, visible) {
 
   const element = $(id);
 
   if (element) {
+
     element.setAttribute(
       "visible",
       Boolean(visible)
     );
+
   }
 }
 
 
-// Mengatur panel sentuh
+// Membuka atau menutup panel sentuh
 function setDockOpen(open) {
 
   $("touchDock").classList.toggle(
@@ -243,14 +246,15 @@ function setDockOpen(open) {
 }
 
 
-// Menghapus tombol lama
+// Menghapus tombol panel sebelumnya
 function clearButtons() {
 
   $("touchActions").replaceChildren();
+
 }
 
 
-// Membuat tombol HTML
+// Membuat tombol panel HTML
 function addButton(
   text,
   callback,
@@ -258,7 +262,8 @@ function addButton(
   selected = false
 ) {
 
-  const button = document.createElement("button");
+  const button =
+    document.createElement("button");
 
   button.type = "button";
 
@@ -283,110 +288,66 @@ function addButton(
 }
 
 
-// Mengubah deskripsi panel
+// Menampilkan penjelasan pada panel
 function describe(text) {
 
   $("dockDescription").textContent = text;
+
 }
 
 
-// Mengatur status marker
-function setMarkerStatus(text, found = false, error = false) {
-
-  const status = $("markerStatus");
-
-  if (!status) return;
-
-  status.textContent = text;
-
-  status.classList.toggle(
-    "found",
-    found
-  );
-
-  status.classList.toggle(
-    "error",
-    error
-  );
-}
-
-
-// ================================================
-// 4. TOMBOL MULAI ALTERNATIF
-// ================================================
-
-function syncStartBackup() {
-
-  const button = $("startBackup");
-
-  if (!button) return;
-
-  const shouldShow =
-    state.markerFound &&
-    state.screen === "welcome" &&
-    !state.started;
-
-  button.hidden = !shouldShow;
-}
-
-
-// ================================================
-// 5. MEMULAI QUIZ
-// ================================================
+// ========================================
+// 4. MULAI APLIKASI
+// ========================================
 
 function startExperience() {
 
-  // Marker harus terlihat
-  if (!state.markerFound) return;
+  // Logo harus terdeteksi
+  if (!state.markerFound) {
+    return;
+  }
 
-  // Tidak boleh dijalankan dua kali
-  if (state.started) return;
+  // Tidak boleh mulai dua kali
+  if (state.started) {
+    return;
+  }
 
-  // Hanya pada tampilan welcome
-  if (state.screen !== "welcome") return;
+  if (state.screen !== "welcome") {
+    return;
+  }
 
   state.started = true;
 
   state.screen = "menu";
 
-  state.category = null;
-
-  state.lessonIndex = 0;
-
-  state.questionIndex = 0;
-
-  state.selectedAnswer = null;
-
-  state.score = 0;
-
   setDockOpen(false);
 
   render();
 
-  setMarkerStatus(
-    "Pilih menu IMIP QUIZ",
-    true
-  );
+  $("markerStatus").textContent =
+    "Pilih menu IMIP QUIZ";
 
   syncStartBackup();
-
-  console.log(
-    "IMIP QUIZ: tombol MULAI berhasil ditekan"
-  );
 }
 
 
-// ================================================
-// 6. BUKA MODUL
-// ================================================
+// ========================================
+// 5. MEMBUKA MODUL
+// ========================================
 
 function openModule(screen, category) {
 
-  if (!state.started) return;
+  if (!state.started) {
+    return;
+  }
 
-  if (!modules[category]) return;
+  if (!modules[category]) {
+    return;
+  }
 
-  if (!["learn", "quiz"].includes(screen)) return;
+  if (!["learn", "quiz"].includes(screen)) {
+    return;
+  }
 
   state.screen = screen;
 
@@ -400,19 +361,28 @@ function openModule(screen, category) {
 
   state.score = 0;
 
-  setDockOpen(false);
+  // Saat Belajar K3, panel sentuh ditutup
+  // supaya papan APD terlihat penuh.
+  //
+  // Panel bisa dibuka dengan tombol +.
+
+  setDockOpen(
+    !(screen === "learn" && category === "k3")
+  );
 
   render();
 }
 
 
-// ================================================
-// 7. KEMBALI KE MENU
-// ================================================
+// ========================================
+// 6. KEMBALI KE MENU
+// ========================================
 
 function goHome() {
 
-  if (!state.started) return;
+  if (!state.started) {
+    return;
+  }
 
   state.screen = "menu";
 
@@ -432,24 +402,23 @@ function goHome() {
 }
 
 
-// ================================================
-// 8. PILIH JAWABAN
-// ================================================
+// ========================================
+// 7. MEMILIH JAWABAN SOAL
+// ========================================
 
 function chooseAnswer(index) {
 
-  if (state.screen !== "quiz") return;
+  if (state.screen !== "quiz") {
+    return;
+  }
 
-  // Satu soal hanya bisa dijawab sekali
-  if (state.selectedAnswer !== null) return;
+  if (state.selectedAnswer !== null) {
+    return;
+  }
 
-  const module = modules[state.category];
-
-  if (!module) return;
-
-  const question = module.questions[state.questionIndex];
-
-  if (!question) return;
+  const question =
+    modules[state.category]
+      .questions[state.questionIndex];
 
   if (
     !Number.isInteger(index) ||
@@ -462,24 +431,63 @@ function chooseAnswer(index) {
   state.selectedAnswer = index;
 
   if (index === question.correct) {
-    state.score += 1;
+    state.score++;
   }
 
   render();
 }
 
 
-// ================================================
-// 9. TOMBOL LANJUT
-// ================================================
+// ========================================
+// 8. LANGKAH BERIKUTNYA
+// ========================================
 
 function nextStep() {
 
   const module = modules[state.category];
 
-  if (!module) return;
+  if (!module) {
+    return;
+  }
 
-  // MATERI
+  // --------------------------------------
+  // GALERI 8 OBJEK APD K3
+  // --------------------------------------
+
+  if (
+    state.screen === "learn" &&
+    state.category === "k3"
+  ) {
+
+    const count =
+      (window.IMIP_K3_ITEMS || []).length;
+
+    if (!count) {
+      return;
+    }
+
+    // Objek berikutnya
+    if (state.lessonIndex < count - 1) {
+
+      state.lessonIndex++;
+
+      render();
+
+    } else {
+
+      // Setelah objek terakhir,
+      // langsung masuk latihan K3.
+      openModule("quiz", "k3");
+
+    }
+
+    return;
+  }
+
+  // --------------------------------------
+  // BELAJAR PERATURAN PERUSAHAAN
+  // --------------------------------------
+
   if (state.screen === "learn") {
 
     if (
@@ -502,7 +510,10 @@ function nextStep() {
     return;
   }
 
-  // SOAL
+  // --------------------------------------
+  // LATIHAN SOAL
+  // --------------------------------------
+
   if (state.screen === "quiz") {
 
     if (state.selectedAnswer === null) {
@@ -528,81 +539,127 @@ function nextStep() {
     return;
   }
 
-  // HASIL
+  // --------------------------------------
+  // HASIL LATIHAN
+  // --------------------------------------
+
   if (state.screen === "result") {
 
     openModule(
       "quiz",
       state.category
     );
+
   }
 }
 
 
-// ================================================
-// 10. AKSI TOMBOL AR
-// ================================================
+// ========================================
+// 9. AKSI TOMBOL 3D
+// ========================================
 
 function handleAction(action) {
 
-  if (!action) return;
-
-  // MULAI
   if (action === "start") {
+
     startExperience();
+
     return;
   }
 
-  if (!state.started) return;
+  if (!state.started) {
+    return;
+  }
 
-  // MENU
   const menuActions = {
+
     "learn-pp": ["learn", "pp"],
+
     "learn-k3": ["learn", "k3"],
+
     "quiz-pp": ["quiz", "pp"],
+
     "quiz-k3": ["quiz", "k3"]
+
   };
+
+  // --------------------------------------
+  // EMPAT MENU UTAMA
+  // --------------------------------------
 
   if (menuActions[action]) {
 
     if (state.screen === "menu") {
 
-      const [screen, category] =
-        menuActions[action];
+      openModule(
+        ...menuActions[action]
+      );
 
-      openModule(screen, category);
     }
 
     return;
   }
 
-  // KEMBALI
+  // --------------------------------------
+  // KEMBALI MENU
+  // --------------------------------------
+
   if (action === "home") {
+
     goHome();
+
     return;
   }
 
-  // LANJUT
+  // --------------------------------------
+  // OBJEK APD SEBELUMNYA
+  // --------------------------------------
+
+  if (action === "k3-prev") {
+
+    if (
+      state.screen === "learn" &&
+      state.category === "k3" &&
+      state.lessonIndex > 0
+    ) {
+
+      state.lessonIndex--;
+
+      render();
+
+    }
+
+    return;
+  }
+
+  // --------------------------------------
+  // TOMBOL LANJUT
+  // --------------------------------------
+
   if (action === "next") {
+
     nextStep();
+
     return;
   }
 
-  // JAWABAN
+  // --------------------------------------
+  // PILIHAN JAWABAN A, B, C
+  // --------------------------------------
+
   if (action.startsWith("answer-")) {
 
-    const index = Number(
-      action.slice(7)
+    chooseAnswer(
+      Number(action.slice(7))
     );
 
-    chooseAnswer(index);
   }
 }
 
 
-// ================================================
-// 11. TAMPILKAN EMPAT MENU
-// ================================================
+// ========================================
+// 10. TAMPILKAN EMPAT MENU
+// ========================================
 
 function renderMenu() {
 
@@ -611,8 +668,7 @@ function renderMenu() {
 
   describe(
     "Sentuh salah satu dari empat menu " +
-    "3D di atas logo IMIP, atau gunakan " +
-    "kontrol sentuh."
+    "pada logo IMIP, atau gunakan kontrol ini."
   );
 
   addButton(
@@ -634,12 +690,13 @@ function renderMenu() {
     "Latihan Soal K3",
     () => openModule("quiz", "k3")
   );
+
 }
 
 
-// ================================================
-// 12. TAMPILKAN MATERI
-// ================================================
+// ========================================
+// 11. BELAJAR PP
+// ========================================
 
 function renderLearn() {
 
@@ -648,17 +705,16 @@ function renderLearn() {
   const lesson =
     module.lessons[state.lessonIndex];
 
-  const total = module.lessons.length;
-
-  const lastLesson =
-    state.lessonIndex === total - 1;
+  const last =
+    state.lessonIndex ===
+    module.lessons.length - 1;
 
   $("dockTitle").textContent =
     module.name;
 
   setText(
     "worldMode",
-    `BELAJAR ${state.lessonIndex + 1}/${total}`
+    `BELAJAR ${state.lessonIndex + 1}/${module.lessons.length}`
   );
 
   setText(
@@ -673,20 +729,19 @@ function renderLearn() {
 
   setText(
     "worldHint",
-    "Baca materi, lalu tekan LANJUT."
+    "Baca materi, kemudian tekan LANJUT."
   );
 
   setText(
     "nextText",
-    lastLesson
-      ? "MULAI SOAL"
-      : "LANJUT"
+    last ? "MULAI SOAL" : "LANJUT"
   );
 
   describe(
     `${lesson.title}\n\n` +
     `${lesson.body}\n\n` +
-    `Materi ${state.lessonIndex + 1} dari ${total}`
+    `Materi ${state.lessonIndex + 1} ` +
+    `dari ${module.lessons.length}`
   );
 
   addButton(
@@ -695,18 +750,143 @@ function renderLearn() {
   );
 
   addButton(
-    lastLesson
+    last
       ? "Mulai Latihan Soal"
       : "Materi Berikutnya",
     nextStep,
     true
   );
+
 }
 
 
-// ================================================
-// 13. TAMPILKAN KUIS
-// ================================================
+// ========================================
+// 12. BELAJAR K3 DENGAN OBJEK APD 3D
+// ========================================
+
+function renderK3Learn() {
+
+  const items = window.IMIP_K3_ITEMS || [];
+
+  const item =
+    items[state.lessonIndex];
+
+  if (!item) {
+
+    $("dockTitle").textContent =
+      "Belajar K3";
+
+    describe(
+      "Data APD belum dimuat. " +
+      "Periksa file k3-learn-3d.js."
+    );
+
+    return;
+  }
+
+  const last =
+    state.lessonIndex === items.length - 1;
+
+  $("dockTitle").textContent =
+    `${item.name} ` +
+    `(${state.lessonIndex + 1}/${items.length})`;
+
+  // --------------------------------------
+  // TULISAN DI PAPAN AR K3
+  // --------------------------------------
+
+  setText(
+    "k3Counter",
+    `OBJEK ${state.lessonIndex + 1} / ${items.length}`
+  );
+
+  setText(
+    "k3ItemTitle",
+    item.name
+  );
+
+  setText(
+    "k3ItemDescription",
+    item.description
+  );
+
+  setText(
+    "k3ItemCheck",
+    `PERIKSA: ${item.check}`
+  );
+
+  setText(
+    "k3NextLabel",
+    last ? "MULAI SOAL" : "LANJUT"
+  );
+
+  // Tombol SEBELUMNYA hanya muncul
+  // setelah objek pertama.
+  setVisible(
+    "k3PrevGroup",
+    state.lessonIndex > 0
+  );
+
+  // --------------------------------------
+  // PERGANTIAN OBJEK 3D
+  // --------------------------------------
+
+  const model = $("k3Model3d");
+
+  if (model) {
+
+    model.setAttribute(
+      "k3-apd-model",
+      "type",
+      item.type
+    );
+
+  }
+
+  // --------------------------------------
+  // PANEL SENTUH HTML
+  // --------------------------------------
+
+  describe(
+    `${item.name}\n\n` +
+    `${item.description}\n\n` +
+    `${item.check}`
+  );
+
+  addButton(
+    "Kembali ke Menu",
+    goHome
+  );
+
+  if (state.lessonIndex > 0) {
+
+    addButton(
+      "Objek Sebelumnya",
+      () => {
+
+        state.lessonIndex--;
+
+        render();
+
+      }
+    );
+
+  }
+
+  addButton(
+    last
+      ? "Mulai Latihan K3"
+      : "Objek Berikutnya",
+    nextStep,
+    true
+  );
+
+}
+
+
+// ========================================
+// 13. TAMPILKAN LATIHAN SOAL
+// ========================================
 
 function renderQuiz() {
 
@@ -715,20 +895,19 @@ function renderQuiz() {
   const question =
     module.questions[state.questionIndex];
 
-  const total = module.questions.length;
-
   const answered =
     state.selectedAnswer !== null;
 
-  const lastQuestion =
-    state.questionIndex === total - 1;
+  const last =
+    state.questionIndex ===
+    module.questions.length - 1;
 
   $("dockTitle").textContent =
     module.name;
 
   setText(
     "worldMode",
-    `SOAL ${state.questionIndex + 1}/${total}`
+    `SOAL ${state.questionIndex + 1}/${module.questions.length}`
   );
 
   setText(
@@ -750,55 +929,53 @@ function renderQuiz() {
 
   setText(
     "nextText",
-    lastQuestion
-      ? "LIHAT HASIL"
-      : "LANJUT"
+    last ? "LIHAT HASIL" : "LANJUT"
   );
 
-  // Tombol lanjut muncul setelah jawaban
   setVisible(
     "nextGroup",
     answered
   );
 
   describe(
-    `Soal ${state.questionIndex + 1} dari ${total}\n\n` +
+    `Soal ${state.questionIndex + 1} ` +
+    `dari ${module.questions.length}\n\n` +
     question.question +
-    (answered
-      ? "\n\nJawaban dicatat."
-      : "")
+    (
+      answered
+        ? "\n\nJawaban dicatat."
+        : ""
+    )
   );
 
-  // Tiga pilihan jawaban
-  question.options.forEach((option, index) => {
+  question.options.forEach(
+    (option, index) => {
 
-    const letter = "ABC"[index];
+      setText(
+        `optionText${index}`,
+        `${"ABC"[index]}. ${option}`
+      );
 
-    setText(
-      `optionText${index}`,
-      `${letter}. ${option}`
-    );
+      const plane = $(`option${index}`);
 
-    const plane = $(`option${index}`);
-
-    if (plane) {
       plane.setAttribute(
         "color",
         state.selectedAnswer === index
           ? "#FFD28B"
           : "#EBF8DC"
       );
+
+      const button = addButton(
+        `${"ABC"[index]}. ${option}`,
+        () => chooseAnswer(index),
+        false,
+        state.selectedAnswer === index
+      );
+
+      button.disabled = answered;
+
     }
-
-    const button = addButton(
-      `${letter}. ${option}`,
-      () => chooseAnswer(index),
-      false,
-      state.selectedAnswer === index
-    );
-
-    button.disabled = answered;
-  });
+  );
 
   addButton(
     "Kembali ke Menu",
@@ -808,19 +985,21 @@ function renderQuiz() {
   if (answered) {
 
     addButton(
-      lastQuestion
+      last
         ? "Lihat Hasil Latihan"
         : "Soal Berikutnya",
       nextStep,
       true
     );
+
   }
+
 }
 
 
-// ================================================
-// 14. TAMPILKAN HASIL
-// ================================================
+// ========================================
+// 14. TAMPILKAN HASIL NILAI
+// ========================================
 
 function renderResult() {
 
@@ -830,10 +1009,9 @@ function renderResult() {
 
   const correct = state.score;
 
-  const wrong = total - correct;
-
-  const score =
-    Math.round((correct / total) * 100);
+  const score = Math.round(
+    (correct / total) * 100
+  );
 
   $("dockTitle").textContent =
     "Hasil Latihan";
@@ -869,8 +1047,7 @@ function renderResult() {
     `Nilai: ${score}/100\n` +
     `Jumlah soal: ${total}\n` +
     `Benar: ${correct}\n` +
-    `Salah: ${wrong}\n\n` +
-    "Hasil ini merupakan simulasi akademik."
+    `Salah: ${total - correct}`
   );
 
   addButton(
@@ -886,12 +1063,13 @@ function renderResult() {
     ),
     true
   );
+
 }
 
 
-// ================================================
+// ========================================
 // 15. RENDER UTAMA
-// ================================================
+// ========================================
 
 function render() {
 
@@ -904,66 +1082,98 @@ function render() {
   const quiz =
     state.screen === "quiz";
 
-  // Pembuka
-  setVisible("welcome3d", welcome);
+  const k3Learn =
+    state.screen === "learn" &&
+    state.category === "k3";
 
-  // Empat menu
-  setVisible("menu3d", menu);
-
-  // Papan isi
+  // Welcome
   setVisible(
-    "content3d",
-    !welcome && !menu
+    "welcome3d",
+    welcome
   );
 
-  // Pilihan jawaban
+  // Empat menu
+  setVisible(
+    "menu3d",
+    menu
+  );
+
+  // Galeri APD K3
+  setVisible(
+    "k3Learn3d",
+    k3Learn
+  );
+
+  // Materi PP, soal dan nilai
+  setVisible(
+    "content3d",
+    !welcome && !menu && !k3Learn
+  );
+
+  // Jawaban A, B, C
   setVisible(
     "worldChoices",
     quiz
   );
 
-  // Tombol lanjut
+  // Tombol LANJUT
   setVisible(
     "nextGroup",
     !welcome && !menu && !quiz
   );
 
-  // Panel sentuh
   $("touchDock").hidden = welcome;
 
   syncStartBackup();
 
   clearButtons();
 
-  if (welcome) {
-    return;
-  }
-
   if (menu) {
+
     renderMenu();
-  }
 
-  else if (state.screen === "learn") {
+  } else if (k3Learn) {
+
+    renderK3Learn();
+
+  } else if (state.screen === "learn") {
+
     renderLearn();
-  }
 
-  else if (quiz) {
+  } else if (quiz) {
+
     renderQuiz();
-  }
 
-  else if (state.screen === "result") {
+  } else if (state.screen === "result") {
+
     renderResult();
+
   }
 }
 
 
-// ================================================
+// ========================================
 // 16. TOMBOL MULAI CADANGAN
-// ================================================
+// ========================================
 
-// Area klik transparan di AR bergerak bersama
-// papan. Jika klik A-Frame tidak tertangkap,
-// posisi hitbox diproyeksikan ke layar HP.
+function syncStartBackup() {
+
+  const button = $("startBackup");
+
+  if (!button) {
+    return;
+  }
+
+  button.hidden = !(
+    state.markerFound &&
+    state.screen === "welcome"
+  );
+}
+
+
+// ========================================
+// 17. SENTUHAN CADANGAN PADA KANVAS AR
+// ========================================
 
 function installPointerFallback(scene) {
 
@@ -971,7 +1181,9 @@ function installPointerFallback(scene) {
 
     const canvas = scene.canvas;
 
-    if (!canvas) return;
+    if (!canvas) {
+      return;
+    }
 
     if (canvas.dataset.imipTouchReady) {
       return;
@@ -983,30 +1195,40 @@ function installPointerFallback(scene) {
       "pointerup",
       (event) => {
 
-        if (!state.markerFound) return;
-
-        if (state.started) return;
-
-        if (state.screen !== "welcome") return;
+        if (
+          !state.markerFound ||
+          state.screen !== "welcome"
+        ) {
+          return;
+        }
 
         const hit = $("start3dHit");
 
         const camera = scene.camera;
 
-        if (!hit || !hit.object3D || !camera) {
+        if (
+          !hit ||
+          !hit.object3D ||
+          !camera
+        ) {
           return;
         }
 
         const width =
-          Number(hit.getAttribute("width")) || 1.00;
+          Number(hit.getAttribute("width")) ||
+          0.92;
 
         const height =
-          Number(hit.getAttribute("height")) || 0.27;
+          Number(hit.getAttribute("height")) ||
+          0.34;
 
         const rect =
           canvas.getBoundingClientRect();
 
-        if (!rect.width || !rect.height) {
+        if (
+          !rect.width ||
+          !rect.height
+        ) {
           return;
         }
 
@@ -1019,62 +1241,76 @@ function installPointerFallback(scene) {
 
         const vertices = [
           [-width / 2, -height / 2],
-          [ width / 2, -height / 2],
-          [-width / 2,  height / 2],
-          [ width / 2,  height / 2]
+          [width / 2, -height / 2],
+          [-width / 2, height / 2],
+          [width / 2, height / 2]
         ];
 
         const THREE = AFRAME.THREE;
 
-        const points = vertices.map(([x, y]) => {
+        const points = vertices.map(
+          ([x, y]) => {
 
-          const point = new THREE.Vector3(
-            x,
-            y,
-            0
-          );
+            const point =
+              new THREE.Vector3(
+                x,
+                y,
+                0
+              );
 
-          point.applyMatrix4(
-            hit.object3D.matrixWorld
-          );
+            point.applyMatrix4(
+              hit.object3D.matrixWorld
+            );
 
-          point.project(camera);
+            point.project(camera);
 
-          return {
-            x:
-              rect.left +
-              ((point.x + 1) / 2) *
-              rect.width,
+            return {
 
-            y:
-              rect.top +
-              ((1 - point.y) / 2) *
-              rect.height
-          };
-        });
+              x:
+                rect.left +
+                ((point.x + 1) / 2) *
+                rect.width,
 
-        const valid = points.every(
-          (p) =>
-            Number.isFinite(p.x) &&
-            Number.isFinite(p.y)
+              y:
+                rect.top +
+                ((1 - point.y) / 2) *
+                rect.height
+
+            };
+          }
         );
 
-        if (!valid) return;
+        const valid = points.every(
+          (point) =>
+            Number.isFinite(point.x) &&
+            Number.isFinite(point.y)
+        );
 
-        // Toleransi sentuhan 20 piksel
+        if (!valid) {
+          return;
+        }
+
         const padding = 20;
 
         const minX =
-          Math.min(...points.map(p => p.x)) - padding;
+          Math.min(
+            ...points.map(p => p.x)
+          ) - padding;
 
         const maxX =
-          Math.max(...points.map(p => p.x)) + padding;
+          Math.max(
+            ...points.map(p => p.x)
+          ) + padding;
 
         const minY =
-          Math.min(...points.map(p => p.y)) - padding;
+          Math.min(
+            ...points.map(p => p.y)
+          ) - padding;
 
         const maxY =
-          Math.max(...points.map(p => p.y)) + padding;
+          Math.max(
+            ...points.map(p => p.y)
+          ) + padding;
 
         const inside =
           event.clientX >= minX &&
@@ -1085,6 +1321,7 @@ function installPointerFallback(scene) {
         if (inside) {
           startExperience();
         }
+
       },
       {
         passive: true
@@ -1093,20 +1330,24 @@ function installPointerFallback(scene) {
   }
 
   if (scene.canvas) {
+
     attach();
+
   } else {
+
     scene.addEventListener(
       "renderstart",
       attach,
       { once: true }
     );
+
   }
 }
 
 
-// ================================================
-// 17. INISIALISASI MINDAR
-// ================================================
+// ========================================
+// 18. INISIALISASI MINDAR
+// ========================================
 
 function initialize() {
 
@@ -1116,25 +1357,19 @@ function initialize() {
 
   const status = $("markerStatus");
 
-  if (!scene || !target || !status) {
-    console.error(
-      "Elemen utama MindAR tidak ditemukan."
-    );
-    return;
-  }
-
   // Kamera siap
   scene.addEventListener(
     "arReady",
     () => {
 
       if (!state.markerFound) {
-        setMarkerStatus("Scan logo IMIP");
+
+        status.textContent =
+          "Scan logo IMIP";
       }
 
-      console.log(
-        "MindAR: kamera siap"
-      );
+      status.classList.remove("error");
+
     }
   );
 
@@ -1143,73 +1378,68 @@ function initialize() {
     "arError",
     () => {
 
-      setMarkerStatus(
-        "Gagal membuka kamera / target",
-        false,
-        true
-      );
+      status.textContent =
+        "Gagal membuka kamera / target";
 
-      console.error(
-        "MindAR: terjadi masalah kamera atau target"
-      );
+      status.classList.remove("found");
+
+      status.classList.add("error");
+
     }
   );
 
-  // Logo ditemukan
+  // Logo IMIP ditemukan
   target.addEventListener(
     "targetFound",
     () => {
 
       state.markerFound = true;
 
-      setMarkerStatus(
+      status.classList.add("found");
+
+      status.textContent =
         state.started
           ? "Logo IMIP terdeteksi"
-          : "Sentuh tombol MULAI",
-        true
-      );
+          : "Sentuh tombol MULAI";
 
       syncStartBackup();
 
-      console.log(
-        "MindAR: logo IMIP terdeteksi"
-      );
     }
   );
 
-  // Logo hilang dari kamera
+  // Logo IMIP hilang
   target.addEventListener(
     "targetLost",
     () => {
 
       state.markerFound = false;
 
-      setMarkerStatus(
-        "Arahkan ke logo IMIP"
-      );
+      status.classList.remove("found");
+
+      status.textContent =
+        "Arahkan ke logo IMIP";
 
       syncStartBackup();
 
-      console.log(
-        "MindAR: logo IMIP tidak terlihat"
-      );
     }
   );
 
-  // Tombol MULAI cadangan HTML
+  // Tombol MULAI cadangan
   const backup = $("startBackup");
 
   if (backup) {
+
     backup.addEventListener(
       "click",
       startExperience
     );
+
   }
 
-  // Sentuhan cadangan pada kanvas
+  // Sentuhan cadangan pada kanvas AR
   installPointerFallback(scene);
 
-  // Sentuhan objek 3D
+  // Sentuhan tombol 3D
   document.querySelectorAll(
     ".clickable[data-action]"
   ).forEach((element) => {
@@ -1225,43 +1455,40 @@ function initialize() {
         handleAction(
           element.dataset.action
         );
+
       }
     );
   });
 
-  // Panel kontrol sentuh
-  const toggle = $("toggleDock");
+  // Panel sentuh
+  $("toggleDock").addEventListener(
+    "click",
+    () => {
 
-  if (toggle) {
-    toggle.addEventListener(
-      "click",
-      () => {
-
-        if (!state.started) return;
+      if (state.started) {
 
         const collapsed =
           $("touchDock")
             .classList.contains("collapsed");
 
         setDockOpen(collapsed);
-      }
-    );
-  }
 
-  // Tampilan awal
+      }
+    }
+  );
+
   render();
 
-  console.log(
-    "IMIP QUIZ V8 berhasil diinisialisasi"
-  );
 }
 
 
-// ================================================
-// 18. MULAI APLIKASI
-// ================================================
+// ========================================
+// 19. JALANKAN APLIKASI
+// ========================================
 
-if (document.readyState === "loading") {
+if (
+  document.readyState === "loading"
+) {
 
   document.addEventListener(
     "DOMContentLoaded",
@@ -1271,4 +1498,5 @@ if (document.readyState === "loading") {
 } else {
 
   initialize();
+
 }
